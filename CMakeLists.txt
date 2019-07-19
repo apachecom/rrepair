@@ -57,18 +57,27 @@ endif ()
 
 include(ConfigGBench)
 
-set(CTPH
-        #../bigRePair/bigrepair/ctph/malloc_count.h
-        #../bigRePair/bigrepair/ctph/malloc_count.c
-        ../bigRePair/bigrepair/ctph/newscan.hpp
-        ../bigRePair/bigrepair/ctph/pscan.hpp
-        ../bigRePair/bigrepair/ctph/utils.h
-        ../bigRePair/bigrepair/ctph/utils.c
-        #../bigRePair/bigrepair/ctph/xerrors.h
-        #../bigRePair/bigrepair/ctph/xerrors.c
-        )
+#set(CTPH
+#        #../bigRePair/bigrepair/ctph/malloc_count.h
+#        #../bigRePair/bigrepair/ctph/malloc_count.c
+#        ../bigRePair/bigrepair/ctph/newscan.hpp
+#        ../bigRePair/bigrepair/ctph/pscan.hpp
+#        ../bigRePair/bigrepair/ctph/utils.h
+#        ../bigRePair/bigrepair/ctph/utils.c
+#        #../bigRePair/bigrepair/ctph/xerrors.h
+#        #../bigRePair/bigrepair/ctph/xerrors.c
+#        )
 
-set(SOURCE_FILES main.cpp)
+set(SOURCE_FILES
+        utils/utils.h)
 
 
-add_executable(RRpair ${SOURCE_FILES} ${CTPH})
+add_executable(RRpair main.cpp ${SOURCE_FILES})
+
+
+
+include(internal_utils)
+
+
+cxx_executable_with_flags(big_repair_build "" "${LIBS};benchmark" tests/big_repair_build.cpp ${SOURCE_FILES})
+
