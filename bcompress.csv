@@ -1,0 +1,18 @@
+2019-11-03 19:51:35
+Running ./b_bigrepair_compression
+Run on (8 X 4000 MHz CPU s)
+CPU Caches:
+  L1 Data 32K (x4)
+  L1 Instruction 32K (x4)
+  L2 Unified 256K (x4)
+  L3 Unified 8192K (x1)
+Load Average: 1.92, 1.97, 2.77
+***WARNING*** CPU scaling is enabled, the benchmark real time measurements may be noisy and will incur extra overhead.
+name,iterations,real_time,cpu_time,time_unit,bytes_per_second,items_per_second,label,error_occurred,error_message,"G","memory"
+"compress chr19x50",1,2.38639e+08,1.86852e+08,us,,,,,,1.55963e+07,3.91638e+09
+"compress chr19x100",1,4.309e+08,3.60221e+08,us,,,,,,1.64532e+07,3.78587e+08
+"compress chr19x250",1,1.02773e+09,9.11886e+08,us,,,,,,1.9688e+07,3.78587e+08
+"compress chr19x500",1,2.02002e+09,1.8247e+09,us,,,,,,2.46688e+07,3.78587e+08
+"compress chr19x1000",1,4.09583e+09,3.71644e+09,us,,,,,,3.38686e+07,3.78587e+08
+"compress salx815",1,4.45129e+08,2.87098e+08,us,,,,,,4.38874e+07,3.78587e+08
+"compress salx2073",1,1.33092e+09,8.10079e+08,us,,,,,,1.12966e+08,3.78587e+08

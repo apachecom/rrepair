@@ -1,0 +1,12 @@
+2019-12-22 00:54:19
+Running ./b_stats
+Run on (8 X 4000 MHz CPU s)
+CPU Caches:
+  L1 Data 32K (x4)
+  L1 Instruction 32K (x4)
+  L2 Unified 256K (x4)
+  L3 Unified 8192K (x1)
+Load Average: 1.00, 1.15, 1.30
+***WARNING*** CPU scaling is enabled, the benchmark real time measurements may be noisy and will incur extra overhead.
+name,iterations,real_time,cpu_time,time_unit,bytes_per_second,items_per_second,label,error_occurred,error_message,"G","calls_to_partitioner","it_0_len_dicc","it_0_len_parser","it_0_m_mod","it_0_memory_peak_dicc","it_0_parser_time","it_0_repair_times","it_0_total_size_dicc","it_0_total_size_parse","it_0_windows_size","it_1_len_dicc","it_1_len_parser","it_1_m_mod","it_1_parser_time","it_1_repair_times","it_1_total_size_dicc","it_1_total_size_parse","it_1_windows_size","it_2_parser_time","it_2_repair_times","last_parser_file_repair_times","num_it","posprocessing_time","th"
+"run_collection_bigrepair_rec_partition",1,4.89728e+09,2.81523e+09,us,,,,,,0,2,5.08415e+06,2.80374e+07,20,1.47446e+09,4.13893e+09,1.14796e+08,6.59766e+08,1.1215e+08,10,623898,969385,20,1.2762e+08,1.39933e+08,7.78695e+07,3.87754e+06,10,4.03438e+06,2.34168e+07,828976,3,333,1e+07

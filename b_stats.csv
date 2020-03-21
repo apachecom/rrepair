@@ -1,0 +1,20 @@
+2019-12-12 22:48:21
+Running ./b_stats
+Run on (8 X 4000 MHz CPU s)
+CPU Caches:
+  L1 Data 32K (x4)
+  L1 Instruction 32K (x4)
+  L2 Unified 256K (x4)
+  L3 Unified 8192K (x1)
+Load Average: 1.59, 2.14, 2.07
+***WARNING*** CPU scaling is enabled, the benchmark real time measurements may be noisy and will incur extra overhead.
+name,iterations,real_time,cpu_time,time_unit,bytes_per_second,items_per_second,label,error_occurred,error_message,"G","calls_to_partitioner","it_0_first_repair_len_seq","it_0_first_repair_seq_binary_rules","it_0_len_dicc","it_0_len_parser","it_0_m_mod","it_0_memory_peak_dicc","it_0_parser_time","it_0_posproc_repair_rules","it_0_repair_times","it_0_total_size_dicc","it_0_total_size_parse","it_0_windows_size","it_1_first_repair_len_seq","it_1_first_repair_seq_binary_rules","it_1_parser_time","it_1_posproc_repair_rules","it_1_repair_times","last_parser_file_repair_times","num_it","parser_file_posproc_repair_rules","parser_file_posproc_repair_sequence","posprocessing_time","th"
+"run_collection_bigrepair_rec_partition",1,2.44418e+08,1.55212e+08,us,,,,,,1.60383e+07,1,5.17776e+06,3.74033e+06,98816,236902,100,1.03131e+08,1.95381e+08,2.85964e+06,2.84468e+07,5.99834e+07,947608,10,630686,433054,2.0153e+06,892511,7.41618e+06,69305,2,27583,132031,2.62624e+06,1e+07
+"run_collection_bigrepair_rec_partition",1,4.37866e+08,2.99405e+08,us,,,,,,1.70655e+07,1,5.14187e+06,3.61826e+06,158274,468457,100,1.12093e+08,3.77503e+08,3.10955e+06,3.14052e+07,1.03625e+08,1.87383e+06,10,918529,601981,3.89303e+06,1.03305e+06,1.25428e+07,142133,2,52836,234165,2.7635e+06,1e+07
+"run_collection_bigrepair_rec_partition",1,1.02576e+09,7.31528e+08,us,,,,,,1.97366e+07,1,5.17786e+06,3.43259e+06,316184,1.18665e+06,100,1.34867e+08,9.33196e+08,3.63625e+06,3.86455e+07,2.17295e+08,4.74659e+06,10,1.71249e+06,1.08013e+06,9.31621e+06,1.33702e+06,2.76285e+07,555567,2,120471,523651,3.3212e+06,1e+07
+"run_collection_bigrepair_rec_partition",1,2.01492e+09,1.46183e+09,us,,,,,,2.47265e+07,1,5.6724e+06,3.47472e+06,569348,2.35903e+06,100,1.8061e+08,1.86775e+09,4.34596e+06,4.97407e+07,4.01591e+08,9.43612e+06,10,3.09663e+06,1.95794e+06,1.8703e+07,1.85911e+06,5.33445e+07,1.24257e+06,2,220399,1.01018e+06,4.45832e+06,1e+07
+"run_collection_bigrepair_rec_partition",1,4.06803e+09,2.93544e+09,us,,,,,,3.39343e+07,1,7.03535e+06,4.07465e+06,1.10972e+06,4.7424e+06,100,2.58777e+08,3.79991e+09,5.05235e+06,7.18245e+07,7.80821e+08,1.89696e+07,10,5.7019e+06,3.48247e+06,3.79775e+07,2.92895e+06,1.13317e+08,2.77811e+06,2,409868,2.03767e+06,6.49922e+06,1e+07
+"run_collection_bigrepair_rec_partition",1,4.42561e+08,2.41502e+08,us,,,,,,4.63696e+07,1,1.88203e+07,1.39742e+07,136998,342191,100,3.57569e+08,2.82746e+08,4.91428e+06,1.09577e+08,7.25557e+07,1.36876e+06,10,2.95277e+06,2.67878e+06,2.71386e+06,1.50818e+06,1.13367e+07,113329,2,31875,155101,9.46435e+06,1e+07
+"run_collection_bigrepair_rec_partition",1,1.18273e+09,6.29819e+08,us,,,,,,1.20434e+08,1,5.2376e+07,3.99011e+07,386259,875337,100,8.83499e+08,7.42996e+08,9.78218e+06,3.09234e+08,2.09794e+08,3.50135e+06,10,8.17827e+06,7.40575e+06,7.48453e+06,2.83124e+06,3.31431e+07,315548,2,61808,469918,2.46511e+07,1e+07
+"run_collection_bigrepair_rec_partition",1,2.29993e+09,1.50121e+09,us,,,,,,0,1,5.2376e+07,3.99011e+07,898927,1.97256e+06,100,2.31142e+09,1.72874e+09,9.78218e+06,587324,4.87033e+08,7.89022e+06,10,8.17827e+06,7.40575e+06,2.15849e+07,2.83124e+06,8.0503e+07,993574,2,61808,469918,28055,1e+07
+"run_collection_bigrepair_rec_partition",1,5.03536e+09,3.41508e+09,us,,,,,,0,1,5.2376e+07,3.99011e+07,1.56699e+06,4.78281e+06,100,3.47696e+09,4.08345e+09,9.78218e+06,224291,8.78322e+08,1.91313e+07,10,8.17827e+06,7.40575e+06,5.45574e+07,2.83124e+06,1.5757e+08,3.32294e+06,2,61808,469918,227832,1e+07
