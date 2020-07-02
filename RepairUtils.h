@@ -50,6 +50,29 @@ namespace big_repair{
         }
 
 
+        /*
+         * Take a sequence S of variables and create a dummy binary grammar
+         * for S
+         * symbols is the start id to name the new rules
+         * Write in output_file
+         * */
+        void create_binary_grammars(const std::vector<int>& R,std::ofstream& fr_out, uint32_t & symbols)
+        {
+            std::vector<int>Q(R.size());
+            std::copy(R.begin(),R.end(),Q.begin());
+
+            while(Q.size() > 1)
+            {
+                fr_out.write((char*)&Q[0],sizeof(int));
+                fr_out.write((char*)&Q[1],sizeof(int));
+
+                auto it = R.begin();
+                Q.erase(it,it+1);
+                Q.push_back(++symbols);
+            }
+        }
+
+
     }
 
 }

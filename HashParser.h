@@ -30,13 +30,22 @@ namespace big_repair{
         //todo ver como implementar stats!!
         struct stats{
             uint32_t _max_alph_val;
+            uint32_t _seq_len;
+            uint32_t _dicc_len;
+
             stats(){
                 _max_alph_val = 0;
+                _seq_len = 0;
+                _dicc_len = 0;
+
             }
             void print(){
                 std::cout<<"-------------------Parser Data------------------------------\n";
                 std::cout<<"Max value in alph:" << _max_alph_val << std::endl;
+                std::cout<<"Initial Sequence len:" << _seq_len << std::endl;
+                std::cout<<"Dicctionary len:" << _dicc_len << std::endl;
             }
+
         };
         stats results;
 
@@ -57,12 +66,11 @@ namespace big_repair{
             config = nullptr;
 
         }
-
         HashParser(C* c) {
             this->config = c;
         }
         HashParser(const HashParser & HP) {
-            this->config = new C(HP.config) ;
+            this->config = HP.config;
         }
         ~HashParser() = default;
 
@@ -84,6 +92,8 @@ namespace big_repair{
                 // new phrase
                 rank_hash[hash] = coll_map.size() + 1;
                 compressed_seq.push_back(coll_map.size() + 1);
+
+                results._dicc_len++;
 #ifdef CHECK_COLLISION
                 // insert the hash and the word to check collisions in the map
                 coll_map[hash] = std::move(word);
@@ -101,7 +111,9 @@ namespace big_repair{
 #endif
                 word.clear();
                 compressed_seq.push_back(rank_hash[hash]);
+
             }
+            results._seq_len++;
         }
 
         void addWord(std::vector<uint32_t>& word, std::fstream& dFile, std::fstream& pFile, bool constrain = true){
@@ -121,6 +133,7 @@ namespace big_repair{
             if (it == coll_map.end()) {
                 // new phrase
 
+                results._dicc_len++;
                 //write the phrase in the dictionary file
                 dFile.write(ptr,word.size()*sizeof(int));
                 //put 0 between phrases
@@ -150,7 +163,7 @@ namespace big_repair{
                 uint32_t v = rank_hash[hash];
                 pFile.write((const char* )& v,sizeof(uint32_t));
             }
-
+            results._seq_len++;
         }
 
 
@@ -205,8 +218,8 @@ namespace big_repair{
                 return;
             }
 
-            std::fstream ffiled("file_dicc", std::ios::out|std::ios::binary);
-            std::fstream ffilep("file_parse", std::ios::out|std::ios::binary);
+            std::fstream ffiled(config->inputFile()+".dicc", std::ios::out|std::ios::binary);
+            std::fstream ffilep(config->inputFile()+".parse", std::ios::out|std::ios::binary);
 
             // we will read max 32 bit Integer
             uint32_t c = 0;
