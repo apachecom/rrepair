@@ -124,9 +124,11 @@ namespace big_repair{
              * internal data
              * */
             uint32_t  _size_seq;
+            std::vector<std::pair<uint32_t,uint32_t>> maxSigmaIt; // store the sigma alph (max alp, max artificial add) used in each it
             std::vector<std::string> diccFiles;
             std::vector<std::string> parseFiles;
-            std::vector<std::string> repairFiles;
+            std::vector<std::string> repairFilesR;
+            std::vector<std::string> repairFilesC;
 
     //        uint32_t symbols;
     //        uint32_t  bytes_per_symbol;
@@ -194,13 +196,19 @@ namespace big_repair{
             //apply repair and store repair files
             for(std::string s:diccFiles){
                 if(_compressor.apply(s) > 0){
-                    repairFiles.push_back(s + ".R");
-                    repairFiles.push_back(s + ".C");
+                    repairFilesR.push_back(s + ".R");
+                    repairFilesC.push_back(s + ".C");
                 }
                 else
-                    throw "[ERROR] RePair compression fail";
+                    throw "[ERROR] RePair compression fail dicc file " + s;
 
             }
+            std::string last_parse_file = parseFiles[_iter-1];
+            if(_compressor.apply(last_parse_file) > 0){
+                repairFilesR.push_back(last_parse_file + ".R");
+                repairFilesC.push_back(last_parse_file + ".C");
+            } else throw "[ERROR] RePair compression fail last parser file";
+
         };
         /**
         * partitioner method must create two files file_dicc and file_parse as integers
@@ -225,12 +233,15 @@ namespace big_repair{
             _parser->parseFileSM();
             //posprocess dictionary
             _size_seq = _parser->results._seq_len;
-            util::prepareDiccFileForRP(
+            uint32_t max_sigma = util::prepareDiccFileForRP(
                     _parser_conf.inputFile() + ".dicc",
                     _parser_conf.inputFile()+"["+std::to_string(_iter)+"].dicc",
                     sizeof(uint32_t),
                     _parser->results._max_alph_val
                     );
+
+
+            maxSigmaIt.emplace_back(_parser->results._max_alph_val,max_sigma);
 
             //store the dicc file for later compression
             diccFiles.push_back(_parser_conf.inputFile()+"["+std::to_string(_iter)+"].dicc");
@@ -243,7 +254,151 @@ namespace big_repair{
         /**
          *  Postprocess the files in case that it will be necesary
          * */
-        virtual void postprocess() {};
+        virtual void postprocess() {
+            // create a file for the final rules...
+            std::fstream R(_filename + ".R", std::ios::out|std::ios::binary);
+
+            // write the initial sigma value
+            uint32_t initial_sigma = maxSigmaIt.front().first;
+            R.write((const char *)&initial_sigma,sizeof(uint32_t));
+
+            // keep the rules ids.
+            std::map<uint32_t,uint32_t> rule_map;
+            // last id of the rules assigned
+            uint32_t offset_rules = initial_sigma;
+            uint32_t total_rules = 0;
+
+
+            for (uint32_t i = 0; i < repairFilesR.size() - 1 ; ++i) {
+                //open files C and R
+                std::fstream fileR(repairFilesR[i], std::ios::in|std::ios::binary);
+                std::fstream fileC(repairFilesR[i], std::ios::in|std::ios::binary);
+                //process file R and return the number of rules
+                uint32_t n_rules_level = postprocessRFile(fileR,R,offset_rules,initial_sigma,rule_map);
+                //process file C (Create rules for each phrase in the level)
+                postprocessCFile(fileC,R,n_rules_level,offset_rules,maxSigmaIt[i].first,maxSigmaIt[i].second,rule_map);
+                /* Update the offset of the rules adding the number of rules created in this iteration**/
+                offset_rules += n_rules_level;
+                total_rules += n_rules_level;
+            }
+
+            /**
+            *  Process last parser file stored in repairFilesR.last
+            * */
+        }
+
+
+        protected:
+
+
+        /**
+         * Read the rules and update the ids using the current offset
+         * and the map
+        */
+        uint32_t postprocessRFile(std::fstream& file,std::fstream& R, const uint32_t& offset_rules,  const uint32_t &min_sigma, std::map<uint32_t,uint32_t>& rule_map){
+
+            uint32_t maxsigma = 0;
+            file.read((char*)&maxsigma,sizeof(int));
+
+            uint32_t X,Y,c = 0;
+            while(!file.eof() && file.read((char*)&X,sizeof(uint32_t)) && file.read((char*)&Y,sizeof(uint32_t)))
+            {
+                // If X is less than min_sigma then is an element of the initial alph
+                if(X > min_sigma){
+                    /* If X is an element of the alp we change it by the corresponding non-terminal**/
+                    if(X < maxsigma) X = rule_map[X];
+                    else (X - maxsigma) + offset_rules;
+                }
+                //Same for Y
+                if(Y > min_sigma){
+                    /* If X is an element of the alp we change it by the corresponding non-terminal**/
+                    if(Y < maxsigma) X = rule_map[Y];
+                    else (Y - maxsigma) + offset_rules;
+                }
+
+                /*Write in the file*/
+                R.write((char*)&X,4);
+                R.write((char*)&Y,4);
+                c++;
+            }
+            return c;
+        }
+
+
+        /**
+         * Read the C file and build a rule for each phrase
+         * Each phrase is delimited in the sequence by an element between min_sigma and max_sigma ......$.....$......$......$
+         * Update de map_rules for the next level
+         * the rules created will be the alphabeth of the next level
+         * */
+        void postprocessCFile(
+                std::fstream& file,
+                std::fstream& R,
+                uint32_t& n_rules_level,
+                const uint32_t& offset_rules,
+                const uint32_t &min_sigma,
+                const uint32_t &max_sigma,
+                std::map<uint32_t,uint32_t>& rule_map
+                ){
+                    /* store the current rule*/
+                    std::vector<uint32_t> X;
+                    /* read the current rule*/
+                    uint32_t rule = 0;
+                    uint32_t level_rule_id = 0;
+                    std::map<uint32_t,uint32_t> rule_map_level;
+                    while(!file.eof() && file.read((char*)&rule,sizeof(uint32_t)))
+                    {
+                        // rule is an alph or a repair rule (NOT an artificial symbol!!!)
+                        if(rule <= min_sigma || rule > max_sigma) {
+                            /*if it is a valid simbol add it to the current rule*/
+                            if(rule <= min_sigma) // if it is a alph symbol mapping
+                                X.push_back(rule_map[rule]);
+                            else // if it is a new rule compute its real id
+                                X.push_back(rule - min_sigma - 1 + offset_rules);
+                        }else{
+                            //create a binary rules for each phrase
+                            if(X.size() > 1)
+                            {
+                                uint32_t last = X.size()-1, i = 0;
+                                while(i < X.size()-1)
+                                {
+                                    if(i == last){
+                                        X.push_back(X[last]);
+                                        last = X.size()-1;
+                                        ++i;
+                                    }
+                                    else{
+
+                                        X.push_back( n_rules_level + offset_rules );
+
+                                        if(i+1 == last)
+                                            last = X.size()-1;
+
+                                        ++n_rules_level;
+
+                                        R.write((char*)&X[i],4);
+                                        R.write((char*)&X[i+1],4);
+
+                                        i+=2;
+                                    }
+
+                                    /**Update symbol*/
+                                    rule_map_level[++level_rule_id] = n_rules_level - 1 + offset_rules;
+
+                                }
+                                X.clear();
+
+                            }else{
+                                rule_map_level[++level_rule_id] = X.front();
+                                X.clear();
+                            }
+                        }
+                    }
+
+                    rule_map.clear();
+                    rule_map = rule_map_level;
+            }
+
 
 
     };

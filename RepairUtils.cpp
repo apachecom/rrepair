@@ -7,18 +7,18 @@
 
 using namespace big_repair;
 
-void util::prepareDiccFileForRP(const std::string &dFile, const std::string &dout, int bytes, uint32_t max_value) {
+uint32_t util::prepareDiccFileForRP(const std::string &dFile, const std::string &dout, int bytes, uint32_t max_value) {
     //Open Dicc file
     std::fstream ffile(dFile, std::ios::in);
     if (!ffile.is_open()) {
         std::cout << "Error opening the file: " << dFile << std::endl;
-        return;
+        return 0;
     }
     //Open output file
     std::fstream fout(dout, std::ios::out);
     if (!fout.is_open()) {
         std::cout << "Error opening the file: " << dout << std::endl;
-        return;
+        return 0;
     }
 
     uint32_t cont = max_value;
@@ -34,6 +34,7 @@ void util::prepareDiccFileForRP(const std::string &dFile, const std::string &dou
         }
 
     }
+    return cont;
 }
 
 
