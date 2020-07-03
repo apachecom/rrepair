@@ -66,13 +66,21 @@ namespace big_repair{
             config = nullptr;
 
         }
-        HashParser(C* c) {
-            this->config = c;
+        HashParser(const C& c) {
+            this->config = new C(c);
         }
         HashParser(const HashParser & HP) {
             this->config = HP.config;
         }
-        ~HashParser() = default;
+
+        HashParser& operator = (const HashParser& HP){
+            config = new C(HP.config);
+            return *this;
+        }
+
+        ~HashParser() {
+            if(config != nullptr) delete config;
+        }
 
         // add a phrase to the dicc and to the sequence / check for collisions / write in the files
         void addWord(std::vector<uint32_t>& word, bool constrain = true){

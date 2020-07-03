@@ -59,7 +59,7 @@ namespace big_repair {
 
                 for (size_t k = 0; k < len; k++) {
 
-                    int c = (unsigned int) s[k];
+                    int c = (unsigned char) s[k];
                     //  std::cout<<c<<" ";
                     assert(c >= 0 && c < 256);
                     hash = (256 * hash + c) % prime;    //  add char k

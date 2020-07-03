@@ -16,8 +16,12 @@ namespace big_repair{
     >
     class RePairRecursive {
 
+
+    public:
         RePairRecursive(){  config = nullptr; }
-        RePairRecursive(C& c) { config = c;}
+        RePairRecursive(const C& c) {
+            config = c;
+        }
         RePairRecursive(const RePairRecursive & R) {
             this->config = R.config ;
         }
@@ -28,25 +32,25 @@ namespace big_repair{
         * Compress the file using a recursively version of repair
         */
         void apply(){
-            while(config->stopCondition())
+            while(!config.stopCondition())
             {
                 /**
                 * partitioner method must create two files file_dicc and file_parse as integers
                 * and Preprocess  dicc file in order to be able apply repair
                 * */
-                    config->parseIt();
+                    config.parseIt();
             }
             /**
              * Apply repair to all files
              * */
-            config->comppress();
+            config.compressor();
             /**
              * Posprocessing files
              */
-            config->postprocess();
+//            config.postprocess();
         }
         protected:
-            C* config;
+            C config;
     };
 
 
