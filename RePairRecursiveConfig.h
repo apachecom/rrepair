@@ -130,37 +130,47 @@ namespace big_repair{
             std::vector<std::string> repairFilesR;
             std::vector<std::string> repairFilesC;
 
-    //        uint32_t symbols;
-    //        uint32_t  bytes_per_symbol;
-    //
-    //        std::fstream fc_out;
-    //        std::fstream fr_out;
-    //        std::set<alph_type> map_sigma;
-
-
             DummyRepair _compressor;
 
             ParseConf _parser_conf;
             Parse* _parser;
 
-            std::vector<std::string> tmp_files;
-
             void cleanTmpFiles(){
-                for(std::string s:tmp_files){
+//                for(std::string s:tmp_files){
+//                    /*Remove all tmp file of dicc**/
+//                    std::string rm_cmd_old_dicc = "rm "+ s;
+//                    if(system(rm_cmd_old_dicc.c_str()) < 0  ){
+//                        std::cout<<"[ERROR] Can't remove tmp file: "+ s;
+//                    }
+//
+//                }
+//                tmp_files.clear();
 
-                    /*Remove all tmp file of dicc**/
+                for(std::string s:diccFiles){
                     std::string rm_cmd_old_dicc = "rm "+ s;
                     if(system(rm_cmd_old_dicc.c_str()) < 0  ){
                         std::cout<<"[ERROR] Can't remove tmp file: "+ s;
                     }
-
                 }
-                tmp_files.clear();
+                for(std::string s:parseFiles){
+                    std::string rm_cmd_old_dicc = "rm "+ s;
+                    if(system(rm_cmd_old_dicc.c_str()) < 0  ){
+                        std::cout<<"[ERROR] Can't remove tmp file: "+ s;
+                    }
+                }
+                for(std::string s:repairFilesR){
+                    std::string rm_cmd_old_dicc = "rm "+ s;
+                    if(system(rm_cmd_old_dicc.c_str()) < 0  ){
+                        std::cout<<"[ERROR] Can't remove tmp file: "+ s;
+                    }
+                }
+                for(std::string s:repairFilesC){
+                    std::string rm_cmd_old_dicc = "rm "+ s;
+                    if(system(rm_cmd_old_dicc.c_str()) < 0  ){
+                        std::cout<<"[ERROR] Can't remove tmp file: "+ s;
+                    }
+                }
             }
-
-
-
-
 
             std::string file() const { return _filename;}
 
@@ -185,7 +195,7 @@ namespace big_repair{
     public:
 
         bool stopCondition(){
-                return ( _iter > _max_iter ) || ( _size_seq < _max_iter );
+                return ( _iter > _max_iter ) || ( _size_seq < _th_initial_seq );
             }
         bool firstIteration(){ return !_iter; }
 
@@ -203,7 +213,7 @@ namespace big_repair{
                     throw "[ERROR] RePair compression fail dicc file " + s;
 
             }
-            std::string last_parse_file = parseFiles[_iter-1];
+            std::string last_parse_file = parseFiles.back();
             if(_compressor.apply(last_parse_file) > 0){
                 repairFilesR.push_back(last_parse_file + ".R");
                 repairFilesC.push_back(last_parse_file + ".C");
@@ -218,10 +228,8 @@ namespace big_repair{
         virtual void parseIt()
         {
             if(firstIteration()){
-                //todo init parser conf
                 initParserConf();
             }else{
-                //todo init parser conf
                 updateParserConf();
             }
             //config parse;
@@ -254,7 +262,7 @@ namespace big_repair{
         /**
          *  Postprocess the files in case that it will be necesary
          * */
-        virtual void postprocess() {
+        std::pair<uint32_t,uint32_t> postprocess() {
             // create a file for the final rules...
             std::fstream R(_filename + ".R", std::ios::out|std::ios::binary);
 
@@ -265,18 +273,21 @@ namespace big_repair{
             // keep the rules ids.
             std::map<uint32_t,uint32_t> rule_map;
             // last id of the rules assigned
-            uint32_t offset_rules = initial_sigma;
+            uint32_t offset_rules = initial_sigma + 1;
             uint32_t total_rules = 0;
 
 
             for (uint32_t i = 0; i < repairFilesR.size() - 1 ; ++i) {
+#ifdef DEBUG_PRINT
+                std::cout<<"Posprocessing files R and C of dicc:"<<i+1<<std::endl;
+#endif
                 //open files C and R
                 std::fstream fileR(repairFilesR[i], std::ios::in|std::ios::binary);
-                std::fstream fileC(repairFilesR[i], std::ios::in|std::ios::binary);
+                std::fstream fileC(repairFilesC[i], std::ios::in|std::ios::binary);
                 //process file R and return the number of rules
-                uint32_t n_rules_level = postprocessRFile(fileR,R,offset_rules,initial_sigma,rule_map);
+                uint32_t n_rules_level = postprocessDiccRFile(fileR,R,offset_rules,maxSigmaIt[i].first,rule_map);
                 //process file C (Create rules for each phrase in the level)
-                postprocessCFile(fileC,R,n_rules_level,offset_rules,maxSigmaIt[i].first,maxSigmaIt[i].second,rule_map);
+                postprocessDiccCFile(fileC,R,n_rules_level,offset_rules,maxSigmaIt[i].first,maxSigmaIt[i].second,rule_map);
                 /* Update the offset of the rules adding the number of rules created in this iteration**/
                 offset_rules += n_rules_level;
                 total_rules += n_rules_level;
@@ -285,6 +296,10 @@ namespace big_repair{
             /**
             *  Process last parser file stored in repairFilesR.last
             * */
+
+            std::fstream C(_filename + ".C", std::ios::out|std::ios::binary);
+            std::pair<uint32_t,uint32_t> p = posprocessingFinalParseFile(R,C,offset_rules,initial_sigma,rule_map);
+            return std::make_pair(total_rules+p.first,p.second);
         }
 
 
@@ -294,8 +309,15 @@ namespace big_repair{
         /**
          * Read the rules and update the ids using the current offset
          * and the map
+         * return the number of rules
         */
-        uint32_t postprocessRFile(std::fstream& file,std::fstream& R, const uint32_t& offset_rules,  const uint32_t &min_sigma, std::map<uint32_t,uint32_t>& rule_map){
+        uint32_t postprocessDiccRFile(
+                std::fstream& file,
+                std::fstream& R,
+                const uint32_t& offset_rules,
+                const uint32_t &min_sigma,
+                std::map<uint32_t,uint32_t>& rule_map
+                ){
 
             uint32_t maxsigma = 0;
             file.read((char*)&maxsigma,sizeof(int));
@@ -304,21 +326,49 @@ namespace big_repair{
             while(!file.eof() && file.read((char*)&X,sizeof(uint32_t)) && file.read((char*)&Y,sizeof(uint32_t)))
             {
                 // If X is less than min_sigma then is an element of the initial alph
-                if(X > min_sigma){
+//                if(X > min_sigma){
                     /* If X is an element of the alp we change it by the corresponding non-terminal**/
-                    if(X < maxsigma) X = rule_map[X];
-                    else (X - maxsigma) + offset_rules;
-                }
+                    if(X < maxsigma)
+                        X = rule_map.empty()?X:rule_map[X];
+                    else
+                        X = (X - maxsigma) + offset_rules;
+//                }
                 //Same for Y
-                if(Y > min_sigma){
+//                if(Y > min_sigma){
                     /* If X is an element of the alp we change it by the corresponding non-terminal**/
-                    if(Y < maxsigma) X = rule_map[Y];
-                    else (Y - maxsigma) + offset_rules;
-                }
+                    if(Y < maxsigma)
+                        Y = rule_map.empty()?Y:rule_map[Y];
+                    else
+                        Y = (Y - maxsigma) + offset_rules;
+//                }
 
                 /*Write in the file*/
-                R.write((char*)&X,4);
-                R.write((char*)&Y,4);
+                R.write((char*)&X,sizeof(uint32_t));
+                R.write((char*)&Y,sizeof(uint32_t));
+
+
+#ifdef DEBUG_PRINT
+
+                if(_parser_conf.bytesToRead() == 1){
+
+                    char p1 = X;
+                    char p2 = Y;
+                    std::cout<<c+offset_rules+1<<"-<";
+                    if(X <= 67)
+                        std::cout<<p1;
+                    else std::cout<<X;
+                    std::cout<<",";
+                    if(Y <= 67)
+                        std::cout<<p2;
+                    else std::cout<<Y;
+                    std::cout<<">"<<std::endl;
+                } else{
+
+                    std::cout<<c+offset_rules+1<<"-<"<<X<<","<<Y<<">"<<std::endl;
+                }
+
+#endif
+
                 c++;
             }
             return c;
@@ -331,7 +381,7 @@ namespace big_repair{
          * Update de map_rules for the next level
          * the rules created will be the alphabeth of the next level
          * */
-        void postprocessCFile(
+        void postprocessDiccCFile(
                 std::fstream& file,
                 std::fstream& R,
                 uint32_t& n_rules_level,
@@ -346,16 +396,48 @@ namespace big_repair{
                     uint32_t rule = 0;
                     uint32_t level_rule_id = 0;
                     std::map<uint32_t,uint32_t> rule_map_level;
+
+#ifdef DEBUG_PRINT
+
+            std::cout<<"Parser sequence:"<<std::endl;
+#endif
                     while(!file.eof() && file.read((char*)&rule,sizeof(uint32_t)))
                     {
                         // rule is an alph or a repair rule (NOT an artificial symbol!!!)
                         if(rule <= min_sigma || rule > max_sigma) {
                             /*if it is a valid simbol add it to the current rule*/
                             if(rule <= min_sigma) // if it is a alph symbol mapping
-                                X.push_back(rule_map[rule]);
+                            {
+                                uint32_t xx =  rule_map.empty()?rule:rule_map[rule];
+                                X.push_back(xx);
+
+#ifdef DEBUG_PRINT
+
+
+                                if(xx < 67)
+                                    std::cout<<char(xx)<<" ";
+                                else
+                                    std::cout<<xx<<" ";
+
+#endif
+
+                            }
                             else // if it is a new rule compute its real id
-                                X.push_back(rule - min_sigma - 1 + offset_rules);
+                            {
+                                uint32_t xx =  rule - max_sigma - 1 + offset_rules;
+                                X.push_back(xx);
+
+#ifdef DEBUG_PRINT
+                                std::cout<<xx<<" ";
+#endif
+                            }
                         }else{
+
+
+#ifdef DEBUG_PRINT
+
+                            std::cout<<std::endl;
+#endif
                             //create a binary rules for each phrase
                             if(X.size() > 1)
                             {
@@ -379,14 +461,19 @@ namespace big_repair{
                                         R.write((char*)&X[i],4);
                                         R.write((char*)&X[i+1],4);
 
+#ifdef DEBUG_PRINT
+                                        std::cout<<n_rules_level - 1 + offset_rules<<"-<"<<X[i]<<","<<X[i+1]<<">"<<std::endl;
+#endif
                                         i+=2;
+
+
                                     }
 
-                                    /**Update symbol*/
-                                    rule_map_level[++level_rule_id] = n_rules_level - 1 + offset_rules;
+
 
                                 }
                                 X.clear();
+                                rule_map_level[++level_rule_id] = n_rules_level - 1 + offset_rules;
 
                             }else{
                                 rule_map_level[++level_rule_id] = X.front();
@@ -394,12 +481,105 @@ namespace big_repair{
                             }
                         }
                     }
+#ifdef DEBUG_PRINT
 
+                    std::cout<<std::endl;
+#endif
                     rule_map.clear();
                     rule_map = rule_map_level;
             }
 
 
+
+        std::pair<uint32_t,uint32_t> posprocessingFinalParseFile(
+                std::fstream& R,
+                std::fstream& C,
+                uint32_t& offset_rules,
+                const uint32_t& initial_sigma,
+                std::map<uint32_t,uint32_t>& rule_map
+                ){
+
+
+            /*Updating rules*/
+            std::fstream r_file(repairFilesR.back(),std::ios::in);
+            uint32_t  maxsigma = 0, n_rules = 0;
+
+#ifdef DEBUG_PRINT
+
+            std::cout<<"FINAL SEQ RULES"<<std::endl;
+#endif
+            {
+                r_file.read((char*)&maxsigma,4);
+                /**reading rules*/
+                uint32_t X,Y;
+                while(!r_file.eof() && r_file.read((char*)&X,sizeof(uint32_t)) && r_file.read((char*)&Y,sizeof(uint32_t )))
+                {
+                    /* If X is an element of the alp we change it by the corresponding non-terminal**/
+                    if(X < maxsigma)X = rule_map[X];
+                        /* If X is a rule we add it the corresponding offset**/
+                    else X = X - maxsigma + offset_rules;
+                    /*Same for Y**/
+                    if(Y < maxsigma)Y = rule_map[Y];
+                    else Y = Y - maxsigma + offset_rules;
+                    /*Write in the file*/
+                    R.write((char*)&X,sizeof(uint32_t));
+                    R.write((char*)&Y,sizeof(uint32_t));
+                    /*Increase the number of rules*/
+
+#ifdef DEBUG_PRINT
+                    char p1 = X;
+                    char p2 = Y;
+                    std::cout<<offset_rules+n_rules+1<<"-<";
+                    if(X <= initial_sigma)
+                        std::cout<<p1;
+                    else std::cout<<X;
+                    std::cout<<",";
+                    if(Y <= initial_sigma)
+                        std::cout<<p2;
+                    else std::cout<<Y;
+                    std::cout<<">"<<std::endl;
+
+#endif
+                    ++n_rules;
+                }
+            }
+
+            uint32_t len = 0;
+            {
+                /*Updating first rule*/
+                std::fstream c_file(repairFilesC.back(),std::ios::in);
+                uint32_t X = 0;
+
+#ifdef DEBUG_PRINT
+
+                std::cout<<"FINAL SEQ C"<<std::endl;
+#endif
+                while(!c_file.eof() && c_file.read((char*)&X,sizeof(uint32_t)))
+                {
+                    /* If X is an element of the alp we change it by the corresponding non-terminal**/
+                    if(X < maxsigma) X = rule_map[X];
+                    /* If X is a rule we add it the corresponding offset**/
+                    else X = X - maxsigma + offset_rules;
+                    C.write((char*)&X,sizeof(uint32_t));
+
+#ifdef DEBUG_PRINT
+
+                    if(X < initial_sigma) std::cout<<char(X)<<" ";
+                    else std::cout<<X<<" ";
+#endif
+                    len++;
+                }
+
+
+#ifdef DEBUG_PRINT
+
+                std::cout<<std::endl;
+#endif
+            }
+
+            return std::make_pair(n_rules,len);
+
+        }
 
     };
 

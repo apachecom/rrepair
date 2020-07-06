@@ -31,11 +31,12 @@ namespace big_repair{
     };
 
     template <>
-    class HashParserConfig<KRPSlindingWindow<>,KRPHashFunction<uint64_t ,std::string>>{
+    class HashParserConfig<KRPSlindingWindow<>,KRPHashFunction<uint64_t ,std::string>> {
 
 
     public:
         HashParserConfig(){ }
+
         HashParserConfig(const HashParserConfig<KRPSlindingWindow<>,KRPHashFunction<uint64_t ,std::string>>& HC){
 
             _input_file = HC._input_file;
@@ -79,11 +80,13 @@ namespace big_repair{
 
         void print(){
 
+
+#ifdef DEBUG_PRINT
             std::cout<<"inputFile:"<<_input_file<<std::endl;
             std::cout<<"prefixTempFiles:"<<_dir_temp<<std::endl;
             std::cout<<"mod:"<<_mod<<std::endl;
             std::cout<<"bytesToRead:"<<_bytes_to_read<<std::endl;
-
+#endif
         }
 
     protected:

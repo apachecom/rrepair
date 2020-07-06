@@ -31,6 +31,8 @@ namespace big_repair{
         void create_binary_grammars(const std::vector<int>& R,std::ofstream& fr_out, uint32_t & symbols);
 
 
+        uint32_t decompress(const std::string&);
+
     }
 
 }

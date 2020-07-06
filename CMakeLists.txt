@@ -76,7 +76,7 @@ set(SOURCE_FILES
         RepairUtils.h
         RePairRecursive.cpp RePairRecursive.h
         RePairRecursiveConfig.cpp RePairRecursiveConfig.h
-        DummyRePair.cpp DummyRePair.h RepairUtils.cpp)
+        DummyRePair.cpp DummyRePair.h RepairUtils.cpp bench/rrepair.cpp)
 
 
 
@@ -99,6 +99,9 @@ cxx_executable_with_flags(t_hash_parser "" "${LIBS};benchmark;sdsl" test/t_hash_
 cxx_executable_with_flags(t_sliding_window "" "${LIBS};benchmark;sdsl" test/t_sliding_window.cpp ${SOURCE_FILES})
 cxx_executable_with_flags(t_repair_recursive "" "${LIBS};benchmark;sdsl" test/t_repair_recursive.cpp ${SOURCE_FILES})
 
+
+
+cxx_executable_with_flags(rrepair "" "${LIBS};benchmark;sdsl" bench/rrepair.cpp ${SOURCE_FILES})
 
 cxx_executable_with_flags(b_bigrepair_compression "" "${LIBS};benchmark;sdsl" bench/b_bigrepair_compression.cpp ${SOURCE_FILES})
 cxx_executable_with_flags(b_stats "" "${LIBS};benchmark;sdsl" bench/b_stats.cpp ${SOURCE_FILES})

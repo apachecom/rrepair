@@ -47,7 +47,7 @@ namespace big_repair{
             /**
              * Posprocessing files
              */
-//            config.postprocess();
+            config.postprocess();
         }
         protected:
             C config;

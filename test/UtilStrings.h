@@ -11,6 +11,7 @@
 #include <functional>
 #include <algorithm>
 #include <random>
+#include <fstream>
 
 namespace big_repair{
     namespace util{
@@ -21,20 +22,20 @@ namespace big_repair{
         {
             //Change this to suit
             return char_array(
-                    {'0','1','2'
-                     ,'3','4'
-                     ,
-                     '5','6','7','8','9',
-                     'A','B','C','D','E','F',
-                     'G','H','I','J','K',
-                     'L','M','N','O','P',
-                     'Q','R','S','T','U',
-                     'V','W','X','Y','Z',
-                     'a','b','c','d','e','f',
-                     'g','h','i','j','k',
-                     'l','m','n','o','p',
-                     'q','r','s','t','u',
-                     'v','w','x','y','z'
+                    {
+//                        '1','2','3','4',
+//                     '5','6','7','8','9',
+                     'A','B','C','D','E','F'
+//                     ,
+//                     'G','H','I','J','K',
+//                     'L','M','N','O','P',
+//                     'Q','R','S','T','U',
+//                     'V','W','X','Y','Z',
+//                     'a','b','c','d','e','f',
+//                     'g','h','i','j','k',
+//                     'l','m','n','o','p',
+//                     'q','r','s','t','u',
+//                     'v','w','x','y','z'
                     });
         };
 
@@ -71,6 +72,29 @@ namespace big_repair{
             return random_string(length,randchar);
 
         }
+
+        bool compareFiles(const std::string& p1, const std::string& p2) {
+            std::ifstream f1(p1, std::ifstream::binary|std::ifstream::ate);
+            std::ifstream f2(p2, std::ifstream::binary|std::ifstream::ate);
+
+            if (f1.fail() || f2.fail()) {
+                return false; //file problem
+            }
+
+            if (f1.tellg() != f2.tellg()) {
+                return false; //size mismatch
+            }
+
+            //seek back to beginning and use std::equal to compare contents
+            f1.seekg(0, std::ifstream::beg);
+            f2.seekg(0, std::ifstream::beg);
+            return std::equal(std::istreambuf_iterator<char>(f1.rdbuf()),
+                              std::istreambuf_iterator<char>(),
+                              std::istreambuf_iterator<char>(f2.rdbuf()));
+        }
+
+
+
     }
 
 }
