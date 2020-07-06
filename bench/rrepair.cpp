@@ -39,8 +39,8 @@ struct Params {
     void readParams(int argc, char *argv[]){
 
         if(argc < 6 ){
-            throw "Wrong number of parameters";
             help();
+            throw "Wrong number of parameters";
         }
 
         filename = argv[1];
