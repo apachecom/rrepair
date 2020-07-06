@@ -2,7 +2,7 @@
 // Created by alejandro on 30-07-19.
 //
 
-#ifndef RRPAIR_UTILS_H
+#ifndef RRPAIR_UTILSTRINGS_H
 #define RRPAIR_UTILS_H
 
 #include <cstring>
@@ -22,6 +22,6 @@ std::string mydespair_exe = "repos/bigrepairmzz/bigrepair/myrepair/despair";
 
 
 
-#endif //RRPAIR_UTILS_H
+#endif //RRPAIR_UTILSTRINGS_H
 
 
