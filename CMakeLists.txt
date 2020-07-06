@@ -89,24 +89,24 @@ add_executable(
 
 include(internal_utils)
 
-cxx_executable_with_flags(t_preprocess_dicc "" "${LIBS};benchmark;sdsl" test/t_preprocess_dicc.cpp ${SOURCE_FILES})
-cxx_executable_with_flags(t_partition "" "${LIBS};benchmark;sdsl" test/t_partition.cpp ${SOURCE_FILES})
-cxx_executable_with_flags(t_recursive_partition "" "${LIBS};benchmark;sdsl" test/t_recursive_partition.cpp ${SOURCE_FILES})
-cxx_executable_with_flags(t_compressor "" "${LIBS};benchmark;sdsl" test/t_compressor.cpp ${SOURCE_FILES})
+#cxx_executable_with_flags(t_preprocess_dicc "" "${LIBS};benchmark;sdsl" test/t_preprocess_dicc.cpp ${SOURCE_FILES})
+#cxx_executable_with_flags(t_partition "" "${LIBS};benchmark;sdsl" test/t_partition.cpp ${SOURCE_FILES})
+#cxx_executable_with_flags(t_recursive_partition "" "${LIBS};benchmark;sdsl" test/t_recursive_partition.cpp ${SOURCE_FILES})
+#cxx_executable_with_flags(t_compressor "" "${LIBS};benchmark;sdsl" test/t_compressor.cpp ${SOURCE_FILES})
 
-cxx_executable_with_flags(t_hash_function "" "${LIBS};benchmark;sdsl" test/t_hash_function.cpp ${SOURCE_FILES})
-cxx_executable_with_flags(t_hash_parser "" "${LIBS};benchmark;sdsl" test/t_hash_parser.cpp ${SOURCE_FILES})
-cxx_executable_with_flags(t_sliding_window "" "${LIBS};benchmark;sdsl" test/t_sliding_window.cpp ${SOURCE_FILES})
-cxx_executable_with_flags(t_repair_recursive "" "${LIBS};benchmark;sdsl" test/t_repair_recursive.cpp ${SOURCE_FILES})
+cxx_executable_with_flags(t_hash_function "" "${LIBS};benchmark" test/t_hash_function.cpp ${SOURCE_FILES})
+cxx_executable_with_flags(t_hash_parser "" "${LIBS};benchmark" test/t_hash_parser.cpp ${SOURCE_FILES})
+cxx_executable_with_flags(t_sliding_window "" "${LIBS};benchmark" test/t_sliding_window.cpp ${SOURCE_FILES})
+cxx_executable_with_flags(t_repair_recursive "" "${LIBS};benchmark" test/t_repair_recursive.cpp ${SOURCE_FILES})
 
 
 
-cxx_executable_with_flags(rrepair "" "${LIBS};benchmark;sdsl" bench/rrepair.cpp ${SOURCE_FILES})
+cxx_executable_with_flags(rrepair "" "${LIBS};benchmark" bench/rrepair.cpp ${SOURCE_FILES})
 
-cxx_executable_with_flags(b_bigrepair_compression "" "${LIBS};benchmark;sdsl" bench/b_bigrepair_compression.cpp ${SOURCE_FILES})
-cxx_executable_with_flags(b_stats "" "${LIBS};benchmark;sdsl" bench/b_stats.cpp ${SOURCE_FILES})
-cxx_executable_with_flags(b_bigrepair_mzz "" "${LIBS};benchmark;sdsl" bench/b_bigrepair_mzz.cpp ${SOURCE_FILES})
-cxx_executable_with_flags(b_repair "" "${LIBS};benchmark;sdsl" bench/b_repair.cpp ${SOURCE_FILES})
+#cxx_executable_with_flags(b_bigrepair_compression "" "${LIBS};benchmark;sdsl" bench/b_bigrepair_compression.cpp ${SOURCE_FILES})
+#cxx_executable_with_flags(b_stats "" "${LIBS};benchmark;sdsl" bench/b_stats.cpp ${SOURCE_FILES})
+#cxx_executable_with_flags(b_bigrepair_mzz "" "${LIBS};benchmark;sdsl" bench/b_bigrepair_mzz.cpp ${SOURCE_FILES})
+#cxx_executable_with_flags(b_repair "" "${LIBS};benchmark;sdsl" bench/b_repair.cpp ${SOURCE_FILES})
 
 
 
