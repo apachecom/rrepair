@@ -12,13 +12,13 @@ echo building tests
 make t_hash_function
 make t_sliding_window
 make t_hash_parser
-make t_recursive_repair
+make t_repair_recursive
 
 
 ./t_hash_function
 ./t_sliding_window
 ./t_hash_parser
-./t_recursive_repair
+./t_repair_recursive
 
 echo building binnary
 
