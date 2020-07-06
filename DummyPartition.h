@@ -44,9 +44,7 @@ struct KR_window {
     KR_window(int w) : wsize(w) {
 
         asize = 256;
-
         asize_pot = 1;
-
         for (int i = 1; i < wsize; i++)
             asize_pot = (asize_pot * asize) % prime; // ugly linear-time power algorithm
         // alloc and clear window
@@ -367,7 +365,7 @@ public:
     uint parse_file(
             const std::string &file,
             const uint rb) {
-        /**
+      /**
        * Open files
       */
         fstream ffile(file, std::ios::in);
@@ -972,9 +970,9 @@ private:
                     const uint &bytes
 
             ) {
+
         uint len = word.size();
         int *A = new int[len];
-
         std::copy(word.begin(), word.end(), A);
         word.clear();
         char *S = (char *) A;

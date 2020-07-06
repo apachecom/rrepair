@@ -266,7 +266,7 @@ protected:
                 /* If X is an element of the alp we change it by the corresponding non-terminal**/
 //                std::cout<<"\t"<<X<<" "<<Y<<std::endl;
                 if(X < maxsigma)X = S[X];
-                /* If X is a rule we add it the corresponding offset**/
+                /* If X is a rule we add it the correspondingS offset**/
                 else X = (X - maxsigma) + off_rules;
                 /*Same for Y**/
                 if(Y < maxsigma)Y = S[Y];
@@ -344,7 +344,7 @@ protected:
      * off_rules is the current offset of the rules.
      * S is the map from the alphabet of the file to the real rule (This is updated for next iteration)
     */
-    int process_first_rule(const std::string & file,std::fstream& Gf,const uint &i,const std::pair<uint,uint> &sigma_b,
+    int     process_first_rule(const std::string & file,std::fstream& Gf,const uint &i,const std::pair<uint,uint> &sigma_b,
                              uint& n_rules, const uint& off_rules, std::unordered_map<uint,uint>&S,const uint &it){
 
 
@@ -534,7 +534,7 @@ protected:
 
         uint iteration  = 0;
         /**
-         * First iteration we read bytes
+         * First it eration we read bytes
          * parse file receive the file and the number of bytes to read.
         */
         
@@ -621,10 +621,10 @@ protected:
             
             std::string rm_cmd_old_dicc = "rm "+file_dicc;
 
-            if(system(rm_cmd_old_dicc.c_str()) < 0  ){
-                std::cout<<"Error we can't remove the old dicc file";
-                return 0;
-            }
+                if(system(rm_cmd_old_dicc.c_str()) < 0  ){
+                    std::cout<<"Error we can't remove the old dicc file";
+                    return 0;
+                }
             sigmas.push_back(n_v);
             
             part_file =curr_file;
