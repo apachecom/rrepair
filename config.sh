@@ -10,13 +10,13 @@ cmake -DCMAKE_BUILD_TYPE=Release ..
 echo building tests
 
 make t_hash_function
-make t_sliding_windows
+make t_sliding_window
 make t_hash_parser
 make t_recursive_repair
 
 
 ./t_hash_function
-./t_sliding_windows
+./t_sliding_window
 ./t_hash_parser
 ./t_recursive_repair
 
