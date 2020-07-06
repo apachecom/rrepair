@@ -1,4 +1,5 @@
 # rrepair
+Recursive version of the Re-Pair algorithm for large repetitive collections.
 
 ## Clone the repo
 ```
