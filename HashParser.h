@@ -8,7 +8,11 @@
 #include <memory>
 #include <fstream>
 #include <iostream>
-#include <sdsl/int_vector.hpp>
+#include <vector>
+#include <map>
+#include <set>
+
+//#include <sdsl/int_vector.hpp>
 
 //#define DEBUG_PRINT 1
 //#define CHECK_COLLISION

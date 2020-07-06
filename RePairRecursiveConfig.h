@@ -12,6 +12,7 @@
 #include <stack>
 #include <vector>
 #include <iostream>
+#include <limits>
 #include "HashParser.h"
 #include "HashParserConfig.h"
 #include "DummyRePair.h"

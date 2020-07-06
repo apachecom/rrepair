@@ -76,15 +76,16 @@ set(SOURCE_FILES
         RepairUtils.h
         RePairRecursive.cpp RePairRecursive.h
         RePairRecursiveConfig.cpp RePairRecursiveConfig.h
-        DummyRePair.cpp DummyRePair.h RepairUtils.cpp bench/rrepair.cpp)
+        DummyRePair.cpp DummyRePair.h RepairUtils.cpp
+        )
 
 
 
-
-
-add_executable(
-        rrpair main.cpp ${SOURCE_FILES}
-)
+#
+#
+#add_executable(
+#        rrpair main.cpp ${SOURCE_FILES}
+#)
 
 
 include(internal_utils)
@@ -110,4 +111,4 @@ cxx_executable_with_flags(rrepair "" "${LIBS};benchmark" bench/rrepair.cpp ${SOU
 
 
 
-target_link_libraries(rrpair sdsl)
+#target_link_libraries(rrpair sdsl)
