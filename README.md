@@ -1,15 +1,15 @@
 # rrepair
 
-##Clone the repo
+## Clone the repo
 ```
 git clone https://github.com/apachecom/rrepair.git
 ```
 
-##Execute config file 
+## Execute config file 
 ```
 ./config.sh
 ```
-##Use the binary cmake-build-release/rrepair to run the compressor
+## Use the binary cmake-build-release/rrepair to run the compressor
 ```
 usage is <filename> <ws> <mod> <max-iter> <th-len-seq>
 ```
