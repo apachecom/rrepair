@@ -16,7 +16,7 @@ make t_recursive_repair
 
 
 ./t_hash_function
-./t_hash_sliding_windows
+./t_sliding_windows
 ./t_hash_parser
 ./t_recursive_repair
 
