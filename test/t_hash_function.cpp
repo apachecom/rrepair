@@ -30,7 +30,9 @@ static void tKRPHashFunction(benchmark::State & state)
         // This code gets timed
         KRPHashFunction <uint64_t ,std::string> f;
         std::string s = util::generate_random_string(10);
-        std::cout<<"string:"<<s<<"/"<<f.apply(s)<<std::endl;
+        f.apply(s);
+//        std::cout<<"string:"<<s<<"/"<<f.apply(s)<<std::endl;
+//        ASSERT_EQ(s,f.apply(s));
     }
 
 }
