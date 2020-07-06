@@ -20,7 +20,7 @@ make t_repair_recursive
 ./t_hash_parser
 ./t_repair_recursive
 
-echo building binnary
+echo building binary
 
 make rrepair
 ./rrepair
