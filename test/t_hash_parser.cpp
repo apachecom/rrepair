@@ -49,7 +49,7 @@ static void tParseFileSM(benchmark::State & state)
     // Perform setup here
     for (auto _ : state) {
         // This code gets timed
-        std::string T = util::generate_random_string(100000);
+        std::string T = util::generate_random_string(100000000);
         std::fstream fout("tmp",std::ios::out);
         fout.write(T.c_str(),T.length());
         fout.close();

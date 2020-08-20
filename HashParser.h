@@ -15,7 +15,7 @@
 //#include <sdsl/int_vector.hpp>
 
 //#define DEBUG_PRINT 1
-//#define CHECK_COLLISION
+#define CHECK_COLLISION
 
 
 namespace big_repair{
@@ -46,12 +46,13 @@ namespace big_repair{
             void print(){
 
 
-#ifdef DEBUG_PRINT
+//#ifdef DEBUG_PRINT
                 std::cout<<"-------------------Parser Data------------------------------\n";
                 std::cout<<"Max value in alph:" << _max_alph_val << std::endl;
                 std::cout<<"Initial Sequence len:" << _seq_len << std::endl;
                 std::cout<<"Dicctionary len:" << _dicc_len << std::endl;
-#endif
+//                std::cout<<"Dicctionary len:" <<rank_hash.size()std::endl;
+//#endif
 
             }
 
@@ -66,7 +67,7 @@ namespace big_repair{
 #else
         std::set<hash_type> coll_map;
 #endif
-        std::map<uint32_t, hash_type> rank_hash;
+        std::map< hash_type, uint32_t> rank_hash;
         std::vector<uint32_t> compressed_seq;
 
 #ifdef DEBUG_PRINT
@@ -177,7 +178,7 @@ namespace big_repair{
                 dFile.write((const char *)&z,sizeof(uint32_t));
 
                 rank_hash[hash] = coll_map.size() + 1;
-                uint32_t v = rank_hash[hash];
+                uint32_t v = coll_map.size() + 1;
                 // write the id in the sequence
                 pFile.write((const char* ) & v, sizeof(uint32_t));
 #ifdef CHECK_COLLISION
@@ -292,6 +293,7 @@ namespace big_repair{
             }
             //add possible last phrase in the buffer "word"
             if (!word.empty()){
+                std::cout<<word.size()<<std::endl;
                 addWord(word,ffiled,ffilep,false);
                 config->getWindow()->reset();
 

@@ -13,12 +13,12 @@
 using namespace big_repair;
 using namespace std;
 
-#define TSIZE 1000000
-#define WINDOWS_SIZE 5
+#define TSIZE 100000000
+#define WINDOWS_SIZE 10
 #define MOD 5
 #define COMPRESSOR_BIN_DIR "../external/repair/repair"
 #define MAX_ITER 10
-#define TH_INITIAL_SEQ 20
+#define TH_INITIAL_SEQ 10000000
 
 
 static void tRecursiveRePair(benchmark::State & state)
