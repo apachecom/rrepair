@@ -7,6 +7,7 @@
 
 
 #include <cstdint>
+#include "RepairUtils.h"
 
 namespace big_repair{
 
@@ -16,7 +17,7 @@ namespace big_repair{
         public:
             SlidingWindow() = default;
             ~SlidingWindow() = default;
-            virtual const uint32_t sizeWindow() = 0;
+            virtual const uint_t sizeWindow() = 0;
             virtual const hash_type hashAddCharToWindow(const int& c ) = 0;
             virtual void reset() = 0;
     };
@@ -68,7 +69,7 @@ namespace big_repair{
 
             ~KRPSlindingWindow() {    delete[] window; }
 
-            virtual uint32_t sizeWindow() const { return wsize;}
+            virtual uint_t sizeWindow() const { return wsize;}
 
             virtual hash_type hashAddCharToWindow(const int& c ) {
 

@@ -8,9 +8,14 @@
 #include <fstream>
 #include <iostream>
 #include <cstring>
+#include <vector>
+
+//#define DEBUG_PRINT
 
 namespace big_repair{
 
+    typedef uint32_t uint_t;
+    
     namespace util{
 
         /**
@@ -20,7 +25,7 @@ namespace big_repair{
          * Output s_1,|A|+1,s_2,|A|+2,.....,s_n,|A|+ n
          * where |A| is the max value in the alph dictionary
          ***/
-        uint32_t prepareDiccFileForRP(const std::string &dFile, const std::string &dout, int bytes, uint32_t max_value = 0);
+        uint_t prepareDiccFileForRP(const std::string &dFile, const std::string &dout, int bytes, uint_t max_value = 0);
 
         /*
          * Take a sequence S of variables and create a dummy binary grammar
@@ -28,10 +33,10 @@ namespace big_repair{
          * symbols is the start id to name the new rules
          * Write in output_file
          * */
-        void create_binary_grammars(const std::vector<int>& R,std::ofstream& fr_out, uint32_t & symbols);
+        void create_binary_grammars(const std::vector<int>& R,std::ofstream& fr_out, uint_t & symbols);
 
 
-        uint32_t decompress(const std::string&);
+        uint_t decompress(const std::string&);
 
     }
 

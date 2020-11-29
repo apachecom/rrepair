@@ -7,15 +7,15 @@
 #include <functional>
 #include "RepairUtils.h"
 
+#define DEBUG_PRINT 1
 using namespace big_repair;
-//#define DEBUG_PRINT
 
 
 #ifdef DEBUG_PRINT
 std::string cc = "";
 #endif
 
-uint32_t util::prepareDiccFileForRP(const std::string &dFile, const std::string &dout, int bytes, uint32_t max_value) {
+uint_t util::prepareDiccFileForRP(const std::string &dFile, const std::string &dout, int bytes, uint_t max_value) {
     //Open Dicc file
     std::fstream ffile(dFile, std::ios::in);
     if (!ffile.is_open()) {
@@ -35,16 +35,16 @@ uint32_t util::prepareDiccFileForRP(const std::string &dFile, const std::string 
         throw "Error opening the file:" + dout;
     }
 
-    uint32_t cont = max_value;
-    uint32_t c = 0;
+    uint_t cont = max_value;
+    uint_t c = 0;
     //Read Dicc File
     while (!ffile.eof() && ffile.read((char *) &c, bytes))
     {
         if(c == 0){
             cont++;
-            fout.write((const char* )& cont, sizeof(uint32_t));
+            fout.write((const char* )& cont, sizeof(uint_t));
         }else{
-            fout.write((const char* )& c, sizeof(uint32_t));
+            fout.write((const char* )& c, sizeof(uint_t));
         }
 
     }
@@ -56,28 +56,28 @@ uint32_t util::prepareDiccFileForRP(const std::string &dFile, const std::string 
     return cont;
 }
 
+//
+//void util::create_binary_grammars(const std::vector<int>& R,std::ofstream& fr_out, uint_t & symbols)
+//{
+//    std::vector<int>Q(R.size());
+//    std::copy(R.begin(),R.end(),Q.begin());
+//
+//    while(Q.size() > 1)
+//    {
+//        fr_out.write((char*)&Q[0],sizeof(int));
+//        fr_out.write((char*)&Q[1],sizeof(int));
+//
+//        auto it = R.begin();
+//        Q.erase(it,it+1);
+//        Q.push_back(++symbols);
+//    }
+//}
 
-void util::create_binary_grammars(const std::vector<int>& R,std::ofstream& fr_out, uint32_t & symbols)
-{
-    std::vector<int>Q(R.size());
-    std::copy(R.begin(),R.end(),Q.begin());
 
-    while(Q.size() > 1)
-    {
-        fr_out.write((char*)&Q[0],sizeof(int));
-        fr_out.write((char*)&Q[1],sizeof(int));
-
-        auto it = R.begin();
-        Q.erase(it,it+1);
-        Q.push_back(++symbols);
-    }
-}
-
-
-uint32_t util::decompress(const std::string& file){
+uint_t util::decompress(const std::string& file){
 
 #ifdef DEBUG_PRINT
-    std::cout<<"DECOMPRESING.............\n";
+std::cout<<"DECOMPRESING.............\n";
 #endif
     std::fstream out_file(file+"_dec",std::ios::out);
     std::fstream r_file(file+".R",std::ios::in);
@@ -92,51 +92,51 @@ uint32_t util::decompress(const std::string& file){
         std::cout<<"Error opening rules file\n";
         throw "Error opening rules file\n";
     }
-    std::unordered_map<uint32_t ,std::pair<uint32_t ,uint32_t >> rules;
-    std::unordered_map<uint32_t ,char> map_sigma;
+    std::unordered_map<uint_t ,std::pair<uint_t ,uint_t >> rules;
+    std::unordered_map<uint_t ,char> map_sigma;
 
-    uint32_t  maxsigma = 0;
-    r_file.read((char*)&maxsigma,4);
+    uint_t  maxsigma = 0;
+    r_file.read((char*)&maxsigma,sizeof(uint_t));
 
-
-#ifdef DEBUG_PRINT
-    std::cout<<"sigma-max:"<<maxsigma<<std::endl;
-#endif
-    uint id = maxsigma;
-    uint32_t  X,Y;
 
 #ifdef DEBUG_PRINT
-    uint32_t i =1;
+std::cout<<"sigma-max:"<<maxsigma<<std::endl;
+uint_t i =1;
 #endif
 
-    while(!r_file.eof() && r_file.read((char*)&X,sizeof(uint32_t )) && r_file.read((char*)&Y,sizeof(uint32_t ))){
+    uint_t id = maxsigma;
+    uint_t  X,Y;
+    while(!r_file.eof() && r_file.read((char*)&X,sizeof(uint_t)) && r_file.read((char*)&Y,sizeof(uint_t))){
         rules[++id] = std::make_pair(X,Y);
 
-#ifdef DEBUG_PRINT
-        char p1 = X;
-        char p2 = Y;
 
-        std::cout<<maxsigma+i<<"-<";
-        if(X <= maxsigma)
-            std::cout<<p1;
-        else std::cout<<X;
-        std::cout<<",";
-        if(Y <= maxsigma)
-            std::cout<<p2;
-        else std::cout<<Y;
-        std::cout<<">"<<std::endl;
-        ++i;
+#ifdef DEBUG_PRINT
+char p1 = X;
+char p2 = Y;
+
+std::cout<<maxsigma+i<<"-<";
+if(X <= maxsigma)
+    std::cout<<p1;
+else std::cout<<X;
+std::cout<<",";
+if(Y <= maxsigma)
+    std::cout<<p2;
+else std::cout<<Y;
+std::cout<<">"<<std::endl;
+++i;
 #endif
 
     }
 
     std::fstream c_file(file+".C",std::ios::in);
 
-    std::function< void (const uint32_t & , std::fstream & ) > f;
+    std::function< void (const uint_t & , std::fstream & ) > f;
 
-    f = [&maxsigma, &rules, &f](const uint32_t & i, std::fstream& out ){
+    f = [&maxsigma, &rules, &f](const uint_t & i, std::fstream& out ){
         if(i <= maxsigma ){
-            out.write((char*)&i,1);
+            auto ii = char(i);
+            std::cout<<ii<<std::endl;
+            out.write((const char *)&ii,sizeof(char));
 
 #ifdef DEBUG_PRINT
             cc = cc + char(i);
@@ -149,14 +149,13 @@ uint32_t util::decompress(const std::string& file){
         f(rules[i].first,out);
         f(rules[i].second,out);
     };
-    uint32_t C = 0;
-    uint32_t fcont = 0;
+    uint_t C = 0;
+    uint_t fcont = 0;
 
 #ifdef DEBUG_PRINT
     std::cout<<"S\n";
 #endif
-
-    while(!c_file.eof() && c_file.read((char*)&C,sizeof(uint32_t ))){
+    while(!c_file.eof() && c_file.read((char*)&C,sizeof(uint_t ))){
 
 #ifdef DEBUG_PRINT
         cc = "";

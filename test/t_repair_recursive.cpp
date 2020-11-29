@@ -13,11 +13,11 @@
 using namespace big_repair;
 using namespace std;
 
-#define TSIZE 1000000
-#define WINDOWS_SIZE 5
-#define MOD 5
+#define TSIZE 100
+#define WINDOWS_SIZE 10
+#define MOD 100
 #define COMPRESSOR_BIN_DIR "../external/repair/repair"
-#define MAX_ITER 10
+#define MAX_ITER 1
 #define TH_INITIAL_SEQ 20
 
 
@@ -38,14 +38,15 @@ static void tRecursiveRePair(benchmark::State & state)
 
             HashParserConfig<KRPSlindingWindow<>,KRPHashFunction<uint64_t ,std::string>> conf(WINDOWS_SIZE,1,MOD,"tmp","");
             DummyRepair compresor(COMPRESSOR_BIN_DIR);
+
             RePairRecursiveConfig <
-                    uint32_t,
+                    uint_t_64 ,
                     DummyRepair,
                     HashParser< HashParserConfig< KRPSlindingWindow<>, KRPHashFunction< uint64_t ,std::string > > >
             > rrConf(conf,compresor,MAX_ITER,TH_INITIAL_SEQ);
 
             RePairRecursive<RePairRecursiveConfig <
-                    uint32_t,
+                    uint_t_64 ,
                     DummyRepair,
                     HashParser< HashParserConfig< KRPSlindingWindow<>, KRPHashFunction< uint64_t ,std::string > > >
             >> brepair(rrConf);
@@ -55,7 +56,7 @@ static void tRecursiveRePair(benchmark::State & state)
             uint32_t size = util::decompress("tmp");
 
 
-            ASSERT_TRUE(util::compareFiles("tmp","tmp_dec"));
+            EXPECT_EQ(true,util::compareFiles("tmp","tmp_dec"));
 
 
             std::cout<<"R-RePair-grammar-size:"<<size<<std::endl;
@@ -66,7 +67,7 @@ static void tRecursiveRePair(benchmark::State & state)
             std::cout<<"module-param:"<<MOD<<std::endl;
             std::cout<<"max-iter:"<<MAX_ITER<<std::endl;
             std::cout<<"th-inital-seq:"<<TH_INITIAL_SEQ<<std::endl;
-
+            sleep(3);
     }
 }
 

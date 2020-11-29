@@ -62,18 +62,18 @@ auto b_compress  = [](benchmark::State &state,const Params& params)
     for (auto _ : state) {
 
 
-        HashParserConfig<KRPSlindingWindow<>,KRPHashFunction<uint64_t ,std::string>> conf(params.ws,1,params.mod,params.filename,"");
+        HashParserConfig<KRPSlindingWindow<>,KRPHashFunction<uint_t_64,std::string>> conf(params.ws,1,params.mod,params.filename,"");
         DummyRepair compresor(COMPRESSOR_BIN_DIR);
         RePairRecursiveConfig <
-        uint32_t,
+                uint_t_64 ,
                 DummyRepair,
-                HashParser< HashParserConfig< KRPSlindingWindow<>, KRPHashFunction< uint64_t ,std::string > > >
+                HashParser< HashParserConfig< KRPSlindingWindow<>, KRPHashFunction< uint_t_64 ,std::string > > >
                                                                                               > rrConf(conf,compresor,params.max_iter,params.th);
 
         RePairRecursive<RePairRecursiveConfig <
-        uint32_t,
+                uint_t_64 ,
                 DummyRepair,
-                HashParser< HashParserConfig< KRPSlindingWindow<>, KRPHashFunction< uint64_t ,std::string > > >
+                HashParser< HashParserConfig< KRPSlindingWindow<>, KRPHashFunction< uint_t_64 ,std::string > > >
         >> brepair(rrConf);
 
         brepair.apply();
