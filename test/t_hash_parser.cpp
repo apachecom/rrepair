@@ -10,9 +10,12 @@
 #include "../HashParserConfig.h"
 #include "../RepairUtils.h"
 
+#define LEN 10000000
 using namespace big_repair;
 using namespace std;
-
+std::map<uint,std::string> dir = {
+        {0,"/d1/apacheco/collections/big-repair/chr/uncompress_col/chr19x50.fa.out"}
+};
 //
 //static void tParseFile(benchmark::State & state)
 //{
@@ -38,39 +41,72 @@ using namespace std;
 //
 //}
 
+static void tParseFileSMBigFile(benchmark::State & state)
+{
+    uint64_t coll = state.range(0);
+    // Perform setup here
+    for (auto _ : state) {
+        // This code gets timed
+        HashParserConfig<KRPSlindingWindow<>,KRPHashFunction<uint64_t ,std::string>> conf(10,1,100,dir[coll],"./");
+        conf.print();
+        HashParser< HashParserConfig< KRPSlindingWindow<>,KRPHashFunction<uint64_t ,std::string> >> parser(conf);
+            try {
+                parser.parseFileSM();
+                parser.results.print();
+                parser.recreateFile("tmp",1);
+
+            } catch (const char * s) {
+                std::cout<<s<<std::endl;
+            }
+
+
+        EXPECT_TRUE(util::compareFiles("tmp","tmp_recreated"));
+    }
+
+
+}
 
 static void tParseFileSM(benchmark::State & state)
 {
     // Perform setup here
     for (auto _ : state) {
         // This code gets timed
-        std::string T = util::generate_random_string(10000000);
-        std::fstream fout("tmp",std::ios::out);
-        fout.write(T.c_str(),T.length());
-        fout.close();
-        HashParserConfig<KRPSlindingWindow<>,KRPHashFunction<uint64_t ,std::string>> conf(10,1,100,"tmp","");
-        conf.print();
-        HashParser< HashParserConfig< KRPSlindingWindow<>,KRPHashFunction<uint64_t ,std::string> >> parser(conf);
         bool collison = true;
         uint j = 0;
         while (collison && j < 5){
             try {
+
+                std::string T = util::generate_random_string(LEN);
+                std::fstream fout("tmp",std::ios::out);
+                fout.write(T.c_str(),T.length());
+                fout.close();
+                std::cout<<"TEXT:"<<std::endl;
+                for (int i = 0; i < 10 ; ++i) {
+                    std::cout<<T[i];
+                }
+
+                HashParserConfig<KRPSlindingWindow<>,KRPHashFunction<uint64_t ,std::string>> conf(10,1,100,"tmp","");
+                conf.print();
+                HashParser< HashParserConfig< KRPSlindingWindow<>,KRPHashFunction<uint64_t ,std::string> >> parser(conf);
+
                 ++j;
                 parser.parseFileSM();
                 collison = false;
+                parser.results.print();
+                parser.recreateFile("tmp",1);
+
+
             } catch (const char * s) {
+
+                std::cout<<s<<std::endl;
                 if(s == "COLLISION FOUND"){
                     std::cout<<"Collision found\n";
-                    collison = true;
                 }else{
                     std::cout<<"UKNOWN ERROR\n";
                     collison = false;
                 }
             }
         }
-
-        parser.results.print();
-        parser.recreateFile("tmp",1);
         EXPECT_TRUE(util::compareFiles("tmp","tmp_recreated"));
     }
 
@@ -125,6 +161,7 @@ static void firstTest(benchmark::State & state)
 // Register the function as a benchmark
 BENCHMARK( firstTest)->Unit(benchmark::TimeUnit::kMicrosecond);
 BENCHMARK( tParseFileSM)->Unit(benchmark::TimeUnit::kMicrosecond);
+BENCHMARK( tParseFileSMBigFile)->Args({0})->Unit(benchmark::TimeUnit::kMicrosecond);
 //BENCHMARK( tParseFile)->Unit(benchmark::TimeUnit::kMicrosecond);
 //BENCHMARK( tPrepareForRP)->Unit(benchmark::TimeUnit::kMicrosecond);
 
