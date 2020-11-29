@@ -30,8 +30,8 @@ namespace big_repair{
             int wsize;
             int *window;
             int asize;
-            const hash_type  prime = 27162335252586509;
-//            const hash_type prime = 1999999973;
+//            const hash_type  prime = 27162335252586509;
+            const hash_type prime = 1999999973;
             hash_type hash;
             hash_type tot_char;
             hash_type asize_pot;   // asize^(wsize-1) mod prime
