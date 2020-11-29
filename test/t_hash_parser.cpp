@@ -47,14 +47,13 @@ static void tParseFileSMBigFile(benchmark::State & state)
     // Perform setup here
     for (auto _ : state) {
         // This code gets timed
-        HashParserConfig<KRPSlindingWindow<>,KRPHashFunction<uint64_t ,std::string>> conf(10,1,100,dir[coll],"./");
+        HashParserConfig<KRPSlindingWindow<>,KRPHashFunction<uint64_t ,std::string>> conf(10,1,200,dir[coll],"./");
         conf.print();
         HashParser< HashParserConfig< KRPSlindingWindow<>,KRPHashFunction<uint64_t ,std::string> >> parser(conf);
             try {
                 parser.parseFileSM();
                 parser.results.print();
                 parser.recreateFile("tmp",1);
-
             } catch (const char * s) {
                 std::cout<<s<<std::endl;
             }
@@ -159,8 +158,8 @@ static void firstTest(benchmark::State & state)
 
 }
 // Register the function as a benchmark
-BENCHMARK( firstTest)->Unit(benchmark::TimeUnit::kMicrosecond);
-BENCHMARK( tParseFileSM)->Unit(benchmark::TimeUnit::kMicrosecond);
+//BENCHMARK( firstTest)->Unit(benchmark::TimeUnit::kMicrosecond);
+//BENCHMARK( tParseFileSM)->Unit(benchmark::TimeUnit::kMicrosecond);
 BENCHMARK( tParseFileSMBigFile)->Args({0})->Unit(benchmark::TimeUnit::kMicrosecond);
 //BENCHMARK( tParseFile)->Unit(benchmark::TimeUnit::kMicrosecond);
 //BENCHMARK( tPrepareForRP)->Unit(benchmark::TimeUnit::kMicrosecond);

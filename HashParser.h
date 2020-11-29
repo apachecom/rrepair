@@ -204,6 +204,19 @@ namespace big_repair{
 #ifdef CHECK_COLLISION
                 //check collision
                 if(coll_map[hash] != word){
+                    std::cout<<"hash:"<<hash<<std::endl;
+
+                    std::cout<<"word-1:";
+                    for (int i = 0; i < coll_map[hash].size(); ++i) {
+                        std::cout<<coll_map[hash][i]<<" ";
+                    }
+                    std::cout<<std::endl;
+
+                    std::cout<<"word-2:";
+                    for (int i = 0; i < word.size(); ++i) {
+                        std::cout<<word[i]<<" ";
+                    }
+                    std::cout<<std::endl;
                     word.clear();
                     throw "COLLISION FOUND";
                 }

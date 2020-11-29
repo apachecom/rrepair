@@ -60,7 +60,13 @@ namespace big_repair{
             _hash_f = new KRPHashFunction<uint64_t ,std::string>();
             return *this;
         }
-        HashParserConfig(const uint_t& ws,const uint_t& b,const uint_t& m,const std::string& input, const std::string& tempDir):_input_file(input),_dir_temp(tempDir),_bytes_to_read(b),_mod(m)
+        HashParserConfig(
+                const uint_t& ws,
+                const uint_t& b,
+                const uint_t& m,
+                const std::string& input,
+                const std::string& tempDir
+                ):_input_file(input),_dir_temp(tempDir),_bytes_to_read(b),_mod(m)
         {
             _slinding_window = new KRPSlindingWindow<>(ws);
             _hash_f = new KRPHashFunction<uint64_t ,std::string>();
