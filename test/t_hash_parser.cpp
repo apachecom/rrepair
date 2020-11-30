@@ -39,13 +39,13 @@ using namespace std;
 //
 //}
 
-auto tParseFileSM =  [](benchmark::State & state, const std::string file,const std::string output_dir)
+auto tParseFileSM =  [](benchmark::State & state, const std::string file,const std::string output_dir,uint32_t m)
 {
     // Perform setup here
     for (auto _ : state) {
         // This code gets timed
                try {
-                   HashParserConfig<KRPSlindingWindow<>, KRPHashFunction<uint64_t, std::string>> conf(10, 1, 5, file,
+                   HashParserConfig<KRPSlindingWindow<>, KRPHashFunction<uint64_t, std::string>> conf(10, 1, m, file,
                                                                                                       "./");
                    conf.print();
                    HashParser<HashParserConfig<KRPSlindingWindow<>, KRPHashFunction<uint64_t, std::string> >> parser(
@@ -81,12 +81,13 @@ int main (int argc, char *argv[] ){
 
     std::string file = argv[1];
     std::string output_dir = argv[2];
+    uint32_t m = atoi(argv[3]);
 
     std::cout<<"file:"<<file<<std::endl;
     std::cout<<"output_dir:"<<output_dir<<std::endl;
 
 
-    benchmark::RegisterBenchmark("hash-parser",tParseFileSM,file,output_dir)->Unit({benchmark::kMicrosecond});
+    benchmark::RegisterBenchmark("hash-parser",tParseFileSM,file,output_dir,m)->Unit({benchmark::kMicrosecond});
 
     benchmark::Initialize(&argc, argv);
     benchmark::RunSpecifiedBenchmarks();
