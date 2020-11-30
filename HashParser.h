@@ -52,7 +52,7 @@ namespace big_repair{
             void print(){
 
 
-#ifdef DEBUG_PRINT
+//#ifdef DEBUG_PRINT
                 std::cout<<"-------------------Parser Data------------------------------\n";
                 std::cout<<"Max value in alph:" << _max_alph_val << std::endl;
                 std::cout<<"Initial Sequence len:" << _seq_len << std::endl;
@@ -63,10 +63,9 @@ namespace big_repair{
 
                 for (const auto &item : seq_len_size)
                     acc += item;
-
                 std::cout<<"Check seq vs File size:" << acc << std::endl;
 
-#endif
+//#endif
 
             }
 
@@ -77,9 +76,9 @@ namespace big_repair{
         C* config;
 
         std::unordered_map<hash_type,tree::ui32_trie32> coll_map;
-        std::unordered_map<hash_type,std::map<uint32_t,uint_t>> node_map_phrase;
+        std::unordered_map<hash_type,std::unordered_map<uint32_t,uint_t>> node_map_phrase;
         uint_t n_phrases{0};
-        std::vector<uint_t> compressed_seq;
+//        std::vector<uint_t> compressed_seq;
 
 #ifdef DEBUG_PRINT
     bool byte;
