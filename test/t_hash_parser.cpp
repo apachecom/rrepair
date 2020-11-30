@@ -44,25 +44,37 @@ auto tParseFileSM =  [](benchmark::State & state, const std::string file,const s
     // Perform setup here
     for (auto _ : state) {
         // This code gets timed
-                HashParserConfig<KRPSlindingWindow<>,KRPHashFunction<uint64_t ,std::string>> conf(10,1,5,file,output_dir);
-                conf.print();
-                HashParser< HashParserConfig< KRPSlindingWindow<>,KRPHashFunction<uint64_t ,std::string> >> parser(conf);
+               try {
+                   HashParserConfig<KRPSlindingWindow<>, KRPHashFunction<uint64_t, std::string>> conf(10, 1, 5, file,
+                                                                                                      "./");
+                   conf.print();
+                   HashParser<HashParserConfig<KRPSlindingWindow<>, KRPHashFunction<uint64_t, std::string> >> parser(
+                           conf);
 
-                parser.parseFileSM();
-                parser.results.print();
+                   parser.parseFileSM();
+                   parser.results.print();
 
-                std::string _f = file;
-                std::reverse(_f.begin(),_f.end());
-                int i = 0;
-                while(_f[i] != '/') ++i;
+                   std::string _f = file;
+                   std::reverse(_f.begin(), _f.end());
 
-                std::string filename;filename.resize(i+1);
-                std::copy(_f.begin(),_f.begin()+i,filename.begin());
-                std::reverse(filename.begin(),filename.end());
-                parser.recreateFile(output_dir+filename,1);
+                   int i = 0;
+                   while (_f[i] != '/' && i < _f.size()) ++i;
 
-               ASSERT_TRUE(util::compareFiles(file,output_dir+filename));
-    }
+
+                   std::string filename;
+                   filename.resize(i + 1);
+                   std::copy(_f.begin(), _f.begin() + i, filename.begin());
+
+                   std::reverse(filename.begin(), filename.end());
+//                std::cout<<output_dir+filename<<std::endl;
+                   parser.recreateFile(filename, output_dir, 1);
+
+                   ASSERT_TRUE(util::compareFiles(file, file+".out"));
+               } catch (const char* string1) {
+                    std::cout<<string1<<std::endl;
+                    sleep(5);
+               }
+           }
 };
 
 int main (int argc, char *argv[] ){

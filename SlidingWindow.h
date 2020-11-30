@@ -45,8 +45,8 @@ namespace big_repair{
                 wsize = 0;
                 window = nullptr;
                 asize = 0;
-                prime = 27162335252586509;
-//                prime = 1999999973;
+//                prime = 27162335252586509;
+                prime = 1999999973;
                 hash = 0;
                 tot_char = 0;
                 asize_pot = 0;
@@ -56,8 +56,8 @@ namespace big_repair{
 
                 asize = 256;
                 asize_pot = 1;
-//                prime = 1999999973;
-                prime = 27162335252586509;
+                prime = 1999999973;
+//                prime = 27162335252586509;
                 for (int i = 1; i < wsize; i++)
                     asize_pot = (asize_pot * asize) % prime; // ugly linear-time power algorithm
                 // alloc and clear window

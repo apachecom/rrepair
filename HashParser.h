@@ -123,7 +123,7 @@ namespace big_repair{
 
             const char* ptr = (const char*) word.data();
             // compute the hash of the string
-            hash_type hash = config->hashFunction()->apply(ptr,word.size()*sizeof(uint_t));
+            hash_type hash = config->hashFunction()->apply(word,word.size());
             //search the has in the dicc
             auto it = coll_map.find(hash);
             results.seq_len_size.push_back(word.size());
@@ -232,6 +232,7 @@ namespace big_repair{
                 throw "Error opening the file: "+config->inputFile() ;
             }
 
+
             std::fstream ffiled(config->inputFile()+".dicc", std::ios::out|std::ios::binary);
             std::fstream ffilep(config->inputFile()+".parse", std::ios::out|std::ios::binary);
 
@@ -270,11 +271,12 @@ namespace big_repair{
         }
 
 
-        void recreateFile(const std::string & s, int bytesToWrite)
+        void recreateFile(const std::string & s,const std::string & out, int bytesToWrite)
         {
-            std::fstream ffiled(s+".dicc", std::ios::in|std::ios::binary);
-            std::fstream ffilep(s+".parse", std::ios::in |std::ios::binary);
-            std::fstream ofile(s+"_recreated", std::ios::out |std::ios::binary);
+
+            std::fstream ffiled(config->inputFile()+".dicc", std::ios::in|std::ios::binary);
+            std::fstream ffilep(config->inputFile()+".parse", std::ios::in |std::ios::binary);
+            std::fstream ofile(config->inputFile()+".out", std::ios::out |std::ios::binary);
 
             uint_t ch = 0;
             std::map<uint_t,std::vector<uint_t>> dicc;
