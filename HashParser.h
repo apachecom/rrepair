@@ -12,6 +12,7 @@
 #include <map>
 #include <set>
 #include "RepairUtils.h"
+#include "include/rr_trie.hpp"
 
 //#define DEBUG_PRINT 1
 #define CHECK_COLLISION
@@ -36,6 +37,7 @@ namespace big_repair{
             uint_t _dicc_len;
             uint_t _dicc_len_size;
             uint_t _check_size;
+            uint_t _collision_times;
             std::vector<uint_t> seq_len_size;
 
 
@@ -45,6 +47,7 @@ namespace big_repair{
                 _dicc_len = 0;
                 _check_size = 0;
                 _dicc_len_size = 0;
+                _collision_times = 0;
             }
             void print(){
 
@@ -73,12 +76,9 @@ namespace big_repair{
     private:
         C* config;
 
-#ifdef CHECK_COLLISION
-        std::map<hash_type,std::vector<uint_t>> coll_map;
-#else
-        std::set<hash_type> coll_map;
-#endif
-        std::map<uint_t, hash_type> rank_hash;
+        std::unordered_map<hash_type,tree::ui32_trie32> coll_map;
+        std::unordered_map<hash_type,std::map<uint32_t,uint_t>> node_map_phrase;
+        uint_t n_phrases{0};
         std::vector<uint_t> compressed_seq;
 
 #ifdef DEBUG_PRINT
@@ -90,7 +90,7 @@ namespace big_repair{
 
         HashParser() {
             config = nullptr;
-
+            n_phrases = 0;
         }
         HashParser(const C& c) {
             this->config = new C(c);
@@ -106,58 +106,21 @@ namespace big_repair{
 
         ~HashParser() {
             if(config != nullptr) delete config;
+            for (auto &item : coll_map) {
+                tree::destroy(item.second);
+            }
         }
 
-        // add a phrase to the dicc and to the sequence / check for collisions / write in the files
-//        void addWord(std::vector<uint_t>& word, bool constrain = true){
-//            uint len = word.size();
-//            //check the word is big enough
-//            if (len < config->getWindow()->sizeWindow() && constrain){
-//                throw "windows to small";
-////                return;
-//            }
-//            const char* ptr = (const char*) word.data();
-//            // compute the hash of the string
-//            hash_type hash = config->hashFunction()->apply(ptr,word.size()*sizeof(int));
-//            //search the has in the dicc
-//            auto it = coll_map.find(hash);
-//
-//            if (it == coll_map.end()) {
-//                // new phrase
-//                rank_hash[hash] = coll_map.size() + 1;
-//                compressed_seq.push_back(coll_map.size() + 1);
-//
-//                results._dicc_len++;
-//#ifdef CHECK_COLLISION
-//                // insert the hash and the word to check collisions in the map
-//                coll_map[hash] = std::move(word);
-//#else
-//                coll_map.insert(hash);
-//#endif
-//            }else{
-//                // already seen phrase
-//#ifdef CHECK_COLLISION
-//                //check collision
-//                if(coll_map[hash] != word){
-//                    word.clear();
-//                    throw "COLLISION FOUND";
-//                }
-//#endif
-//                word.clear();
-//                compressed_seq.push_back(rank_hash[hash]);
-//
-//            }
-//            results._seq_len++;
-//        }
-
         void addWord(std::vector<uint_t>& word, std::fstream& dFile, std::fstream& pFile, bool constrain = true){
-
+            uint_t zero = 0;
+            word.push_back(zero);
             uint len = word.size();
+
             //check the word is big enough
             if (len < config->getWindow()->sizeWindow() && constrain){
                 throw "windows to small";
-//                return;
             }
+
             const char* ptr = (const char*) word.data();
             // compute the hash of the string
             hash_type hash = config->hashFunction()->apply(ptr,word.size()*sizeof(uint_t));
@@ -166,118 +129,95 @@ namespace big_repair{
             results.seq_len_size.push_back(word.size());
 
             if (it == coll_map.end()) {
+
+#ifdef DEBUG_PRINT
+                std::cout<<"- new-hash "<<hash<<std::endl;
+#endif
                 // new phrase
                 results._dicc_len_size += word.size();
-#ifdef DEBUG_PRINT
-                std::cout<<coll_map.size() + 1<<"-";
-                for(int i:word){
-                    if(byte)
-                        std::cout<<(char)i;
-                    else
-                        std::cout<<i;
-                }
-                std::cout<<std::endl;
-
-                std::cout<<coll_map.size() + 1<<"- p "<<std::endl;
-
-#endif
-
                 results._dicc_len++;
                 //write the phrase in the dictionary file
-                dFile.write(ptr,word.size()*sizeof(uint_t));
-                //put 0 between phrases
-                uint_t z = 0;
-                dFile.write((const char *)&z,sizeof(uint_t));
+                //put 0 at the end of each phrase
 
-                rank_hash[hash] = coll_map.size() + 1;
-                uint_t v = rank_hash[hash];
-                // write the id in the sequence
-                pFile.write((const char* ) & v, sizeof(uint_t));
-#ifdef CHECK_COLLISION
+                    dFile.write(ptr,word.size()*sizeof(uint_t));
+
                 // insert the hash and the word to check collisions in the map
-                coll_map[hash] = std::move(word);
-#else
-                coll_map.insert(hash);
+                // we store a trie by each hash to check collision
+                // we associated the id of the phrase to the leaves of the trie
+                tree::ui32_trie32 _trie;
+
+                auto node = tree::init<tree::ui32_trie32,uint32_t,uint32_t>(_trie);
+                for (uint32_t i = 0; i < word.size(); ++i) {
+                    node = tree::insert(node->id,word[i],_trie);
+                }
+                coll_map[hash] = _trie;
+                node_map_phrase[hash][node->id] = n_phrases+1;
+                ++n_phrases;
+                pFile.write((const char* ) & n_phrases, sizeof(uint_t));
+#ifdef DEBUG_PRINT
+                std::cout<<n_phrases<<"- new-p "<<node->id<<" str:";
+                for (int i = 0; i < word.size() ; ++i) {
+                    std::cout<<word[i]<<",";
+                }
+                std::cout<<std::endl;
 #endif
+
             }else{
                 // already seen phrase
-#ifdef CHECK_COLLISION
-                //check collision
-                if(coll_map[hash] != word){
-                    std::cout<<"hash:"<<hash<<std::endl;
-
-                    std::cout<<"word-1:";
-                    for (int i = 0; i < coll_map[hash].size(); ++i) {
-                        std::cout<<coll_map[hash][i]<<" ";
-                    }
-                    std::cout<<std::endl;
-
-                    std::cout<<"word-2:";
-                    for (int i = 0; i < word.size(); ++i) {
-                        std::cout<<word[i]<<" ";
-                    }
-                    std::cout<<std::endl;
-                    word.clear();
-                    throw "COLLISION FOUND";
-                }
+                // check collision
+#ifdef DEBUG_PRINT
+                std::cout<<"- known-hash "<<hash<<std::endl;
 #endif
-                word.clear();
-                uint_t v = rank_hash[hash];
+
+                auto node = tree::root<tree::ui32_trie32,uint32_t,uint32_t>(coll_map[hash]);
+                uint32_t j = 0, l = word.size();
+                while( j < l ){
+                    auto t_node = tree::feed<tree::ui32_trie32,uint32_t,uint32_t>(node->id,word[j],coll_map[hash]);
+                    if(t_node == nullptr) break;
+                    node = t_node;
+                    ++j;
+                }
+                if(j != l || !tree::isLeaf<tree::ui32_trie32,uint32_t,uint32_t>(node->id,coll_map[hash])){
+//                    not found case
+//                    new phrase with equal hash
+
+                    //write the phrase in the dictionary file
+                    std::cout<<"collisions:"<<results._collision_times+1<<"\r";
+                    results._collision_times++;
+                    dFile.write(ptr,word.size()*sizeof(uint_t));
+                    //update trie
+                    for (int i = j; i < l ; ++i) {
+                        node = tree::insert(node->id,word[i],coll_map[hash]);
+                    }
+                    node_map_phrase[hash][node->id] = n_phrases;
+                    ++n_phrases;
+                    pFile.write((const char* )& n_phrases,sizeof(uint_t));
 
 #ifdef DEBUG_PRINT
-
-                std::cout<<v<<"- p "<<std::endl;
-
+                    std::cout<<n_phrases<<"- new-p "<<node->id<<" str:";
+                    for (int i = 0; i < word.size() ; ++i) {
+                        std::cout<<word[i]<<",";
+                    }
+                    std::cout<<std::endl;
 #endif
-                pFile.write((const char* )& v,sizeof(uint_t));
+                }else{
+                    uint_t p  = node_map_phrase[hash][node->id];
+                    pFile.write((const char* )& p,sizeof(uint_t));
+
+#ifdef DEBUG_PRINT
+                    std::cout<<p<<"- found-p "<<node->id<<" str:";
+                    for (int i = 0; i < word.size() ; ++i) {
+                        std::cout<<char(word[i]);
+                    }
+                    std::cout<<std::endl;
+#endif
+                }
+                word.clear();
             }
 
             results._seq_len++;
         }
 
-
-        // main function parse the file in conf obj and return and structure
-//        void parseFile(){
-//                // open file to read
-//                std::fstream ffile(config->inputFile(), std::ios::in);
-//                if (!ffile.is_open()) {
-//                    std::cout << "Error opening the file: " << config->inputFile() << std::endl;
-//                    return;
-//                }
-//                // we will read max 32 bit Integer
-//                uint_t c = 0;
-//                //current phrase
-//                std::vector<uint_t> word;
-//                // reading file
-//                while (!ffile.eof() && ffile.read((char *) &c, config->bytesToRead()))
-//                {
-//                    //keep max value in alph
-//                    results._max_alph_val  = std::max(results._max_alph_val,c);
-//                    // add new element to the current phrase
-//                    word.push_back(c);
-//                    // compute new hash for the window
-//                    hash_type hash  = (uint_t) config->getWindow()->hashAddCharToWindow(c);
-//                    //partition condition
-//                    if (hash % config->mod() == 0 && word.size() >= config->getWindow()->sizeWindow()) {
-//#ifdef DEBUG_PRINT
-//                        for(int i:word){
-//                            std::cout<<(char)i;
-//                        }
-//                        std::cout<<std::endl;
-//#endif
-//                        addWord(word);
-//                        config->getWindow()->reset();
-//                        word.clear();
-//                    }
-//                }
-//                //add possible last phrase in the buffer "word"
-//                if (word.size()){
-//                    addWord(word,false);
-//                    config->getWindow()->reset();
-//                }
-//        }
-
-        // Secondary Memory version
         void parseFileSM(){
 
 
@@ -340,18 +280,49 @@ namespace big_repair{
             std::map<uint_t,std::vector<uint_t>> dicc;
             uint_t cont = 1;
             while(!ffiled.eof() && ffiled.read((char*)&ch,sizeof(uint_t))){
+
                 if(ch == 0){
+
+#ifdef DEBUG_PRINT
+                    std::cout<<":"<<cont<<std::endl;
+#endif
                     ++cont;
                 }else{
                     dicc[cont].emplace_back(ch);
+
+#ifdef DEBUG_PRINT
+    std::cout<<ch<<",";
+#endif
                 }
             }
-
+//
+//#ifdef DEBUG_PRINT
+//
+//            std::cout<<"dicc:"<<std::endl;
+//            for (const auto &item : dicc) {
+//                std::cout<<item.first<<" : ";
+//                for (const auto &item2 : item.second) {
+//                    std::cout<<char(item2);
+//                }
+//                std::cout<<std::endl;
+//            }
+//#endif
             ch = 0;
-            while(!ffilep.eof() && ffilep.read((char*)&ch,sizeof(uint_t))) {
-                auto it = dicc.find(ch);
-                if (it == dicc.end()) throw "PHRASE DID NOT FOUND IN THE DICC";
 
+#ifdef DEBUG_PRINT
+    std::cout<<"sequence:"<<std::endl;
+#endif
+            while(!ffilep.eof() && ffilep.read((char*)&ch,sizeof(uint_t))) {
+
+#ifdef DEBUG_PRINT
+    std::cout<<ch<<std::endl;
+#endif
+                auto it = dicc.find(ch);
+                if (it == dicc.end()) {
+                    std::cout<<"PHRASE DID NOT FOUND IN THE DICC "<<ch<<std::endl;
+                    throw "PHRASE DID NOT FOUND IN THE DICC ";
+
+                }
                 for (uint_t c:it->second)
                     ofile.write((char *) &c, bytesToWrite);
             }

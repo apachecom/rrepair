@@ -10,7 +10,7 @@
 #include "../HashParserConfig.h"
 #include "../RepairUtils.h"
 
-#define LEN 10000000
+#define LEN 100000000
 using namespace big_repair;
 using namespace std;
 std::map<uint,std::string> dir = {
@@ -70,43 +70,29 @@ static void tParseFileSM(benchmark::State & state)
     // Perform setup here
     for (auto _ : state) {
         // This code gets timed
-        bool collison = true;
-        uint j = 0;
-        while (collison && j < 5){
-            try {
-
                 std::string T = util::generate_random_string(LEN);
                 std::fstream fout("tmp",std::ios::out);
                 fout.write(T.c_str(),T.length());
                 fout.close();
-                std::cout<<"TEXT:"<<std::endl;
-                for (int i = 0; i < 10 ; ++i) {
-                    std::cout<<T[i];
-                }
 
-                HashParserConfig<KRPSlindingWindow<>,KRPHashFunction<uint64_t ,std::string>> conf(10,1,100,"tmp","");
+//                std::cout<<"TEXT:"<<std::endl;
+//                for (int i = 0; i < 10 ; ++i) {
+//                    std::cout<<T[i];
+//                }
+//                std::cout<<std::endl;
+
+
+
+                HashParserConfig<KRPSlindingWindow<>,KRPHashFunction<uint64_t ,std::string>> conf(10,1,5,"tmp","");
                 conf.print();
                 HashParser< HashParserConfig< KRPSlindingWindow<>,KRPHashFunction<uint64_t ,std::string> >> parser(conf);
 
-                ++j;
                 parser.parseFileSM();
-                collison = false;
                 parser.results.print();
                 parser.recreateFile("tmp",1);
 
-
-            } catch (const char * s) {
-
-                std::cout<<s<<std::endl;
-                if(s == "COLLISION FOUND"){
-                    std::cout<<"Collision found\n";
-                }else{
-                    std::cout<<"UKNOWN ERROR\n";
-                    collison = false;
-                }
-            }
-        }
-        EXPECT_TRUE(util::compareFiles("tmp","tmp_recreated"));
+               ASSERT_TRUE(util::compareFiles("tmp","tmp_recreated"));
+//                sleep(4);
     }
 
 
@@ -159,8 +145,8 @@ static void firstTest(benchmark::State & state)
 }
 // Register the function as a benchmark
 //BENCHMARK( firstTest)->Unit(benchmark::TimeUnit::kMicrosecond);
-//BENCHMARK( tParseFileSM)->Unit(benchmark::TimeUnit::kMicrosecond);
-BENCHMARK( tParseFileSMBigFile)->Args({0})->Unit(benchmark::TimeUnit::kMicrosecond);
+BENCHMARK( tParseFileSM)->Unit(benchmark::TimeUnit::kMicrosecond);
+//BENCHMARK( t)->Args({0})->Unit(benchmark::TimeUnit::kMicrosecond);
 //BENCHMARK( tParseFile)->Unit(benchmark::TimeUnit::kMicrosecond);
 //BENCHMARK( tPrepareForRP)->Unit(benchmark::TimeUnit::kMicrosecond);
 
