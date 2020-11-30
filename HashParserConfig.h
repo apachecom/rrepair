@@ -86,14 +86,13 @@ namespace big_repair{
         virtual KRPHashFunction<uint64_t ,std::string>* hashFunction() { return _hash_f;}
 
         void print(){
-
-
-#ifdef DEBUG_PRINT
+//#ifdef DEBUG_PRINT
             std::cout<<"inputFile:"<<_input_file<<std::endl;
             std::cout<<"prefixTempFiles:"<<_dir_temp<<std::endl;
             std::cout<<"mod:"<<_mod<<std::endl;
+            std::cout<<"w:"<<_slinding_window->sizeWindow()<<std::endl;
             std::cout<<"bytesToRead:"<<_bytes_to_read<<std::endl;
-#endif
+//#endif
         }
 
     protected:
