@@ -19,25 +19,72 @@ namespace fingerprints {
 
     // if collisions occur use a prime close to 2**63 and 128 bit variables
 
-    uint64_t kr_hash(std::string s) {
-        uint64_t hash = 0;
-        //const uint64_t prime = 3355443229;     // next prime(2**31+2**30+2**27)
-        const uint64_t prime = 27162335252586509; // next prime (2**54 + 2**53 + 2**47 + 2**13)
+//    uint64_t kr_hash(std::string s) {
+//        uint64_t hash = 0;
+//        //const uint64_t prime = 3355443229;     // next prime(2**31+2**30+2**27)
+//        const uint64_t prime = 27162335252586509; // next prime (2**54 + 2**53 + 2**47 + 2**13)
+//
+//        for(size_t k=0;k<s.size();k++) {
+//            int c = (unsigned char) s[k];
+//            assert(c>=0 && c< 256);
+//            hash = (256*hash + c) % prime;    //  add char k
+//        }
+//        return hash;
+//    }
+//
+//    template <typename uint_t = uint128_t>
+//    uint_t kr_hash(const std::string& s){
+//        uint_t hash = 0;
+//    }
 
-        for(size_t k=0;k<s.size();k++) {
-            int c = (unsigned char) s[k];
-            assert(c>=0 && c< 256);
-            hash = (256*hash + c) % prime;    //  add char k
+    template<
+            typename c_type,
+            typename hash_type
+    >
+    class kr_hash {
+    public:
+
+        kr_hash(const uint64_t &_p = 1999999973) {
+            prime = _p;
         }
-        return hash;
-    }
 
-    template <typename uint_t = uint128_t>
-    uint_t kr_hash(const std::string& s){
-        uint_t hash = 0;
-    }
+        uint64_t prime;
+        hash_type hash(const std::basic_string<c_type> &);
+    };
+
+    template<>
+    class kr_hash<unsigned char, uint64_t> {
+    public:
+
+        kr_hash(const uint64_t &_p = 1999999973) {
+            prime = _p;
+        }
+        uint64_t prime;
+        uint64_t hash(const std::basic_string<unsigned char> &str);
+    };
+
+    template<>
+    class kr_hash<char, uint64_t> {
+    public:
+
+        kr_hash(const uint64_t &_p = 1999999973) {
+            prime = _p;
+        }
+        uint64_t prime;
+        uint64_t hash(const std::basic_string<char> &str);
+    };
 
 
+
+    template<>
+    class kr_hash<uint32_t , uint64_t> {
+    public:
+        kr_hash(const uint64_t &_p = 1999999973) {
+            prime = _p;
+        }
+        uint64_t prime;
+        uint64_t hash(const std::basic_string<uint32_t> &str);
+    };
 
 
 }

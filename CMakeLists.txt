@@ -61,16 +61,18 @@ set(SOURCE_LIB
 
         include/rr_fingerprints.hpp
         include/rr_io.hpp
-        include/rr_sliding_windows.hpp
         include/rr_utils.hpp
         include/rr_trie.hpp
         include/_c/utils.h
+        include/rr_sliding_window.hpp
+        include/rr_hash_parser.hpp
 
         lib/rr_fingerprints.cpp
         lib/rr_io.cpp
-        lib/rr_sliding_windows.cpp
         lib/rr_utils.cpp
         lib/_c/utils.c
+        lib/rr_sliding_window.cpp
+
         )
 
 set(SOURCE_FILES
@@ -129,6 +131,7 @@ cxx_executable_with_flags(rrepair "" "${LIBS};benchmark" bench/rrepair.cpp ${SOU
 cxx_executable_with_flags(t_c_utils "" "${LIBS};benchmark" test/rr/c_utils.cpp ${SOURCE_LIB})
 cxx_executable_with_flags(t_utils "" "${LIBS};benchmark" test/rr/utils.cpp ${SOURCE_LIB})
 cxx_executable_with_flags(t_trie "" "${LIBS};benchmark" test/rr/trie.cpp ${SOURCE_LIB})
+cxx_executable_with_flags(t_fingerprints "" "${LIBS};benchmark" test/rr/fingerprints.cpp ${SOURCE_LIB})
 
 
 

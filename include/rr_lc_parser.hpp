@@ -7,4 +7,10 @@
 
 
 
+
+namespace lc {
+
+
+}
+
 #endif //RRPAIR_RR_LC_PARSER_HPP

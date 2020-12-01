@@ -27,9 +27,9 @@ namespace big_repair{
     class KRPSlindingWindow  {
 
         protected:
-            int wsize;
+            uint32_t wsize;
             int *window;
-            int asize;
+            uint32_t asize;
 //            const hash_type  prime = 27162335252586509;
             hash_type prime;
             hash_type hash;
@@ -45,8 +45,8 @@ namespace big_repair{
                 wsize = 0;
                 window = nullptr;
                 asize = 0;
-                prime = 27162335252586509;
-//                prime = 1999999973;
+//                prime = 27162335252586509;
+                prime = 1999999973;
                 hash = 0;
                 tot_char = 0;
                 asize_pot = 0;
@@ -54,10 +54,10 @@ namespace big_repair{
 
             KRPSlindingWindow(const int& ws ) : wsize(ws){
 
-                asize = 256;
+                asize = (1UL << 32)-1  ;//256;
                 asize_pot = 1;
-//                prime = 1999999973;
-                prime = 27162335252586509;
+                prime = 1999999973;
+//                prime = 27162335252586509;
                 for (int i = 1; i < wsize; i++)
                     asize_pot = (asize_pot * asize) % prime; // ugly linear-time power algorithm
                 // alloc and clear window
