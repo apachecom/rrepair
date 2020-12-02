@@ -17,11 +17,17 @@
 
 namespace hash_parser {
 
-    typedef fingerprints::kr_hash<char,uint64_t> kr_hash_c64;
-    typedef fingerprints::kr_hash<unsigned char,uint64_t> kr_hash_uc64;
-    typedef fingerprints::kr_hash<uint32_t ,uint64_t> kr_hash_ui64;
+    template <typename hash_type,typename c_type,typename kwindow> class hParser;
 
-    typedef parse::krb_fingerprint_windows<unsigned char,uint64_t,kr_hash_uc64,1999999973> w_kr_hash_uc64 ;
+//    typedef fingerprints::kr_hash<char,uint64_t> kr_hash_c64;
+//    typedef fingerprints::kr_hash<unsigned char,uint64_t> kr_hash_uc64;
+//    typedef fingerprints::kr_hash<uint32_t ,uint64_t> kr_hash_ui64;
+
+//    typedef parse::krb_fingerprint_windows<unsigned char,uint64_t,kr_hash_uc64,1999999973> w_kr_hash_uc64 ;
+
+    // parser para unsigned char y hash 64 bits
+    typedef hParser<uint64_t,unsigned char, parse::w_kr_uc64> parserUC64;
+
 
     template <typename c_type,typename P >
     void addWord(std::basic_string<c_type>&, std::fstream& dFile, std::fstream& pFile, P&);
@@ -34,44 +40,31 @@ namespace hash_parser {
 
 
 
+
+
+    template <>
+    void addWord(std::basic_string<unsigned char>&, std::fstream& , std::fstream& , parserUC64&);
+    template <>
+    void compress<parserUC64>(const std::string& ,parserUC64 &);
+    template <>
+    void decompress<parserUC64>(const std::string& ,parserUC64 &);
+
+
+
     template <
             typename hash_type,
             typename c_type,
-//            typename hash_function,
             typename kwindow
     >
     class hParser{
         public:
             hParser() = default;
             ~hParser() = default;
-//            hash_function hash; // std::basic_string<c_type> - hash_type
         uint64_t mod;
         kwindow windows;
         uint64_t diccSize{0};
-#ifdef CHECK_COLLISIONS
-        std::unordered_map<uint64_t,std::pair<std::basic_string<unsigned char,uint64_t>> hashToPhrase;
-#else
         std::unordered_map<uint64_t,uint64_t> hashToIds;
-#endif
-
     };
-//
-//    template <>
-//    class hParser<uint64_t,unsigned char, w_kr_hash_uc64 >{
-//    public:
-//        hParser() = default;
-//        ~hParser() = default;
-////        kr_hash_uc64 hash; // std::basic_string<c_type> - hash_type
-//        uint64_t mod;
-//        w_kr_hash_uc64 windows;
-//        uint64_t diccSize{0};
-//#ifdef CHECK_COLLISIONS
-//        std::unordered_map<uint64_t,std::pair<std::basic_string<unsigned char,uint64_t>> hashToPhrase;
-//#else
-//        std::unordered_map<uint64_t,uint64_t> hashToIds;
-//#endif
-//    };
-
 
 
 

@@ -41,14 +41,19 @@ using namespace std;
 //
 //}
 
-auto new_parse = [](benchmark::State & state, const std::string file,const std::string output_dir,uint32_t m){
+auto byte_parse = [](benchmark::State & state, const std::string& file,const std::string output_dir,uint32_t m,uint32_t w){
     for (auto _ : state) {
         // This code gets timed
-            typedef hash_parser::hParser<uint64_t,unsigned char, hash_parser::w_kr_hash_uc64 >P;
-            P parser;
+
+
+        try {
+            hash_parser::parserUC64 parser;
+            parse::init(10,parser.windows);
             parser.mod = m;
             hash_parser::compress(file,parser);
-        try {
+            hash_parser::decompress(file,parser);
+            ASSERT_TRUE(util::compareFiles(file, file+".out"));
+
         } catch (const char * str) {
             std::cout<<str<<std::endl;
             exit(1);
@@ -57,13 +62,13 @@ auto new_parse = [](benchmark::State & state, const std::string file,const std::
 
 };
 
-auto tParseFileSM =  [](benchmark::State & state, const std::string file,const std::string output_dir,uint32_t m)
+auto tParseFileSM =  [](benchmark::State & state, const std::string& file,const std::string output_dir,uint32_t m,uint32_t w)
 {
     // Perform setup here
     for (auto _ : state) {
         // This code gets timed
                try {
-                   HashParserConfig<KRPSlindingWindow<>, KRPHashFunction<uint64_t, std::string>> conf(10, 1, m, file,"./");
+                   HashParserConfig<KRPSlindingWindow<>, KRPHashFunction<uint64_t, std::string>> conf(w, 1, m, file,"./");
                    conf.print();
                    HashParser<HashParserConfig<KRPSlindingWindow<>, KRPHashFunction<uint64_t, std::string> >> parser(
                            conf);
@@ -89,7 +94,7 @@ auto tParseFileSM =  [](benchmark::State & state, const std::string file,const s
                    ASSERT_TRUE(util::compareFiles(file, file+".out"));
                } catch (const char* string1) {
                     std::cout<<string1<<std::endl;
-                    sleep(5);
+                    exit(1);
                }
            }
 };
@@ -99,12 +104,14 @@ int main (int argc, char *argv[] ){
     std::string file = argv[1];
     std::string output_dir = argv[2];
     uint32_t m = atoi(argv[3]);
+    uint32_t w = atoi(argv[3]);
 
     std::cout<<"file:"<<file<<std::endl;
     std::cout<<"output_dir:"<<output_dir<<std::endl;
 
 
-    benchmark::RegisterBenchmark("hash-parser",tParseFileSM,file,output_dir,m)->Unit({benchmark::kMicrosecond});
+    benchmark::RegisterBenchmark("hash-parser",tParseFileSM,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
+    benchmark::RegisterBenchmark("byte-hash-parser",byte_parse,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
 
     benchmark::Initialize(&argc, argv);
     benchmark::RunSpecifiedBenchmarks();

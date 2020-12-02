@@ -7,12 +7,14 @@
 
 
 #include <cstdint>
+#include "../include/rr_fingerprints.hpp"
+
 
 namespace parse{
 
 
     // recibe size of the windows
-    template < typename hash_type, typename W>
+    template < typename W>
     void init(const uint32_t & , W&);
 
     template <typename W>
@@ -45,6 +47,47 @@ namespace parse{
         hash_type asize_pot;   // asize^(wsize-1) mod prime
         hash_f fhash;
     };
+
+    typedef unsigned char uchar;
+    typedef fingerprints::kr_hash<unsigned char,uint64_t> kr_hash_uc64;
+    typedef fingerprints::kr_hash<unsigned char,uint32_t> kr_hash_uc32;
+
+    typedef parse::krb_fingerprint_windows<uchar,uint64_t,kr_hash_uc32> w_kr_uc32;
+    typedef parse::krb_fingerprint_windows<uchar,uint64_t,kr_hash_uc64> w_kr_uc64;
+
+
+    template <>
+    void parse::destroy<w_kr_uc32>( w_kr_uc32& );
+
+    template <>
+    void parse::init<w_kr_uc32>( const uint32_t & size,w_kr_uc32& );
+
+    template <>
+    uint64_t  parse::feed<unsigned char,w_kr_uc32>( const unsigned char&, w_kr_uc32& );
+
+    template <>
+    void parse::reset<w_kr_uc32>(  w_kr_uc32& );
+
+    template <>
+    uint64_t parse::size_window<w_kr_uc32>( w_kr_uc32& );
+
+
+
+    template <>
+    void parse::destroy<w_kr_uc64>( w_kr_uc64& );
+
+    template <>
+    void parse::init<w_kr_uc64>( const uint32_t & size,w_kr_uc64& );
+
+    template <>
+    uint64_t  parse::feed<unsigned char,w_kr_uc64>( const unsigned char&, w_kr_uc64& );
+
+    template <>
+    void parse::reset<w_kr_uc64>(  w_kr_uc64& );
+
+    template <>
+    uint64_t parse::size_window<w_kr_uc64>( w_kr_uc64& );
+
 
 }
 

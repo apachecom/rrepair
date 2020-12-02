@@ -12,25 +12,8 @@ using namespace hash_parser;
 
 
 
-// parser para unsigned char y hash 64 bits
-typedef hParser<uint64_t,unsigned char, kr_hash_uc64> parserUC64;
-
 template <>
-void hash_parser::addWord(std::basic_string<unsigned char>&, std::fstream& , std::fstream& , parserUC64&);
-
-template <>
-void hash_parser::compress<parserUC64>(const std::string& ,parserUC64 &);
-
-template <>
-void hash_parser::decompress<parserUC64>(const std::string& ,parserUC64 &);
-
-
-
-template <>
-void hash_parser::addWord(std::basic_string<unsigned char>& word, std::fstream& dFile, std::fstream& pFile, parserUC64& parser
-#ifdef MEM_MONITOR
-#endif
-){
+void hash_parser::addWord(std::basic_string<unsigned char>& word, std::fstream& dFile, std::fstream& pFile, parserUC64& parser){
 
     unsigned char zero = 0;
     word.push_back(zero);
@@ -42,11 +25,9 @@ void hash_parser::addWord(std::basic_string<unsigned char>& word, std::fstream& 
 
     const char* ptr = (const char*) word.data();
     // compute the hash of the string
-    uint64_t hash = parser.windows.hash(word);
+    uint64_t hash = parser.windows.fhash.hash(word);
     //search the has in the dicc
 
-#ifdef CHECK_COLLISIONS
-#else
     auto it = parser.hashToIds.find(hash);
     if(it == parser.hashToIds.end()){
         //new phrase...
@@ -58,8 +39,6 @@ void hash_parser::addWord(std::basic_string<unsigned char>& word, std::fstream& 
         uint64_t p = it->second;
         pFile.write((const char* ) & p, sizeof(uint64_t));
     }
-#endif
-
     word.clear();
 }
 
@@ -142,4 +121,6 @@ void hash_parser::decompress<parserUC64>(const std::string& file,parserUC64 & pa
 
 
 }
+
+
 

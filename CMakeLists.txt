@@ -70,6 +70,7 @@ set(SOURCE_LIB
         lib/rr_fingerprints.cpp
         lib/rr_io.cpp
         lib/rr_utils.cpp
+        lib/rr_trie.cpp
         lib/_c/utils.c
         lib/rr_sliding_window.cpp
         lib/rr_hash_parser.cpp
@@ -115,7 +116,7 @@ include(internal_utils)
 #cxx_executable_with_flags(t_compressor "" "${LIBS};benchmark;sdsl" test/t_compressor.cpp ${SOURCE_FILES})
 
 cxx_executable_with_flags(t_hash_function "" "${LIBS};benchmark" test/t_hash_function.cpp ${SOURCE_FILES} ${SOURCE_LIB})
-cxx_executable_with_flags(t_hash_parser "" "${LIBS};benchmark" test/t_hash_parser.cpp ${SOURCE_FILES})
+cxx_executable_with_flags(t_hash_parser "" "${LIBS};benchmark" test/t_hash_parser.cpp ${SOURCE_FILES} ${SOURCE_LIB})
 cxx_executable_with_flags(t_sliding_window "" "${LIBS};benchmark" test/t_sliding_window.cpp ${SOURCE_FILES})
 cxx_executable_with_flags(t_repair_recursive "" "${LIBS};benchmark" test/t_repair_recursive.cpp ${SOURCE_FILES})
 
@@ -133,6 +134,7 @@ cxx_executable_with_flags(t_c_utils "" "${LIBS};benchmark" test/rr/c_utils.cpp $
 cxx_executable_with_flags(t_utils "" "${LIBS};benchmark" test/rr/utils.cpp ${SOURCE_LIB})
 cxx_executable_with_flags(t_trie "" "${LIBS};benchmark" test/rr/trie.cpp ${SOURCE_LIB})
 cxx_executable_with_flags(t_fingerprints "" "${LIBS};benchmark" test/rr/fingerprints.cpp ${SOURCE_LIB})
+#cxx_executable_with_flags(t_hash_parser "" "${LIBS};benchmark" test/t_hash_parser.cpp ${SOURCE_LIB})
 
 
 
