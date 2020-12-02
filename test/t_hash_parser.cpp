@@ -104,7 +104,7 @@ int main (int argc, char *argv[] ){
     std::string file = argv[1];
     std::string output_dir = argv[2];
     uint32_t m = atoi(argv[3]);
-    uint32_t w = atoi(argv[3]);
+    uint32_t w = atoi(argv[4]);
 
     std::cout<<"file:"<<file<<std::endl;
     std::cout<<"output_dir:"<<output_dir<<std::endl;
