@@ -48,7 +48,7 @@ auto byte_parse = [](benchmark::State & state, const std::string& file,const std
 
         try {
             hash_parser::parserUC64 parser;
-            parse::init(10,parser.windows);
+            parse::init(w,parser.windows);
             parser.mod = m;
             hash_parser::compress(file,parser);
             hash_parser::decompress(file,parser);

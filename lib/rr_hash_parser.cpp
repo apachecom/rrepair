@@ -10,8 +10,6 @@ using namespace fingerprints;
 using namespace hash_parser;
 
 
-
-
 template <>
 void hash_parser::addWord(std::basic_string<unsigned char>& word, std::fstream& dFile, std::fstream& pFile, parserUC64& parser){
 
@@ -20,6 +18,8 @@ void hash_parser::addWord(std::basic_string<unsigned char>& word, std::fstream& 
     uint len = word.size();
     //check the word is big enough
     if (len < parse::size_window(parser.windows) ){
+        std::cout<<"windows-size:"<<parse::size_window(parser.windows)<<std::endl;
+        std::cout<<"word-len:"<<len<<std::endl;
         throw "windows to small";
     }
 
