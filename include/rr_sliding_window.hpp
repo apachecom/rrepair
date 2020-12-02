@@ -12,19 +12,19 @@ namespace parse{
 
 
     // recibe size of the windows
-    template <typename c_type, typename hash_type, typename W>
+    template < typename hash_type, typename W>
     void init(const uint32_t & , W&);
 
-    template <typename c_type, typename hash_type, typename W>
+    template <typename W>
     uint64_t size_window(W&);
 
-    template <typename c_type, typename hash_type, typename W>
+    template <typename c_type, typename W>
     uint64_t feed(const c_type&, W& );
 
-    template <typename c_type, typename hash_type, typename W>
+    template <typename W>
     void reset( W& );
 
-    template <typename c_type, typename hash_type, typename W>
+    template < typename W>
     void destroy( W& );
 
     template <
@@ -37,9 +37,9 @@ namespace parse{
                         >
     struct krb_fingerprint_windows{
 
-        int wsize;
+        uint64_t wsize;
         c_type *window;
-        int asize;
+        uint64_t  asize;
         hash_type hash;
         hash_type tot_char;
         hash_type asize_pot;   // asize^(wsize-1) mod prime

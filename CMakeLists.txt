@@ -72,6 +72,7 @@ set(SOURCE_LIB
         lib/rr_utils.cpp
         lib/_c/utils.c
         lib/rr_sliding_window.cpp
+        lib/rr_hash_parser.cpp
 
         )
 

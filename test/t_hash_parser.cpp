@@ -10,6 +10,8 @@
 #include "../HashParserConfig.h"
 #include "../RepairUtils.h"
 
+#include "../include/rr_hash_parser.hpp"
+
 #define LEN 100000
 using namespace big_repair;
 using namespace std;
@@ -39,14 +41,29 @@ using namespace std;
 //
 //}
 
+auto new_parse = [](benchmark::State & state, const std::string file,const std::string output_dir,uint32_t m){
+    for (auto _ : state) {
+        // This code gets timed
+            typedef hash_parser::hParser<uint64_t,unsigned char, hash_parser::w_kr_hash_uc64 >P;
+            P parser;
+            parser.mod = m;
+            hash_parser::compress(file,parser);
+        try {
+        } catch (const char * str) {
+            std::cout<<str<<std::endl;
+            exit(1);
+        }
+    }
+
+};
+
 auto tParseFileSM =  [](benchmark::State & state, const std::string file,const std::string output_dir,uint32_t m)
 {
     // Perform setup here
     for (auto _ : state) {
         // This code gets timed
                try {
-                   HashParserConfig<KRPSlindingWindow<>, KRPHashFunction<uint64_t, std::string>> conf(10, 1, m, file,
-                                                                                                      "./");
+                   HashParserConfig<KRPSlindingWindow<>, KRPHashFunction<uint64_t, std::string>> conf(10, 1, m, file,"./");
                    conf.print();
                    HashParser<HashParserConfig<KRPSlindingWindow<>, KRPHashFunction<uint64_t, std::string> >> parser(
                            conf);

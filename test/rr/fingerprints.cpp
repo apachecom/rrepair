@@ -25,13 +25,6 @@ auto hashC64 = [](benchmark::State & state, const uint32_t& samples,const uint32
             std::basic_string<char> str = big_repair::util::generate_random_string(len);
             kr_hash_c64 f;
             uint64_t hash = f.hash(str);
-//            if(i < 5){
-//                std::cout<<hash<<"------";
-//                for (int j = 0; j < len && j < 3; ++j) {
-//                    std::cout<<str[j];
-//                }
-//                std::cout<<std::endl;
-//            }
             auto it = D.find(hash);
             if(it == D.end())
                 D[hash] = str;
@@ -64,13 +57,6 @@ auto hashUI64 = [](benchmark::State & state, const uint32_t& samples,const uint3
 
             kr_hash_ui64 f;
             uint64_t hash = f.hash(str);
-//            if(i < 5){
-//                std::cout<<hash<<"------";
-//                for (int j = 0; j < len && j < 3; ++j) {
-//                    std::cout<<str[j]<<" ";
-//                }
-//                std::cout<<std::endl;
-//            }
             auto it = D.find(hash);
             if(it == D.end()) D[hash] = str;
             else{
