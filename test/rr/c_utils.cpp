@@ -102,12 +102,14 @@ auto readFILE = [](benchmark::State & state,const std::string &file)
     // Perform setup here
     for (auto _ : state) {
         // This code gets timed
-        struct stat s;
-        if (stat (file.c_str(),&s) != 0)
+        struct stat64 s;
+
+        if (stat64 (file.c_str(),&s) != 0)
         {
             fprintf (stderr,"Error: cannot stat file %s\n",file.c_str());
             exit(1);
         }
+
         uint64_t len = s.st_size/sizeof(char);
 
         FILE *f = fopen(file.c_str(),"rb");

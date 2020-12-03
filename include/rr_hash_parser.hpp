@@ -9,7 +9,7 @@
 #include <fstream>
 #include <unordered_map>
 
-
+//#define CHECK_COLLISION
 
 #include "rr_fingerprints.hpp"
 #include "rr_sliding_window.hpp"
@@ -27,13 +27,20 @@ namespace hash_parser {
 
     // parser para unsigned char y hash 64 bits
     typedef hParser<uint64_t,unsigned char, parse::w_kr_uc64> parserUC64;
+    typedef hParser<uint64_t,unsigned char, parse::w_kr_uc64> parserUC64;
+    typedef hParser<uint64_t,unsigned char, parse::KR_window> mzzParserUC64;
 
 
     template <typename c_type,typename P >
-    void addWord(std::basic_string<c_type>&, std::fstream& dFile, std::fstream& pFile, P&);
+    void addWord(std::basic_string<c_type>&, std::fstream& dFile, std::fstream& pFile, P&, bool constrain);
 
     template <typename P>
     void compress(const std::string& ,P&);
+
+
+    template <typename P>
+    void compress_in_mem(const std::string& ,P&,const uint32_t &);
+
 
     template <typename P>
     void decompress(const std::string&,P&);
@@ -43,12 +50,23 @@ namespace hash_parser {
 
 
     template <>
-    void addWord(std::basic_string<unsigned char>&, std::fstream& , std::fstream& , parserUC64&);
+    void addWord(std::basic_string<unsigned char>&, std::fstream& , std::fstream& , parserUC64&, bool constrain);
     template <>
     void compress<parserUC64>(const std::string& ,parserUC64 &);
     template <>
     void decompress<parserUC64>(const std::string& ,parserUC64 &);
 
+
+
+
+    template <>
+    void addWord(std::basic_string<unsigned char>&, std::fstream& , std::fstream& , mzzParserUC64&, bool constrain);
+    template <>
+    void compress<mzzParserUC64>(const std::string& ,mzzParserUC64 &);
+    template <>
+    void decompress<mzzParserUC64>(const std::string& ,mzzParserUC64&);
+    template <>
+    void compress_in_mem<mzzParserUC64>(const std::string& ,mzzParserUC64&,const uint32_t &);
 
 
     template <
@@ -64,6 +82,9 @@ namespace hash_parser {
         kwindow windows;
         uint64_t diccSize{0};
         std::unordered_map<uint64_t,uint64_t> hashToIds;
+#ifdef CHECK_COLLISION
+        std::unordered_map<uint64_t,std::basic_string<c_type>> check_collision;
+#endif
     };
 
 
