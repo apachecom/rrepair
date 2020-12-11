@@ -176,7 +176,7 @@ void rr::addWord(std::basic_string<unsigned char>& word, std::fstream& dFile, st
 template <>
 void rr::compress_in_mem<mzzParserUC64>(const std::string& file ,mzzParserUC64 & parser, const uint32_t &buffer_size){
 
-    std::cout<<"compress_in_mem"<<std::endl;
+//    std::cout<<"compress_in_mem"<<std::endl;
 
     std::streampos fsize = 0;
     std::fstream ffile(file, std::ios::in);
@@ -188,9 +188,9 @@ void rr::compress_in_mem<mzzParserUC64>(const std::string& file ,mzzParserUC64 &
     ffile.seekg( 0, std::ios::beg );
     ffile.clear();
     auto file_size = (uint32_t)fsize;
-    std::cout<<"file eof:"<<ffile.eof()<<std::endl;
-    std::cout<<"file size:"<<file_size<<std::endl;
-
+//    std::cout<<"file eof:"<<ffile.eof()<<std::endl;
+//    std::cout<<"file size:"<<file_size<<std::endl;
+//
 
     if (!ffile.is_open()) {
         std::cout << "Error opening the file: " << file << std::endl;
@@ -234,7 +234,7 @@ void rr::compress_in_mem<mzzParserUC64>(const std::string& file ,mzzParserUC64 &
     delete c;
     uint32_t rest = file_size%buffer_size;
 
-    std::cout<<"rest of file:"<<rest<<std::endl;
+//    std::cout<<"rest of file:"<<rest<<std::endl;
     c = new unsigned char[rest];
     if(rest > 0){
 
