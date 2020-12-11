@@ -61,7 +61,7 @@ set(SOURCE_LIB
 
 
 #///////////////////C-UTILS///////////////////////////////
-        include/_c/utils.h
+#        include/_c/utils.h
 #///////////////////RRepair///////////////////////////////
         include/rr/rr_utils.hpp
         include/rr/rr_trie.hpp
@@ -114,7 +114,7 @@ set(SOURCE_LIB
 
 
 #///////////////////C-UTILS///////////////////////////////
-        lib/_c/utils.c
+#        lib/_c/utils.c
 #///////////////////RRepair///////////////////////////////
         lib/rr/rr_utils.cpp
         lib/rr/rr_trie.cpp
