@@ -5,24 +5,24 @@
 #include "../../DummyPartition.h"
 
 
-using namespace parse;
+using namespace rr;
 
 
 
 template <>
-void parse::destroy<w_kr_uc64>( w_kr_uc64& );
+void rr::destroy<w_kr_uc64>( w_kr_uc64& );
 
 template <>
-void parse::init<w_kr_uc64>( const uint32_t & size,w_kr_uc64& );
+void rr::init<w_kr_uc64>( const uint32_t & size,w_kr_uc64& );
 
 template <>
-uint64_t  parse::feed<unsigned char,w_kr_uc64>( const unsigned char&, w_kr_uc64& );
+uint64_t  rr::feed<unsigned char,w_kr_uc64>( const unsigned char&, w_kr_uc64& );
 
 template <>
-void parse::reset<w_kr_uc64>(  w_kr_uc64& );
+void rr::reset<w_kr_uc64>(  w_kr_uc64& );
 
 template <>
-uint64_t parse::size_window<w_kr_uc64>( w_kr_uc64& );
+uint64_t rr::size_window<w_kr_uc64>( w_kr_uc64& );
 
 
 /**
@@ -43,13 +43,13 @@ uint64_t modpow(uint64_t base, uint64_t exp,uint64_t prime)
 
 
 template <>
-void parse::destroy<parse::w_kr_uc32>( parse::w_kr_uc32& window){
+void rr::destroy<rr::w_kr_uc32>( rr::w_kr_uc32& window){
     delete[] window.window;
 }
 
 
 template <>
-void parse::init<parse::w_kr_uc32>( const uint32_t & size, parse::w_kr_uc32& window){
+void rr::init<rr::w_kr_uc32>( const uint32_t & size, rr::w_kr_uc32& window){
 
     window.asize = 1ULL << 32;
     window.asize_pot = 1;
@@ -65,7 +65,7 @@ void parse::init<parse::w_kr_uc32>( const uint32_t & size, parse::w_kr_uc32& win
 }
 
 template <>
-uint64_t parse::feed<unsigned char,parse::w_kr_uc32>( const unsigned char& c, parse::w_kr_uc32& window){
+uint64_t rr::feed<unsigned char,rr::w_kr_uc32>( const unsigned char& c, rr::w_kr_uc32& window){
 
     uint32_t k = window.tot_char++ % window.wsize;
     // complex expression to avoid negative numbers
@@ -77,7 +77,7 @@ uint64_t parse::feed<unsigned char,parse::w_kr_uc32>( const unsigned char& c, pa
 }
 
 template <>
-void parse::reset<parse::w_kr_uc32>(  parse::w_kr_uc32& windows ){
+void rr::reset<rr::w_kr_uc32>(  rr::w_kr_uc32& windows ){
     for (uint32_t i = 0; i < windows.wsize; i++)
         windows.window[i] = 0;
     // init hash value and related values
@@ -86,7 +86,7 @@ void parse::reset<parse::w_kr_uc32>(  parse::w_kr_uc32& windows ){
 
 
 template <>
-uint64_t parse::size_window<parse::w_kr_uc32>( parse::w_kr_uc32& windows){
+uint64_t rr::size_window<rr::w_kr_uc32>( rr::w_kr_uc32& windows){
     return windows.wsize;
 }
 
@@ -94,13 +94,13 @@ uint64_t parse::size_window<parse::w_kr_uc32>( parse::w_kr_uc32& windows){
 
 
 template <>
-void parse::destroy<parse::w_kr_uc64>( parse::w_kr_uc64& window){
+void rr::destroy<rr::w_kr_uc64>( rr::w_kr_uc64& window){
     delete[] window.window;
 }
 
 
 template <>
-void parse::init<parse::w_kr_uc64>( const uint32_t & size, parse::w_kr_uc64& window){
+void rr::init<rr::w_kr_uc64>( const uint32_t & size, rr::w_kr_uc64& window){
     window.asize = 256;
     window.wsize = size;
     window.fhash.prime = 1999999973;
@@ -110,7 +110,7 @@ void parse::init<parse::w_kr_uc64>( const uint32_t & size, parse::w_kr_uc64& win
 }
 
 template <>
-uint64_t parse::feed<unsigned char,parse::w_kr_uc64>( const unsigned char& c, parse::w_kr_uc64& window){
+uint64_t rr::feed<unsigned char,rr::w_kr_uc64>( const unsigned char& c, rr::w_kr_uc64& window){
 
     uint64_t k = window.tot_char++ % window.wsize;
     // complex expression to avoid negative numbers
@@ -122,7 +122,7 @@ uint64_t parse::feed<unsigned char,parse::w_kr_uc64>( const unsigned char& c, pa
 }
 
 template <>
-void parse::reset<parse::w_kr_uc64>(  parse::w_kr_uc64& windows ){
+void rr::reset<rr::w_kr_uc64>(  rr::w_kr_uc64& windows ){
     for (uint64_t i = 0; i < windows.wsize; i++)
         windows.window[i] = 0;
     // init hash value and related values
@@ -131,7 +131,7 @@ void parse::reset<parse::w_kr_uc64>(  parse::w_kr_uc64& windows ){
 
 
 template <>
-uint64_t parse::size_window<parse::w_kr_uc64>( parse::w_kr_uc64& windows){
+uint64_t rr::size_window<rr::w_kr_uc64>( rr::w_kr_uc64& windows){
     return windows.wsize;
 }
 
@@ -141,7 +141,7 @@ uint64_t parse::size_window<parse::w_kr_uc64>( parse::w_kr_uc64& windows){
 // init window, hash, and tot_symb
 
 template <>
-void parse::reset<parse::KR_window>(KR_window& window) {
+void rr::reset<rr::KR_window>(KR_window& window) {
     for(int i=0;i<window.wbsize;i++) window.window[i]=0;
     // init hash value and related values
     window.hash=window.tot_symb=0;
@@ -149,7 +149,7 @@ void parse::reset<parse::KR_window>(KR_window& window) {
 
 
 template <>
-void parse::init<parse::KR_window>( const uint32_t & size,KR_window& window){
+void rr::init<rr::KR_window>( const uint32_t & size,KR_window& window){
 
     window.wsize = size;
     window.bytexsymb = 1;
@@ -164,7 +164,7 @@ void parse::init<parse::KR_window>( const uint32_t & size,KR_window& window){
 
 
 template <>
-uint64_t parse::feed<unsigned char,parse::KR_window>(const unsigned char& s, KR_window& window ){
+uint64_t rr::feed<unsigned char,rr::KR_window>(const unsigned char& s, KR_window& window ){
 
     // compute destination of symbol's bytes inside window[]
     int k = (window.tot_symb++ % window.wsize)*window.bytexsymb;
@@ -180,8 +180,8 @@ uint64_t parse::feed<unsigned char,parse::KR_window>(const unsigned char& s, KR_
 
 
 template <>
-uint64_t parse::size_window<parse::KR_window>(KR_window& window){ return (uint64_t)window.wsize;}
+uint64_t rr::size_window<rr::KR_window>(KR_window& window){ return (uint64_t)window.wsize;}
 template <>
-void parse::destroy<parse::KR_window>( parse::KR_window& w){
+void rr::destroy<rr::KR_window>( rr::KR_window& w){
     delete[] w.window;
 }

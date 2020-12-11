@@ -18,6 +18,7 @@
 using namespace io;
 using namespace big_repair;
 using namespace utilString;
+using namespace rr;
 using namespace std;
 
 
@@ -52,11 +53,11 @@ auto byte_parse = [](benchmark::State & state, const std::string& file,const std
 
 
         try {
-            hash_parser::parserUC64 parser;
-            parse::init(w,parser.windows);
+            rr::parserUC64 parser;
+            rr::init(w,parser.windows);
             parser.mod = m;
-            hash_parser::compress(file,parser);
-            hash_parser::decompress(file,parser);
+            rr::compress(file,parser);
+            rr::decompress(file,parser);
             ASSERT_TRUE(io::compareFiles(file, file+".out"));
 
         } catch (const char * str) {
@@ -74,11 +75,11 @@ auto mzz_parse = [](benchmark::State & state, const std::string& file,const std:
 
 
         try {
-            hash_parser::mzzParserUC64 parser;
-            parse::init(w,parser.windows);
+            rr::mzzParserUC64 parser;
+            rr::init(w,parser.windows);
             parser.mod = m;
-            hash_parser::compress(file,parser);
-            hash_parser::decompress(file,parser);
+            rr::compress(file,parser);
+            rr::decompress(file,parser);
             ASSERT_TRUE(io::compareFiles(file, file+".out"));
 
         } catch (const char * str) {
@@ -99,11 +100,11 @@ auto mzz_parse_mem= [](benchmark::State & state,
     for (auto _ : state) {
         // This code gets timed
         try {
-            hash_parser::mzzParserUC64 parser;
-            parse::init(w,parser.windows);
+            rr::mzzParserUC64 parser;
+            rr::init(w,parser.windows);
             parser.mod = m;
-            hash_parser::compress_in_mem(file,parser,buff);
-            hash_parser::decompress(file,parser);
+            rr::compress_in_mem(file,parser,buff);
+            rr::decompress(file,parser);
             ASSERT_TRUE(io::compareFiles(file, file+".out"));
 
         } catch (const char * str) {

@@ -75,7 +75,7 @@ namespace big_repair{
     private:
         C* config;
 
-        std::unordered_map<hash_type,tree::ui32_trie32> coll_map;
+        std::unordered_map<hash_type,rr::ui32_trie32> coll_map;
         std::unordered_map<hash_type,std::unordered_map<uint32_t,uint_t>> node_map_phrase;
         uint_t n_phrases{0};
 //        std::vector<uint_t> compressed_seq;
@@ -106,7 +106,7 @@ namespace big_repair{
         ~HashParser() {
             if(config != nullptr) delete config;
             for (auto &item : coll_map) {
-                tree::destroy(item.second);
+                rr::destroy(item.second);
             }
         }
 
@@ -143,11 +143,11 @@ namespace big_repair{
                 // insert the hash and the word to check collisions in the map
                 // we store a trie by each hash to check collision
                 // we associated the id of the phrase to the leaves of the trie
-                tree::ui32_trie32 _trie;
+                rr::ui32_trie32 _trie;
 
-                auto node = tree::init<tree::ui32_trie32,uint32_t,uint32_t>(_trie);
+                auto node = rr::init<rr::ui32_trie32,uint32_t,uint32_t>(_trie);
                 for (uint32_t i = 0; i < word.size(); ++i) {
-                    node = tree::insert(node->id,word[i],_trie);
+                    node = rr::insert(node->id,word[i],_trie);
                 }
                 coll_map[hash] = _trie;
                 node_map_phrase[hash][node->id] = n_phrases+1;
@@ -168,15 +168,15 @@ namespace big_repair{
                 std::cout<<"- known-hash "<<hash<<std::endl;
 #endif
 
-                auto node = tree::root<tree::ui32_trie32,uint32_t,uint32_t>(coll_map[hash]);
+                auto node = rr::root<rr::ui32_trie32,uint32_t,uint32_t>(coll_map[hash]);
                 uint32_t j = 0, l = word.size();
                 while( j < l ){
-                    auto t_node = tree::feed<tree::ui32_trie32,uint32_t,uint32_t>(node->id,word[j],coll_map[hash]);
+                    auto t_node = rr::feed<rr::ui32_trie32,uint32_t,uint32_t>(node->id,word[j],coll_map[hash]);
                     if(t_node == nullptr) break;
                     node = t_node;
                     ++j;
                 }
-                if(j != l || !tree::isLeaf<tree::ui32_trie32,uint32_t,uint32_t>(node->id,coll_map[hash])){
+                if(j != l || !rr::isLeaf<rr::ui32_trie32,uint32_t,uint32_t>(node->id,coll_map[hash])){
 //                    not found case
 //                    new phrase with equal hash
 
@@ -186,7 +186,7 @@ namespace big_repair{
                     dFile.write(ptr,word.size()*sizeof(uint_t));
                     //update trie
                     for (int i = j; i < l ; ++i) {
-                        node = tree::insert(node->id,word[i],coll_map[hash]);
+                        node = rr::insert(node->id,word[i],coll_map[hash]);
                     }
                     node_map_phrase[hash][node->id] = n_phrases;
                     ++n_phrases;

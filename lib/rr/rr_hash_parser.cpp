@@ -7,18 +7,18 @@
 
 
 using namespace fingerprints;
-using namespace hash_parser;
+using namespace rr;
 
 
 template <>
-void hash_parser::addWord(std::basic_string<unsigned char>& word, std::fstream& dFile, std::fstream& pFile, parserUC64& parser, bool constrain){
+void rr::addWord(std::basic_string<unsigned char>& word, std::fstream& dFile, std::fstream& pFile, parserUC64& parser, bool constrain){
 
     unsigned char zero = 0;
     word.push_back(zero);
     uint len = word.size();
     //check the word is big enough
-    if (len < parse::size_window(parser.windows) && constrain){
-        std::cout<<"windows-size:"<<parse::size_window(parser.windows)<<std::endl;
+    if (len < rr::size_window(parser.windows) && constrain){
+        std::cout<<"windows-size:"<<rr::size_window(parser.windows)<<std::endl;
         std::cout<<"word-len:"<<len<<std::endl;
         throw "windows to small";
     }
@@ -51,7 +51,7 @@ void hash_parser::addWord(std::basic_string<unsigned char>& word, std::fstream& 
 }
 
 template <>
-void hash_parser::compress<parserUC64>(const std::string& file ,parserUC64 & parser){
+void rr::compress<parserUC64>(const std::string& file ,parserUC64 & parser){
 
     std::fstream ffile(file, std::ios::in);
     if (!ffile.is_open()) {
@@ -65,29 +65,29 @@ void hash_parser::compress<parserUC64>(const std::string& file ,parserUC64 & par
     //current phrase
     std::basic_string<unsigned char> word;
     // reading file
-    uint64_t wsize = parse::size_window(parser.windows);
+    uint64_t wsize = rr::size_window(parser.windows);
     while (!ffile.eof() && ffile.read((char*) &c, 1))
     {   // add new element to the current phrase
         word.push_back(c);
         // compute new hash for the window
-        uint64_t hash  = parse::feed(c,parser.windows);
+        uint64_t hash  = rr::feed(c,parser.windows);
         //partition condition
         if (hash % parser.mod == 0 && word.size() >= wsize) {
-            hash_parser::addWord(word,ffiled,ffilep,parser,true);
-            parse::reset(parser.windows);
+            rr::addWord(word,ffiled,ffilep,parser,true);
+            rr::reset(parser.windows);
             word.clear();
         }
     }
     //add possible last phrase in the buffer "word"
     if (!word.empty()){
-        hash_parser::addWord(word,ffiled,ffilep,parser,false);
-        parse::reset(parser.windows);
+        rr::addWord(word,ffiled,ffilep,parser,false);
+        rr::reset(parser.windows);
         word.clear();
     }
 }
 
 template <>
-void hash_parser::decompress<parserUC64>(const std::string& file,parserUC64 & parser){
+void rr::decompress<parserUC64>(const std::string& file,parserUC64 & parser){
 
     std::fstream ffiled(file+".dicc", std::ios::in|std::ios::binary);
     std::fstream ffilep(file+".parse", std::ios::in |std::ios::binary);
@@ -132,14 +132,14 @@ void hash_parser::decompress<parserUC64>(const std::string& file,parserUC64 & pa
 
 
 template <>
-void hash_parser::addWord(std::basic_string<unsigned char>& word, std::fstream& dFile, std::fstream& pFile, mzzParserUC64& parser,bool constrain){
+void rr::addWord(std::basic_string<unsigned char>& word, std::fstream& dFile, std::fstream& pFile, mzzParserUC64& parser,bool constrain){
 
     unsigned char zero = 0;
     word.push_back(zero);
     uint len = word.size();
     //check the word is big enough
-    if (len < parse::size_window(parser.windows) && constrain){
-        std::cout<<"windows-size:"<<parse::size_window(parser.windows)<<std::endl;
+    if (len < rr::size_window(parser.windows) && constrain){
+        std::cout<<"windows-size:"<<rr::size_window(parser.windows)<<std::endl;
         std::cout<<"word-len:"<<len<<std::endl;
         throw "windows to small";
     }
@@ -174,7 +174,7 @@ void hash_parser::addWord(std::basic_string<unsigned char>& word, std::fstream& 
 
 
 template <>
-void hash_parser::compress_in_mem<mzzParserUC64>(const std::string& file ,mzzParserUC64 & parser, const uint32_t &buffer_size){
+void rr::compress_in_mem<mzzParserUC64>(const std::string& file ,mzzParserUC64 & parser, const uint32_t &buffer_size){
 
     std::cout<<"compress_in_mem"<<std::endl;
 
@@ -203,7 +203,7 @@ void hash_parser::compress_in_mem<mzzParserUC64>(const std::string& file ,mzzPar
     //current phrase
     std::basic_string<unsigned char> word;
     // reading file
-    uint64_t wsize = parse::size_window(parser.windows);
+    uint64_t wsize = rr::size_window(parser.windows);
     // we will read byte by byte Integer
     unsigned char *c = new unsigned char[buffer_size];
 
@@ -221,11 +221,11 @@ void hash_parser::compress_in_mem<mzzParserUC64>(const std::string& file ,mzzPar
 //                std::cout<<" \tc:"<<i<<"\r";
                 word.push_back(c[i]);
                 // compute new hash for the window
-                uint64_t hash  = parse::feed(c[i],parser.windows);
+                uint64_t hash  = rr::feed(c[i],parser.windows);
                 //partition condition
                 if (hash % parser.mod == 0 && word.size() >= wsize) {
-                    hash_parser::addWord(word,ffiled,ffilep,parser,true);
-                    parse::reset(parser.windows);
+                    rr::addWord(word,ffiled,ffilep,parser,true);
+                    rr::reset(parser.windows);
                     word.clear();
                 }
             }
@@ -243,11 +243,11 @@ void hash_parser::compress_in_mem<mzzParserUC64>(const std::string& file ,mzzPar
         for (uint32_t i = 0; i < rest; ++i) {
             word.push_back(c[i]);
             // compute new hash for the window
-            uint64_t hash  = parse::feed(c[i],parser.windows);
+            uint64_t hash  = rr::feed(c[i],parser.windows);
             //partition condition
             if (hash % parser.mod == 0 && word.size() >= wsize) {
-                hash_parser::addWord(word,ffiled,ffilep,parser,true);
-                parse::reset(parser.windows);
+                rr::addWord(word,ffiled,ffilep,parser,true);
+                rr::reset(parser.windows);
                 word.clear();
             }
         }
@@ -256,8 +256,8 @@ void hash_parser::compress_in_mem<mzzParserUC64>(const std::string& file ,mzzPar
 //    std::cout<<std::endl;
     //add possible last phrase in the buffer "word"
     if (!word.empty()){
-        hash_parser::addWord(word,ffiled,ffilep,parser,false);
-        parse::reset(parser.windows);
+        rr::addWord(word,ffiled,ffilep,parser,false);
+        rr::reset(parser.windows);
         word.clear();
     }
 
@@ -266,7 +266,7 @@ void hash_parser::compress_in_mem<mzzParserUC64>(const std::string& file ,mzzPar
 }
 
 template <>
-void hash_parser::compress<mzzParserUC64>(const std::string& file ,mzzParserUC64 & parser){
+void rr::compress<mzzParserUC64>(const std::string& file ,mzzParserUC64 & parser){
 
     std::fstream ffile(file, std::ios::in);
     if (!ffile.is_open()) {
@@ -280,29 +280,29 @@ void hash_parser::compress<mzzParserUC64>(const std::string& file ,mzzParserUC64
     //current phrase
     std::basic_string<unsigned char> word;
     // reading file
-    uint64_t wsize = parse::size_window(parser.windows);
+    uint64_t wsize = rr::size_window(parser.windows);
     while (!ffile.eof() && ffile.read((char*) &c, 1))
     {   // add new element to the current phrase
         word.push_back(c);
         // compute new hash for the window
-        uint64_t hash  = parse::feed(c,parser.windows);
+        uint64_t hash  = rr::feed(c,parser.windows);
         //partition condition
         if (hash % parser.mod == 0 && word.size() >= wsize) {
-            hash_parser::addWord(word,ffiled,ffilep,parser,true);
-            parse::reset(parser.windows);
+            rr::addWord(word,ffiled,ffilep,parser,true);
+            rr::reset(parser.windows);
             word.clear();
         }
     }
     //add possible last phrase in the buffer "word"
     if (!word.empty()){
-        hash_parser::addWord(word,ffiled,ffilep,parser,false);
-        parse::reset(parser.windows);
+        rr::addWord(word,ffiled,ffilep,parser,false);
+        rr::reset(parser.windows);
         word.clear();
     }
 }
 
 template <>
-void hash_parser::decompress<mzzParserUC64>(const std::string& file,mzzParserUC64 & parser){
+void rr::decompress<mzzParserUC64>(const std::string& file,mzzParserUC64 & parser){
 
     std::fstream ffiled(file+".dicc", std::ios::in|std::ios::binary);
     std::fstream ffilep(file+".parse", std::ios::in |std::ios::binary);

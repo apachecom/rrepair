@@ -15,7 +15,7 @@
 #include "rr_sliding_window.hpp"
 
 
-namespace hash_parser {
+namespace rr {
 
     template <typename hash_type,typename c_type,typename kwindow> class hParser;
 
@@ -23,12 +23,12 @@ namespace hash_parser {
 //    typedef fingerprints::kr_hash<unsigned char,uint64_t> kr_hash_uc64;
 //    typedef fingerprints::kr_hash<uint32_t ,uint64_t> kr_hash_ui64;
 
-//    typedef parse::krb_fingerprint_windows<unsigned char,uint64_t,kr_hash_uc64,1999999973> w_kr_hash_uc64 ;
+//    typedef rr::krb_fingerprint_windows<unsigned char,uint64_t,kr_hash_uc64,1999999973> w_kr_hash_uc64 ;
 
     // parser para unsigned char y hash 64 bits
-    typedef hParser<uint64_t,unsigned char, parse::w_kr_uc64> parserUC64;
-    typedef hParser<uint64_t,unsigned char, parse::w_kr_uc64> parserUC64;
-    typedef hParser<uint64_t,unsigned char, parse::KR_window> mzzParserUC64;
+    typedef hParser<uint64_t,unsigned char, rr::w_kr_uc64> parserUC64;
+    typedef hParser<uint64_t,unsigned char, rr::w_kr_uc64> parserUC64;
+    typedef hParser<uint64_t,unsigned char, rr::KR_window> mzzParserUC64;
 
 
     template <typename c_type,typename P >

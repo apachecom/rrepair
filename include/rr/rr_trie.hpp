@@ -7,7 +7,7 @@
 #include <vector>
 #include <unordered_map>
 
-namespace tree{
+namespace rr{
 
     template <typename K = uint64_t ,typename C = unsigned char>
     struct node {

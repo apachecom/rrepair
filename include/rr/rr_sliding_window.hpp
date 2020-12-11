@@ -10,7 +10,7 @@
 #include "../fingerprints/fingerprints.hpp"
 
 
-namespace parse{
+namespace rr{
 
 
     // recibe size of the windows
@@ -50,24 +50,24 @@ namespace parse{
 
     typedef unsigned char uchar;
 
-    typedef parse::krb_fingerprint_windows<uchar,uint64_t,fingerprints::kr_hash_uc32> w_kr_uc32;
-    typedef parse::krb_fingerprint_windows<uchar,uint64_t,fingerprints::kr_hash_uc64> w_kr_uc64;
+    typedef rr::krb_fingerprint_windows<uchar,uint64_t,fingerprints::kr_hash_uc32> w_kr_uc32;
+    typedef rr::krb_fingerprint_windows<uchar,uint64_t,fingerprints::kr_hash_uc64> w_kr_uc64;
 
 //
 //    template <>
-//    void parse::destroy<w_kr_uc32>( w_kr_uc32& );
+//    void rr::destroy<w_kr_uc32>( w_kr_uc32& );
 //
 //    template <>
-//    void parse::init<w_kr_uc32>( const uint32_t & size,w_kr_uc32& );
+//    void rr::init<w_kr_uc32>( const uint32_t & size,w_kr_uc32& );
 //
 //    template <>
-//    uint64_t  parse::feed<unsigned char,w_kr_uc32>( const unsigned char&, w_kr_uc32& );
+//    uint64_t  rr::feed<unsigned char,w_kr_uc32>( const unsigned char&, w_kr_uc32& );
 //
 //    template <>
-//    void parse::reset<w_kr_uc32>(  w_kr_uc32& );
+//    void rr::reset<w_kr_uc32>(  w_kr_uc32& );
 //
 //    template <>
-//    uint64_t parse::size_window<w_kr_uc32>( w_kr_uc32& );
+//    uint64_t rr::size_window<w_kr_uc32>( w_kr_uc32& );
 //
 //
 //
