@@ -80,6 +80,7 @@ auto mzz_parse = [](benchmark::State & state, const std::string& file,const std:
             parser.mod = m;
             rr::compress(file,parser);
             rr::decompress(file,parser);
+//            rr::destroy(parser);
             ASSERT_TRUE(io::compareFiles(file, file+".out"));
 
         } catch (const char * str) {
@@ -166,7 +167,7 @@ int main (int argc, char *argv[] ){
     benchmark::RegisterBenchmark("hash-parser",tParseFileSM,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
     benchmark::RegisterBenchmark("byte-hash-parser",byte_parse,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
     benchmark::RegisterBenchmark("mzz-hash-parser",mzz_parse,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
-//    benchmark::RegisterBenchmark("mzz-hash-parser-in-mem",mzz_parse_mem,file,output_dir,m,w,1e12)->Unit({benchmark::kMicrosecond});
+    benchmark::RegisterBenchmark("mzz-hash-parser-in-mem",mzz_parse_mem,file,output_dir,m,w,1e12)->Unit({benchmark::kMicrosecond});
 //    benchmark::RegisterBenchmark("mzz-hash-parser",mzz_parse,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
 
     benchmark::Initialize(&argc, argv);
