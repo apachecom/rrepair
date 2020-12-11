@@ -64,10 +64,10 @@ set(SOURCE_LIB
 #///////////////////C-UTILS///////////////////////////////
 #        include/_c/utils.h
 #///////////////////RRepair///////////////////////////////
-        include/rr/rr_utils.hpp
-        include/rr/rr_trie.hpp
-        include/rr/rr_sliding_window.hpp
-        include/rr/rr_hash_parser.hpp
+        include/rr/utils.hpp
+        include/rr/trie.hpp
+        include/rr/sliding_window.hpp
+        include/rr/hash_parser.hpp
 ##///////////////////LC///////////////////////////////
 #        include/lc/parser.hpp
 #        include/lc/symbols.hpp
@@ -117,10 +117,10 @@ set(SOURCE_LIB
 #///////////////////C-UTILS///////////////////////////////
 #        lib/_c/utils.c
 #///////////////////RRepair///////////////////////////////
-        lib/rr/rr_utils.cpp
-        lib/rr/rr_trie.cpp
-        lib/rr/rr_sliding_window.cpp
-        lib/rr/rr_hash_parser.cpp
+        lib/rr/utils.cpp
+        lib/rr/trie.cpp
+        lib/rr/sliding_window.cpp
+        lib/rr/hash_parser.cpp
 ##///////////////////LC///////////////////////////////
         lib/lc/parser.cpp
         lib/lc/symbols.cpp

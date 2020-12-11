@@ -4,7 +4,7 @@
 
 #include <gtest/gtest.h>
 #include <benchmark/benchmark.h>
-#include "../../include/rr/rr_utils.hpp"
+#include "../../include/rr/utils.hpp"
 
 
 
@@ -15,7 +15,7 @@ auto testComputeLowerPrime = [](benchmark::State & state, const uint64_t& limit)
     std::cout<<"testComputeLowerPrime("<<limit<<")"<<std::endl;
     for (auto _ : state) {
         // This code gets timed
-        uint64_t prime = utils::computeLowerPrime<uint64_t>(limit);
+        uint64_t prime = rr::computeLowerPrime<uint64_t>(limit);
         for (uint64_t i = 2; i < prime ; ++i) {
             ASSERT_TRUE(prime%i != 0);
         }

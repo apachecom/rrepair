@@ -1,7 +1,7 @@
 //
 // Created by via56 on 29-11-20.
 //
-#include "../../include/rr/rr_sliding_window.hpp"
+#include "../../include/rr/sliding_window.hpp"
 #include "../../DummyPartition.h"
 
 

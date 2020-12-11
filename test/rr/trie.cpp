@@ -3,7 +3,7 @@
 //
 #include <gtest/gtest.h>
 #include <benchmark/benchmark.h>
-#include "../../include/rr/rr_trie.hpp"
+#include "../../include/rr/trie.hpp"
 #include "../UtilStrings.h"
 //#define PRINT_LOG_T_TRIE
 //using namespace tree;

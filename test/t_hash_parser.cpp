@@ -12,7 +12,7 @@
 #include "../HashParserConfig.h"
 #include "../RepairUtils.h"
 
-#include "../include/rr/rr_hash_parser.hpp"
+#include "../include/rr/hash_parser.hpp"
 
 #define LEN 100000
 using namespace io;
@@ -67,7 +67,7 @@ auto byte_parse = [](benchmark::State & state, const std::string& file,const std
     }
 
 };
-auto mzz_parse_bench_compression = [](benchmark::State & state, const std::string& file,const std::string output_dir,uint32_t m,uint32_t w){
+auto bench_mzz_parse_compression = [](benchmark::State & state, const std::string& file,const std::string output_dir,uint32_t m,uint32_t w){
     for (auto _ : state) {
         // This code gets timed
         try {
@@ -80,10 +80,14 @@ auto mzz_parse_bench_compression = [](benchmark::State & state, const std::strin
             exit(1);
         }
     }
+
+
+//    state.counters["buff-size"] = buff;
+    std::fstream f(file,std::ios::in|std::ios::binary);
+    state.counters["file-size"] = io::getFileSize(f);
+    f.close();
 };
-
-
-auto mzz_parse_bench_decompression = [](benchmark::State & state, const std::string& file,const std::string output_dir,uint32_t m,uint32_t w){
+auto bench_mzz_parse_decompression = [](benchmark::State & state, const std::string& file,const std::string output_dir,uint32_t m,uint32_t w){
     for (auto _ : state) {
         // This code gets timed
         try {
@@ -96,8 +100,12 @@ auto mzz_parse_bench_decompression = [](benchmark::State & state, const std::str
             exit(1);
         }
     }
-};
 
+//    state.counters["buff-size"] = buff;
+    std::fstream f(file,std::ios::in|std::ios::binary);
+    state.counters["file-size"] = io::getFileSize(f);
+    f.close();
+};
 auto mzz_parse = [](benchmark::State & state, const std::string& file,const std::string output_dir,uint32_t m,uint32_t w){
     for (auto _ : state) {
         // This code gets timed
@@ -119,8 +127,10 @@ auto mzz_parse = [](benchmark::State & state, const std::string& file,const std:
     }
 
 };
-auto mzz_parse_mem_bench_compression = [](benchmark::State & state, const std::string& file,const std::string output_dir,uint32_t m,uint32_t w,
+auto bench_mzz_parse_mem_compression = [](benchmark::State & state, const std::string& file,const std::string output_dir,uint32_t m,uint32_t w,
                                           const uint32_t &buff){
+
+
     for (auto _ : state) {
         // This code gets timed
         try {
@@ -133,6 +143,10 @@ auto mzz_parse_mem_bench_compression = [](benchmark::State & state, const std::s
             exit(1);
         }
     }
+
+    state.counters["buff-size"] = buff;
+    std::fstream f(file,std::ios::in|std::ios::binary);
+    state.counters["file-size"] = io::getFileSize(f);
 };
 
 auto mzz_parse_mem= [](benchmark::State & state,
@@ -157,6 +171,10 @@ auto mzz_parse_mem= [](benchmark::State & state,
             exit(1);
         }
     }
+    state.counters["buff-size"] = buff;
+    std::fstream f(file,std::ios::in|std::ios::binary);
+    state.counters["file-size"] = io::getFileSize(f);
+    f.close();
 
 };
 
@@ -212,9 +230,9 @@ int main (int argc, char *argv[] ){
 //    benchmark::RegisterBenchmark("byte-hash-parser",byte_parse,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
     benchmark::RegisterBenchmark("mzz-hash-parser-check",mzz_parse,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
     benchmark::RegisterBenchmark("mzz-hash-parser-in-mem-check",mzz_parse_mem,file,output_dir,m,w,1e12)->Unit({benchmark::kMicrosecond});
-    benchmark::RegisterBenchmark("mzz-hash-parser-compression",mzz_parse_bench_compression,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
-    benchmark::RegisterBenchmark("mzz-hash-parser-in-mem-compression",mzz_parse_mem_bench_compression,file,output_dir,m,w,1e12)->Unit({benchmark::kMicrosecond});
-    benchmark::RegisterBenchmark("mzz-hash-parser-decompression",mzz_parse_bench_decompression,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
+    benchmark::RegisterBenchmark("mzz-hash-parser-compression",bench_mzz_parse_compression,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
+    benchmark::RegisterBenchmark("mzz-hash-parser-in-mem-compression",bench_mzz_parse_mem_compression,file,output_dir,m,w,1e12)->Unit({benchmark::kMicrosecond});
+    benchmark::RegisterBenchmark("mzz-hash-parser-decompression",bench_mzz_parse_decompression,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
 
     //    benchmark::RegisterBenchmark("mzz-hash-parser",mzz_parse,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
 

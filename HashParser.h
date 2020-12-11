@@ -12,7 +12,7 @@
 #include <map>
 #include <set>
 #include "RepairUtils.h"
-#include "include/rr/rr_trie.hpp"
+#include "include/rr/trie.hpp"
 
 //#define DEBUG_PRINT 1
 #define CHECK_COLLISION

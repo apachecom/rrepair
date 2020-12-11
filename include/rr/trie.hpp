@@ -2,8 +2,8 @@
 // Created by via56 on 30-11-20.
 //
 
-#ifndef RRPAIR_RR_TRIE_HPP
-#define RRPAIR_RR_TRIE_HPP
+#ifndef RRPAIR_TRIE_HPP
+#define RRPAIR_TRIE_HPP
 #include <vector>
 #include <unordered_map>
 
@@ -89,4 +89,4 @@ namespace rr{
 }
 
 
-#endif //RRPAIR_RR_TRIE_HPP
+#endif //RRPAIR_TRIE_HPP

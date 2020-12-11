@@ -2,13 +2,13 @@
 // Created by via56 on 30-11-20.
 //
 
-#ifndef RRPAIR_RR_SLIDING_WINDOW_HPP
-#define RRPAIR_RR_SLIDING_WINDOW_HPP
+#ifndef RRPAIR_SLIDING_WINDOW_HPP
+#define RRPAIR_SLIDING_WINDOW_HPP
 
 
 #include <cstdint>
 #include "../fingerprints/fingerprints.hpp"
-#include "rr_utils.hpp"
+#include "utils.hpp"
 
 namespace rr{
 
@@ -161,4 +161,4 @@ namespace rr{
 
 
 
-#endif //RRPAIR_RR_SLIDING_WINDOW_HPP
+#endif //RRPAIR_SLIDING_WINDOW_HPP

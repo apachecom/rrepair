@@ -2,8 +2,8 @@
 // Created by via56 on 30-11-20.
 //
 
-#ifndef RRPAIR_RR_HASH_PARSER_HPP
-#define RRPAIR_RR_HASH_PARSER_HPP
+#ifndef RRPAIR_HASH_PARSER_HPP
+#define RRPAIR_HASH_PARSER_HPP
 
 #include <cstring>
 #include <fstream>
@@ -12,7 +12,7 @@
 //#define CHECK_COLLISION
 
 #include "../fingerprints/fingerprints.hpp"
-#include "rr_sliding_window.hpp"
+#include "sliding_window.hpp"
 
 
 namespace rr {
@@ -92,4 +92,4 @@ namespace rr {
 
 }
 
-#endif //RRPAIR_RR_HASH_PARSER_HPP
+#endif //RRPAIR_HASH_PARSER_HPP

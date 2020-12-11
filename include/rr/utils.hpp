@@ -2,8 +2,8 @@
 // Created by via56 on 29-11-20.
 //
 
-#ifndef RRPAIR_RR_UTILS_HPP
-#define RRPAIR_RR_UTILS_HPP
+#ifndef RRPAIR_UTILS_HPP
+#define RRPAIR_UTILS_HPP
 
 
 #include <cstdint>
@@ -48,4 +48,4 @@ namespace rr{
 
 
 
-#endif //RRPAIR_RR_UTILS_HPP
+#endif //RRPAIR_UTILS_HPP
