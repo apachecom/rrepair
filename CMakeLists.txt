@@ -55,7 +55,8 @@ if ((CMAKE_CXX_COMPILER_ID MATCHES GNU) OR (CMAKE_CXX_COMPILER_ID MATCHES Clang)
 endif ()
 
 include(ConfigGBench)
-
+include_directories(~/include)
+link_directories(~/lib)
 
 set(SOURCE_LIB
 
@@ -220,7 +221,3 @@ cxx_executable_with_flags(t_lyndon "" "${LIBS};sdsl;benchmark" test/lyndon/build
 
 cxx_executable_with_flags(t_lc_parser "" "${LIBS};sdsl;benchmark" test/lc/parser.cpp ${SOURCE_LIB})
 
-
-
-
-#target_link_libraries(rrpair sdsl)
