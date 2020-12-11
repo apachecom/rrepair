@@ -10,17 +10,18 @@ auto check = [](benchmark::State & state, const std::string& file, const uint32_
 
 // Perform setup here
 
-    rr::KR_window W;
-    W.bytexsymb = bytes;
-
-    std::fstream ff(file,std::ios::in | std::ios::binary);
-    uint64_t file_size = io::getFileSize(ff);
-    uint64_t data_size = file_size/sizeof(bytes);
-    uint8_t * data = new uint8_t [data_size];
-    ff.read((char *) data,file_size);
-
     uint c;
     for (auto _ : state) {
+
+        rr::KR_window W;
+        W.bytexsymb = bytes;
+
+        std::fstream ff(file,std::ios::in | std::ios::binary);
+        uint64_t file_size = io::getFileSize(ff);
+        uint64_t data_size = file_size/sizeof(bytes);
+        uint8_t * data = new uint8_t [data_size];
+        ff.read((char *) data,file_size);
+
         c = 0;
         // This code gets timed
         rr::init(wsize,W);
@@ -28,12 +29,13 @@ auto check = [](benchmark::State & state, const std::string& file, const uint32_
         for (uint64_t i = 0; i < data_size ; ++i) {
            auto hash = rr::feed((const uint8_t*)ptr,W);
             ptr += bytes;
-            if(hash%mod == 0){
+            if(hash%mod == 0    ){
                 rr::reset(W);
                 ++c;
             }
         }
         rr::destroy(W);
+        delete[] data;
     }
 
     state.counters["c"] = c;
