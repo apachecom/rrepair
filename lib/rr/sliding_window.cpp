@@ -131,7 +131,7 @@ template <>
 uint64_t rr::feed<uint8_t ,rr::KR_window>(const uint8_t * s, KR_window& window ){
 
     // compute destination of symbol's bytes inside window[]
-    int k = (window.tot_symb++ % window.wsize)*window.bytexsymb;
+    int k = ((++window.tot_symb) % window.wsize)*window.bytexsymb;
     assert(k+window.bytexsymb-1<window.wbsize); // make sure we are inside window[]
     for(int i=0;i<window.bytexsymb;i++) {
     // complex expression to avoid negative numbers
