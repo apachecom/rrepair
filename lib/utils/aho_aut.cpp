@@ -8,6 +8,7 @@
 #include <set>
 
 using namespace utils;
+
 typedef AhoAutPM<_MapGoto,_MapFailure,_MapOutPut> AM;
 
 template <>

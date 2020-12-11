@@ -46,14 +46,22 @@ namespace utils {
     typedef std::set<uint32_t> _MapOutPut;
     typedef std::unordered_map<uint32_t,state> _MapGoto;
     typedef std::unordered_map<uint32_t,uint32_t> _MapFailure;
+
     template <>
     class AhoAutPM<_MapGoto,_MapFailure,_MapOutPut>{
 
-    public:
-        _MapGoto _goTo; // goto function (state,sym) -> state
-        _MapFailure _fail; // failure function (state) -> state
-        _MapOutPut _output; // output function
+        public:
+            _MapGoto _goTo; // goto function (state,sym) -> state
+            _MapFailure _fail; // failure function (state) -> state
+            _MapOutPut _output; // output function
     };
+
+
+    typedef AhoAutPM<_MapGoto,_MapFailure,_MapOutPut> AM;
+    template <>
+    void match<AM>(const std::string & text, AM& aho_aut);
+    template <>
+    void build<AM>(const std::vector<std::string> & dicc, AM& aut );
 }
 
 
