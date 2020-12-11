@@ -50,27 +50,35 @@ namespace rr{
 
     typedef unsigned char uchar;
 
-    typedef rr::krb_fingerprint_windows<uchar,uint64_t,fingerprints::kr_hash_uc32> w_kr_uc32;
-    typedef rr::krb_fingerprint_windows<uchar,uint64_t,fingerprints::kr_hash_uc64> w_kr_uc64;
+    typedef krb_fingerprint_windows<uchar,uint64_t,fingerprints::kr_hash_uc32> w_kr_uc32;
+    typedef krb_fingerprint_windows<uchar,uint64_t,fingerprints::kr_hash_uc64> w_kr_uc64;
 
-//
-//    template <>
-//    void rr::destroy<w_kr_uc32>( w_kr_uc32& );
-//
-//    template <>
-//    void rr::init<w_kr_uc32>( const uint32_t & size,w_kr_uc32& );
-//
-//    template <>
-//    uint64_t  rr::feed<unsigned char,w_kr_uc32>( const unsigned char&, w_kr_uc32& );
-//
-//    template <>
-//    void rr::reset<w_kr_uc32>(  w_kr_uc32& );
-//
-//    template <>
-//    uint64_t rr::size_window<w_kr_uc32>( w_kr_uc32& );
-//
-//
-//
+
+    template <>
+    void rr::destroy<w_kr_uc32>( w_kr_uc32& );
+    template <>
+    void rr::init<w_kr_uc32>( const uint32_t & size,w_kr_uc32& );
+    template <>
+    uint64_t  rr::feed<unsigned char,w_kr_uc32>( const unsigned char&, w_kr_uc32& );
+    template <>
+    void rr::reset<w_kr_uc32>(  w_kr_uc32& );
+    template <>
+    uint64_t rr::size_window<w_kr_uc32>( w_kr_uc32& );
+
+
+    template <>
+    void rr::destroy<w_kr_uc64>( w_kr_uc64& );
+    template <>
+    void rr::init<w_kr_uc64>( const uint32_t & size,w_kr_uc64& );
+    template <>
+    uint64_t  rr::feed<unsigned char,w_kr_uc64>( const unsigned char&, w_kr_uc64& );
+    template <>
+    void rr::reset<w_kr_uc64>(  w_kr_uc64& );
+    template <>
+    uint64_t rr::size_window<w_kr_uc64>( w_kr_uc64& );
+
+
+
 
 
     struct KR_window {
@@ -132,6 +140,21 @@ namespace rr{
 //        }
 
     };
+
+
+
+    template <>
+    void rr::destroy<KR_window>( KR_window& );
+    template <>
+    void rr::init<KR_window>( const uint32_t & size,KR_window& );
+    template <>
+    uint64_t  rr::feed<unsigned char,KR_window>( const unsigned char&, KR_window& );
+    template <>
+    void rr::reset<KR_window>(  KR_window& );
+    template <>
+    uint64_t rr::size_window<KR_window>( KR_window& );
+
+
 
 }
 
