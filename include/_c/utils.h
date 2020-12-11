@@ -38,11 +38,11 @@ void get_and_write_myint(uint8_t *a, long n, long i, FILE *f);
 
 /* multi segment file functions */
 typedef struct multiFile {
-    FILE *f;      // file currently opened
-    char *base;   // basename
-    char *ext;    // file extension
-    int cur;      // current index
-    int nsegs;    // number of segments
+    FILE *f;      /*// file currently opened*/
+    char *base;   /*// basename*/
+    char *ext;    /*// file extension*/
+    int cur;      /*// current index*/
+    int nsegs;    /*// number of segments*/
 } mFile;
 
 mFile *mopen_aux_file(const char *base, const char *ext, int nsegs);
