@@ -230,9 +230,9 @@ int main (int argc, char *argv[] ){
 //    benchmark::RegisterBenchmark("byte-hash-parser",byte_parse,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
     benchmark::RegisterBenchmark("mzz-hash-parser-check",mzz_parse,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
     benchmark::RegisterBenchmark("mzz-hash-parser-in-mem-check",mzz_parse_mem,file,output_dir,m,w,1e12)->Unit({benchmark::kMicrosecond});
-    benchmark::RegisterBenchmark("mzz-hash-parser-compression",bench_mzz_parse_compression,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
-    benchmark::RegisterBenchmark("mzz-hash-parser-in-mem-compression",bench_mzz_parse_mem_compression,file,output_dir,m,w,1e12)->Unit({benchmark::kMicrosecond});
-    benchmark::RegisterBenchmark("mzz-hash-parser-decompression",bench_mzz_parse_decompression,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
+    benchmark::RegisterBenchmark("bench-mzz-hash-parser-compression",bench_mzz_parse_compression,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
+    benchmark::RegisterBenchmark("bench-mzz-hash-parser-in-mem-compression",bench_mzz_parse_mem_compression,file,output_dir,m,w,1e12)->Unit({benchmark::kMicrosecond});
+    benchmark::RegisterBenchmark("bench-mzz-hash-parser-decompression",bench_mzz_parse_decompression,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
 
     //    benchmark::RegisterBenchmark("mzz-hash-parser",mzz_parse,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
 
