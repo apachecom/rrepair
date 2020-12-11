@@ -200,7 +200,7 @@ namespace lc {
 
 
     template<typename HT1, typename HT2>
-    bool lc::fruns(
+    bool fruns(
             const std::string& pattern,
             std::vector<uint64_t>& MT,
             std::vector<uint64_t>& P,
@@ -273,7 +273,7 @@ namespace lc {
 
 
     template<typename HT1, typename HT2>
-    bool lc::fblock(
+    bool fblock(
             const std::string& pattern,
             std::vector<uint64_t>& MT,
             std::vector<uint64_t>& P,
@@ -343,7 +343,7 @@ namespace lc {
 
 
     template<typename HT1, typename HT2>
-    void lc::parse_pattern(const std::string& s,  HT1& H, HT2& pi, std::set<uint32_t>& P)
+    void parse_pattern(const std::string& s,  HT1& H, HT2& pi, std::set<uint32_t>& P)
     {
         HT2 _pi;
         //inicializar el meta-texto
@@ -378,7 +378,7 @@ namespace lc {
     }
 
     template<typename hash_type, typename HT1>
-    hash_type lc::lookfor_rule(const std::string& expansion, HT1& H){
+    hash_type lookfor_rule(const std::string& expansion, HT1& H){
         auto it = H.find(expansion);
         if(it == H.end())   return 0;
         return (hash_type)it->second;
