@@ -55,27 +55,27 @@ namespace rr{
 
 
     template <>
-    void rr::destroy<w_kr_uc32>( w_kr_uc32& );
+    void destroy<w_kr_uc32>( w_kr_uc32& );
     template <>
-    void rr::init<w_kr_uc32>( const uint32_t & size,w_kr_uc32& );
+    void init<w_kr_uc32>( const uint32_t & size,w_kr_uc32& );
     template <>
-    uint64_t  rr::feed<unsigned char,w_kr_uc32>( const unsigned char&, w_kr_uc32& );
+    uint64_t feed<unsigned char,w_kr_uc32>( const unsigned char&, w_kr_uc32& );
     template <>
-    void rr::reset<w_kr_uc32>(  w_kr_uc32& );
+    void reset<w_kr_uc32>(  w_kr_uc32& );
     template <>
-    uint64_t rr::size_window<w_kr_uc32>( w_kr_uc32& );
+    uint64_t size_window<w_kr_uc32>( w_kr_uc32& );
 
 
     template <>
-    void rr::destroy<w_kr_uc64>( w_kr_uc64& );
+    void destroy<w_kr_uc64>( w_kr_uc64& );
     template <>
-    void rr::init<w_kr_uc64>( const uint32_t & size,w_kr_uc64& );
+    void init<w_kr_uc64>( const uint32_t & size,w_kr_uc64& );
     template <>
-    uint64_t  rr::feed<unsigned char,w_kr_uc64>( const unsigned char&, w_kr_uc64& );
+    uint64_t  feed<unsigned char,w_kr_uc64>( const unsigned char&, w_kr_uc64& );
     template <>
-    void rr::reset<w_kr_uc64>(  w_kr_uc64& );
+    void reset<w_kr_uc64>(  w_kr_uc64& );
     template <>
-    uint64_t rr::size_window<w_kr_uc64>( w_kr_uc64& );
+    uint64_t size_window<w_kr_uc64>( w_kr_uc64& );
 
 
 
@@ -144,15 +144,15 @@ namespace rr{
 
 
     template <>
-    void rr::destroy<KR_window>( KR_window& );
+    void destroy<KR_window>( KR_window& );
     template <>
-    void rr::init<KR_window>( const uint32_t & size,KR_window& );
+    void init<KR_window>( const uint32_t & size,KR_window& );
     template <>
-    uint64_t  rr::feed<unsigned char,KR_window>( const unsigned char&, KR_window& );
+    uint64_t  feed<unsigned char,KR_window>( const unsigned char&, KR_window& );
     template <>
-    void rr::reset<KR_window>(  KR_window& );
+    void reset<KR_window>(  KR_window& );
     template <>
-    uint64_t rr::size_window<KR_window>( KR_window& );
+    uint64_t size_window<KR_window>( KR_window& );
 
 
 
