@@ -58,8 +58,8 @@ void print_parser(const P&);
         typedef std::unordered_map<std::string, MetaSymbol *, hFunction> HashTableRule;
 
         typedef MetaSymbol rule_type;
-        typedef lc::MSrun run_type;
-        typedef lc::MSblock block_type;
+        typedef MSrun run_type;
+        typedef MSblock block_type;
 
         char *text{nullptr}; // original text
         uint64_t n_text;
@@ -74,30 +74,30 @@ void print_parser(const P&);
 
     template<>
     bool
-    lc::check_expansion<lc::parser<>>(const uint64_t &i, const uint64_t &j, std::string &s, const lc::parser<> &parser);
+    check_expansion<parser<>>(const uint64_t &i, const uint64_t &j, std::string &s, const parser<> &parser);
 
     template<>
-    void lc::parse_text<lc::parser<>>(const char *_text, const uint64_t &_n_text, lc::parser<> &Parser);
+    void parse_text<parser<>>(const char *_text, const uint64_t &_n_text, parser<> &Parser);
 
     template<>
-    void lc::parse_file<lc::parser<>>(const std::string &file, lc::parser<> &Parser);
+    void parse_file<parser<>>(const std::string &file, parser<> &Parser);
 
     template<>
-    void lc::runs<lc::parser<>>(std::vector<typename lc::parser<>::rule_type *> &MT, std::vector<uint64_t> &POS,
-                                lc::parser<> &);
+    void runs<parser<>>(std::vector<typename parser<>::rule_type *> &MT, std::vector<uint64_t> &POS,
+                                parser<> &);
 
     template<>
-    void lc::blocks<lc::parser<>>(std::vector<typename lc::parser<>::rule_type *> &MT, std::vector<uint64_t> &POS,
-                                  lc::parser<> &);
+    void blocks<parser<>>(std::vector<typename parser<>::rule_type *> &MT, std::vector<uint64_t> &POS,
+                                  parser<> &);
 
     template<>
-    void lc::decompress<lc::parser<>>(std::fstream &f, lc::parser<> &parser);
+    void decompress<parser<>>(std::fstream &f, parser<> &parser);
 
     template<>
-    void lc::decompress<lc::parser<>>(std::string &s, lc::parser<> &parser);
+    void decompress<parser<>>(std::string &s, parser<> &parser);
 
     template<>
-    void lc::destroy(lc::parser<> &);
+    void destroy(parser<> &);
 ////////////////////////////////
 }
 
