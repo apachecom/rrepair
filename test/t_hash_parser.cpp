@@ -67,7 +67,36 @@ auto byte_parse = [](benchmark::State & state, const std::string& file,const std
     }
 
 };
+auto mzz_parse_bench_compression = [](benchmark::State & state, const std::string& file,const std::string output_dir,uint32_t m,uint32_t w){
+    for (auto _ : state) {
+        // This code gets timed
+        try {
+            rr::mzzParserUC64 parser;
+            rr::init(w,parser.windows);
+            parser.mod = m;
+            rr::compress(file,parser);
+        } catch (const char * str) {
+            std::cout<<str<<std::endl;
+            exit(1);
+        }
+    }
+};
 
+
+auto mzz_parse_bench_decompression = [](benchmark::State & state, const std::string& file,const std::string output_dir,uint32_t m,uint32_t w){
+    for (auto _ : state) {
+        // This code gets timed
+        try {
+            rr::mzzParserUC64 parser;
+//            rr::init(w,parser.windows);
+//            parser.mod = m;
+            rr::decompress(file,parser);
+        } catch (const char * str) {
+            std::cout<<str<<std::endl;
+            exit(1);
+        }
+    }
+};
 
 auto mzz_parse = [](benchmark::State & state, const std::string& file,const std::string output_dir,uint32_t m,uint32_t w){
     for (auto _ : state) {
@@ -89,6 +118,21 @@ auto mzz_parse = [](benchmark::State & state, const std::string& file,const std:
         }
     }
 
+};
+auto mzz_parse_mem_bench_compression = [](benchmark::State & state, const std::string& file,const std::string output_dir,uint32_t m,uint32_t w,
+                                          const uint32_t &buff){
+    for (auto _ : state) {
+        // This code gets timed
+        try {
+            rr::mzzParserUC64 parser;
+            rr::init(w,parser.windows);
+            parser.mod = m;
+            rr::compress_in_mem(file,parser,buff);
+        } catch (const char * str) {
+            std::cout<<str<<std::endl;
+            exit(1);
+        }
+    }
 };
 
 auto mzz_parse_mem= [](benchmark::State & state,
@@ -166,9 +210,13 @@ int main (int argc, char *argv[] ){
 
 //    benchmark::RegisterBenchmark("hash-parser",tParseFileSM,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
 //    benchmark::RegisterBenchmark("byte-hash-parser",byte_parse,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
-    benchmark::RegisterBenchmark("mzz-hash-parser",mzz_parse,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
-    benchmark::RegisterBenchmark("mzz-hash-parser-in-mem",mzz_parse_mem,file,output_dir,m,w,1e12)->Unit({benchmark::kMicrosecond});
-//    benchmark::RegisterBenchmark("mzz-hash-parser",mzz_parse,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
+    benchmark::RegisterBenchmark("mzz-hash-parser-check",mzz_parse,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
+    benchmark::RegisterBenchmark("mzz-hash-parser-in-mem-check",mzz_parse_mem,file,output_dir,m,w,1e12)->Unit({benchmark::kMicrosecond});
+    benchmark::RegisterBenchmark("mzz-hash-parser-compression",mzz_parse_bench_compression,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
+    benchmark::RegisterBenchmark("mzz-hash-parser-in-mem-compression",mzz_parse_mem_bench_compression,file,output_dir,m,w,1e12)->Unit({benchmark::kMicrosecond});
+    benchmark::RegisterBenchmark("mzz-hash-parser-decompression",mzz_parse_bench_decompression,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
+
+    //    benchmark::RegisterBenchmark("mzz-hash-parser",mzz_parse,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
 
     benchmark::Initialize(&argc, argv);
     benchmark::RunSpecifiedBenchmarks();
