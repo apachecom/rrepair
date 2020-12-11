@@ -7,7 +7,7 @@
 #include "../DummyPartition.h"
 #include "../DummyRepairCompressor.h"
 #include "../utils.h"
-#include "../CLogger.h"
+#include "../include/utils/CLogger.h"
 
 
 

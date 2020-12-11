@@ -6,7 +6,7 @@
 #include <benchmark/benchmark.h>
 #include "../UtilStrings.h"
 #include "../../RepairUtils.h"
-#include "../../include/rr_hash_parser.hpp"
+#include "../../include/rr/rr_hash_parser.hpp"
 
 #define LEN 100000
 using namespace big_repair;

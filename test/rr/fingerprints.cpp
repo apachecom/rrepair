@@ -5,7 +5,7 @@
 
 #include <gtest/gtest.h>
 #include <benchmark/benchmark.h>
-#include "../../include/rr_fingerprints.hpp"
+#include "../../include/fingerprints/fingerprints.hpp"
 #include <unordered_map>
 #include "../UtilStrings.h"
 typedef fingerprints::kr_hash<char,uint64_t> kr_hash_c64;

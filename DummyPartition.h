@@ -16,7 +16,7 @@
 #include <assert.h>
 #include <fstream>
 #include <chrono>
-#include "CLogger.h"
+#include "include/logger/CLogger.h"
 
 #define MAX_BUFF 1024
 

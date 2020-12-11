@@ -5,16 +5,21 @@
 
 #include <gtest/gtest.h>
 #include <benchmark/benchmark.h>
-#include "UtilStrings.h"
+//#include "UtilStrings.h"
+#include "../include/utils/io.hpp"
+#include "../include/utils/string.hpp"
 #include "../HashParser.h"
 #include "../HashParserConfig.h"
 #include "../RepairUtils.h"
 
-#include "../include/rr_hash_parser.hpp"
+#include "../include/rr/rr_hash_parser.hpp"
 
 #define LEN 100000
+using namespace io;
 using namespace big_repair;
+using namespace utilString;
 using namespace std;
+
 
 //
 //static void tParseFile(benchmark::State & state)
@@ -52,7 +57,7 @@ auto byte_parse = [](benchmark::State & state, const std::string& file,const std
             parser.mod = m;
             hash_parser::compress(file,parser);
             hash_parser::decompress(file,parser);
-            ASSERT_TRUE(util::compareFiles(file, file+".out"));
+            ASSERT_TRUE(io::compareFiles(file, file+".out"));
 
         } catch (const char * str) {
             std::cout<<str<<std::endl;
@@ -74,7 +79,7 @@ auto mzz_parse = [](benchmark::State & state, const std::string& file,const std:
             parser.mod = m;
             hash_parser::compress(file,parser);
             hash_parser::decompress(file,parser);
-            ASSERT_TRUE(util::compareFiles(file, file+".out"));
+            ASSERT_TRUE(io::compareFiles(file, file+".out"));
 
         } catch (const char * str) {
             std::cout<<str<<std::endl;
@@ -99,7 +104,7 @@ auto mzz_parse_mem= [](benchmark::State & state,
             parser.mod = m;
             hash_parser::compress_in_mem(file,parser,buff);
             hash_parser::decompress(file,parser);
-            ASSERT_TRUE(util::compareFiles(file, file+".out"));
+            ASSERT_TRUE(io::compareFiles(file, file+".out"));
 
         } catch (const char * str) {
             std::cout<<str<<std::endl;
@@ -115,13 +120,13 @@ auto tParseFileSM =  [](benchmark::State & state, const std::string& file,const 
     for (auto _ : state) {
         // This code gets timed
                try {
-                   HashParserConfig<KRPSlindingWindow<>, KRPHashFunction<uint64_t, std::string>> conf(w, 1, m, file,"./");
-                   conf.print();
-                   HashParser<HashParserConfig<KRPSlindingWindow<>, KRPHashFunction<uint64_t, std::string> >> parser(
+                   big_repair::HashParserConfig<big_repair::KRPSlindingWindow<>, KRPHashFunction<uint64_t, std::string>> conf(w, 1, m, file,"./");
+//                   conf.print();
+                   big_repair::HashParser<HashParserConfig<big_repair::KRPSlindingWindow<>, KRPHashFunction<uint64_t, std::string> >> parser(
                            conf);
 
                    parser.parseFileSM();
-                   parser.results.print();
+//                   parser.results.print();
 
                    std::string _f = file;
                    std::reverse(_f.begin(), _f.end());
@@ -138,7 +143,7 @@ auto tParseFileSM =  [](benchmark::State & state, const std::string& file,const 
 //                std::cout<<output_dir+filename<<std::endl;
                    parser.recreateFile(filename, output_dir, 1);
 
-                   ASSERT_TRUE(util::compareFiles(file, file+".out"));
+                   ASSERT_TRUE(io::compareFiles(file, file+".out"));
                } catch (const char* string1) {
                     std::cout<<string1<<std::endl;
                     exit(1);
@@ -153,14 +158,14 @@ int main (int argc, char *argv[] ){
     uint32_t m = atoi(argv[3]);
     uint32_t w = atoi(argv[4]);
 
-    std::cout<<"file:"<<file<<std::endl;
-    std::cout<<"output_dir:"<<output_dir<<std::endl;
+//    std::cout<<"file:"<<file<<std::endl;
+//    std::cout<<"output_dir:"<<output_dir<<std::endl;
 
 
     benchmark::RegisterBenchmark("hash-parser",tParseFileSM,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
     benchmark::RegisterBenchmark("byte-hash-parser",byte_parse,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
     benchmark::RegisterBenchmark("mzz-hash-parser",mzz_parse,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
-    benchmark::RegisterBenchmark("mzz-hash-parser-in-mem",mzz_parse_mem,file,output_dir,m,w,1e12)->Unit({benchmark::kMicrosecond});
+//    benchmark::RegisterBenchmark("mzz-hash-parser-in-mem",mzz_parse_mem,file,output_dir,m,w,1e12)->Unit({benchmark::kMicrosecond});
 //    benchmark::RegisterBenchmark("mzz-hash-parser",mzz_parse,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
 
     benchmark::Initialize(&argc, argv);

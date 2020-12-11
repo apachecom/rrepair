@@ -16,6 +16,7 @@ using namespace std;
 static void firstTest(benchmark::State & state)
 {
     // Perform setup here
+
     for (auto _ : state) {
         // This code gets timed
     }

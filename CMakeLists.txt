@@ -59,21 +59,98 @@ include(ConfigGBench)
 
 set(SOURCE_LIB
 
-        include/rr_fingerprints.hpp
-        include/rr_io.hpp
-        include/rr_utils.hpp
-        include/rr_trie.hpp
-        include/_c/utils.h
-        include/rr_sliding_window.hpp
-        include/rr_hash_parser.hpp
 
-        lib/rr_fingerprints.cpp
-        lib/rr_io.cpp
-        lib/rr_utils.cpp
-        lib/rr_trie.cpp
+#///////////////////C-UTILS///////////////////////////////
+        include/_c/utils.h
+#///////////////////RRepair///////////////////////////////
+        include/rr/rr_utils.hpp
+        include/rr/rr_trie.hpp
+        include/rr/rr_sliding_window.hpp
+        include/rr/rr_hash_parser.hpp
+##///////////////////LC///////////////////////////////
+#        include/lc/parser.hpp
+#        include/lc/symbols.hpp
+#        include/lc/util.hpp
+#        include/lc/macros.hpp
+##///////////////////GRAMMAR///////////////////////////////
+#        include/lc/compressed_grammar.hpp
+        include/lc/symbols.hpp
+        include/lc/parser.hpp
+        include/lc/util.hpp
+#        include/indices/bs_index.hpp
+#        include/indices/zft_index.hpp
+#        include/indices/pt_index.hpp
+##///////////////////FINGERPRINTS///////////////////////////////
+        include/fingerprints/fingerprints.hpp
+        include/fingerprints/algorithms.hpp
+##///////////////////LYNDON///////////////////////////////
+#        include/lyndon/lyndon.h
+##///////////////////LOGGER///////////////////////////////
+#        include/logger/CLogger.h
+##///////////////////MEM-MONITOR///////////////////////////////
+#        include/mem_monitor/mem_monitor.hpp
+##///////////////////UTILS///////////////////////////////
+        include/utils/aho_aut.hpp
+        include/utils/io.hpp
+        include/utils/string.hpp
+##///////////////////TREES///////////////////////////////
+#        include/trees/bp_tree.h
+#        include/trees/dfuds_tree.h
+#        include/trees/loud_tree.h
+#        include/trees/node.h
+#        include/trees/trie/compact_trie.h
+#        include/trees/trie/Trie.h
+##//////////////////INDICE///////////////////////
+#        include/indices/interface.hpp
+#        include/indices/utils.hpp
+##//////////////////GRID///////////////////////
+#        include/grid/interface.hpp
+#        include/grid/utils.hpp
+#
+#
+##//////////////////G-IMPROVE///////////////////////
+#        include/gi/binary_relation.hpp
+
+
+
+#///////////////////C-UTILS///////////////////////////////
         lib/_c/utils.c
-        lib/rr_sliding_window.cpp
-        lib/rr_hash_parser.cpp
+#///////////////////RRepair///////////////////////////////
+        lib/rr/rr_utils.cpp
+        lib/rr/rr_trie.cpp
+        lib/rr/rr_sliding_window.cpp
+        lib/rr/rr_hash_parser.cpp
+##///////////////////LC///////////////////////////////
+        lib/lc/parser.cpp
+        lib/lc/symbols.cpp
+        lib/lc/util.cpp
+#        lib/lc/bs_index.cpp
+#        lib/lc/zft_index.cpp
+#        lib/lc/pt_index.cpp
+##///////////////////FINGERPRINTS///////////////////////////////
+        lib/fingerprints/fingerprints.cpp
+        lib/fingerprints/algorithms.cpp
+##///////////////////GRAMMAR///////////////////////////////
+#        lib/grammar/compressed_grammar.cpp
+##///////////////////LYNDON///////////////////////////////
+#        lib/lyndon/lyndon.cpp
+##///////////////////LOGGER///////////////////////////////
+#        lib/logger/CLogger.cpp
+##///////////////////UTILS///////////////////////////////
+        lib/utils/aho_aut.cpp
+        lib/utils/io.cpp
+        lib/utils/string.cpp
+##///////////////////TREES///////////////////////////////
+#        lib/trees/bp_tree.cpp
+#        lib/trees/dfuds_tree.cpp
+#        lib/trees/loud_tree.cpp
+#        lib/trees/node.cpp
+#        lib/trees/trie/compact_trie.cpp
+#        lib/trees/trie/Trie.cpp
+#
+#
+##//////////////////G-IMPROVE///////////////////////
+#        lib/gi/binary_relation.cpp
 
         )
 
@@ -84,7 +161,7 @@ set(SOURCE_FILES
         DummyRepairCompressor.cpp DummyRepairCompressor.h
         utils.h
         model.h
-        CLogger.cpp CLogger.h
+        lib/logger/CLogger.cpp include/logger/CLogger.h
         Partitioner.cpp Partitioner.h
 
         HashParser.cpp HashParser.h
@@ -97,6 +174,8 @@ set(SOURCE_FILES
         RePairRecursive.cpp RePairRecursive.h
         RePairRecursiveConfig.cpp RePairRecursiveConfig.h
         DummyRePair.cpp DummyRePair.h RepairUtils.cpp
+
+
         )
 
 
@@ -116,7 +195,7 @@ include(internal_utils)
 #cxx_executable_with_flags(t_compressor "" "${LIBS};benchmark;sdsl" test/t_compressor.cpp ${SOURCE_FILES})
 
 cxx_executable_with_flags(t_hash_function "" "${LIBS};benchmark" test/t_hash_function.cpp ${SOURCE_FILES} ${SOURCE_LIB})
-cxx_executable_with_flags(t_hash_parser "" "${LIBS};benchmark" test/t_hash_parser.cpp ${SOURCE_FILES} ${SOURCE_LIB})
+cxx_executable_with_flags(t_hash_parser "" "${LIBS};sdsl;benchmark" test/t_hash_parser.cpp ${SOURCE_FILES} ${SOURCE_LIB})
 cxx_executable_with_flags(t_sliding_window "" "${LIBS};benchmark" test/t_sliding_window.cpp ${SOURCE_FILES})
 cxx_executable_with_flags(t_repair_recursive "" "${LIBS};benchmark" test/t_repair_recursive.cpp ${SOURCE_FILES})
 
@@ -135,6 +214,12 @@ cxx_executable_with_flags(t_utils "" "${LIBS};benchmark" test/rr/utils.cpp ${SOU
 cxx_executable_with_flags(t_trie "" "${LIBS};benchmark" test/rr/trie.cpp ${SOURCE_LIB})
 cxx_executable_with_flags(t_fingerprints "" "${LIBS};benchmark" test/rr/fingerprints.cpp ${SOURCE_LIB})
 #cxx_executable_with_flags(t_hash_parser "" "${LIBS};benchmark" test/t_hash_parser.cpp ${SOURCE_LIB})
+
+cxx_executable_with_flags(t_lyndon "" "${LIBS};sdsl;benchmark" test/lyndon/build.cpp ${SOURCE_LIB})
+
+
+cxx_executable_with_flags(t_lc_parser "" "${LIBS};sdsl;benchmark" test/lc/parser.cpp ${SOURCE_LIB})
+
 
 
 
