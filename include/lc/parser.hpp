@@ -6,7 +6,6 @@
 #define RRPAIR_PARSER_HPP
 
 
-
 #include <unordered_map>
 #include <sdsl/bit_vectors.hpp>
 
@@ -23,48 +22,84 @@
 namespace lc {
 
 #ifdef PRINT_LOGS
-        template<typename P>
-    void print_parser(const P&);
+    template<typename P>
+void print_parser(const P&);
 #endif
-        template<typename P>
-        bool check_expansion(const uint64_t & i ,const uint64_t & j,std::string &, const P& );
-        template <typename P>
-        void parse_text(const char* _text, const uint64_t & _n_text, P& );
-        template <typename P>
-        void parse_file(const std::string &file, P& );
-        template <typename P>
-        void runs( std::vector<typename P::rule_type*>& MT, std::vector<uint64_t> &POS, P& );
-        template <typename P>
-        void blocks( std::vector<typename P::rule_type*>& MT, std::vector<uint64_t> &POS, P& );
-        template <typename P>
-        void decompress( std::fstream& , P& );
-        template <typename P>
-        void decompress( std::string & , P& );
-        template <typename P>
-        void destroy(P& );
 
-        template <typename hFunction = fingerprints::MzzHash>
-        class parser {
+    template<typename P>
+    bool check_expansion(const uint64_t &i, const uint64_t &j, std::string &, const P &);
 
-            public:
-                typedef uint64_t hash_type ;
-                typedef std::unordered_map<std::string,MetaSymbol*,hFunction> HashTableRule;
+    template<typename P>
+    void parse_text(const char *_text, const uint64_t &_n_text, P &);
 
-                typedef MetaSymbol rule_type;
-                typedef lc::MSrun run_type;
-                typedef lc::MSblock block_type;
+    template<typename P>
+    void parse_file(const std::string &file, P &);
 
-                char * text{nullptr}; // original text
-                uint64_t n_text;
-                HashTableRule hash_rules;
-                hFunction kp_f;
-                uint64_t n_sigma{0}; // id incremental
-                uint64_t n_pi{0}; // pi incremental
-                rule_type* S{nullptr};
-                std::vector<char> alph;
-        };
-    }
+    template<typename P>
+    void runs(std::vector<typename P::rule_type *> &MT, std::vector<uint64_t> &POS, P &);
 
+    template<typename P>
+    void blocks(std::vector<typename P::rule_type *> &MT, std::vector<uint64_t> &POS, P &);
+
+    template<typename P>
+    void decompress(std::fstream &, P &);
+
+    template<typename P>
+    void decompress(std::string &, P &);
+
+    template<typename P>
+    void destroy(P &);
+
+    template<typename hFunction = fingerprints::MzzHash>
+    class parser {
+
+    public:
+        typedef uint64_t hash_type;
+        typedef std::unordered_map<std::string, MetaSymbol *, hFunction> HashTableRule;
+
+        typedef MetaSymbol rule_type;
+        typedef lc::MSrun run_type;
+        typedef lc::MSblock block_type;
+
+        char *text{nullptr}; // original text
+        uint64_t n_text;
+        HashTableRule hash_rules;
+        hFunction kp_f;
+        uint64_t n_sigma{0}; // id incremental
+        uint64_t n_pi{0}; // pi incremental
+        rule_type *S{nullptr};
+        std::vector<char> alph;
+    };
+
+
+    template<>
+    bool
+    lc::check_expansion<lc::parser<>>(const uint64_t &i, const uint64_t &j, std::string &s, const lc::parser<> &parser);
+
+    template<>
+    void lc::parse_text<lc::parser<>>(const char *_text, const uint64_t &_n_text, lc::parser<> &Parser);
+
+    template<>
+    void lc::parse_file<lc::parser<>>(const std::string &file, lc::parser<> &Parser);
+
+    template<>
+    void lc::runs<lc::parser<>>(std::vector<typename lc::parser<>::rule_type *> &MT, std::vector<uint64_t> &POS,
+                                lc::parser<> &);
+
+    template<>
+    void lc::blocks<lc::parser<>>(std::vector<typename lc::parser<>::rule_type *> &MT, std::vector<uint64_t> &POS,
+                                  lc::parser<> &);
+
+    template<>
+    void lc::decompress<lc::parser<>>(std::fstream &f, lc::parser<> &parser);
+
+    template<>
+    void lc::decompress<lc::parser<>>(std::string &s, lc::parser<> &parser);
+
+    template<>
+    void lc::destroy(lc::parser<> &);
+////////////////////////////////
+}
 
 
 #endif //RRPAIR_PARSER_HPP

@@ -13,99 +13,79 @@ void lc::print_parser<lc::parser<>>(const lc::parser<>&);
 #endif
 
 template<>
-bool lc::check_expansion<lc::parser<>>(const uint64_t &i, const uint64_t &j, std::string &s, const lc::parser<> & parser);
-template <>
-void lc::parse_text<lc::parser<>>(const char* _text, const uint64_t & _n_text, lc::parser<>& Parser);
-template <>
-void lc::parse_file<lc::parser<>>(const std::string &file , lc::parser<>& Parser);
-template <>
-void lc::runs<lc::parser<>>(std::vector<typename lc::parser<>::rule_type*>& MT, std::vector<uint64_t> &POS, lc::parser<>& );
-template <>
-void lc::blocks<lc::parser<>>(std::vector<typename lc::parser<>::rule_type*>& MT, std::vector<uint64_t> &POS, lc::parser<>& );
-template <>
-void lc::decompress<lc::parser<>>(std::fstream& f, lc::parser<>& parser );
-template <>
-void lc::decompress<lc::parser<>>(std::string& s, lc::parser<>& parser );
+void lc::decompress<lc::parser<>>(std::fstream &f, lc::parser<> &parser) {
 
-template <>
-void lc::destroy(lc::parser<>& );
-
-////////////////////////////////
-
-template <>
-void lc::decompress<lc::parser<>>(std::fstream& f, lc::parser<>& parser ){
-
-    std::function<int(lc::parser<>::rule_type*)> dfs;
-    dfs = [&dfs,&f,&parser](lc::parser<>::rule_type* X){
-        if(X->type() == MS_SYM){
-            if(X->get_id() != ZERO_SYM){
+    std::function<int(lc::parser<>::rule_type *)> dfs;
+    dfs = [&dfs, &f, &parser](lc::parser<>::rule_type *X) {
+        if (X->type() == MS_SYM) {
+            if (X->get_id() != ZERO_SYM) {
                 f << parser.alph[X->get_id()];
-            }return 1;
+            }
+            return 1;
         }
-        if(X->type() == MS_RUN)
-        {
-            for(size_t i = 0; i < X->len(); i++)
+        if (X->type() == MS_RUN) {
+            for (size_t i = 0; i < X->len(); i++)
                 dfs(X->first());
             return 1;
         }
-        for(size_t i = 0; i < X->len(); i++)
-        {
+        for (size_t i = 0; i < X->len(); i++) {
             dfs((*X)[i]);
         }
         return 1;
 
     };
-    if (parser.S!= nullptr)
+    if (parser.S != nullptr)
         dfs(parser.S);
 }
-template <>
-void lc::decompress<lc::parser<>>(std::string& s, lc::parser<>& parser ){
 
-    s.resize(parser.n_text-2);
+template<>
+void lc::decompress<lc::parser<>>(std::string &s, lc::parser<> &parser) {
+
+    s.resize(parser.n_text - 2);
     uint64_t off = 0;
-    std::function<int(lc::parser<>::rule_type*)> dfs;
-    dfs = [&dfs,&s,&off,&parser](lc::parser<>::rule_type* X){
+    std::function<int(lc::parser<>::rule_type *)> dfs;
+    dfs = [&dfs, &s, &off, &parser](lc::parser<>::rule_type *X) {
 //        std::cout<<X->get_id()<<std::endl;
-        if(X->type() == MS_SYM){
-            if(X->get_id() != ZERO_SYM){
+        if (X->type() == MS_SYM) {
+            if (X->get_id() != ZERO_SYM) {
                 s[off] = parser.alph[X->get_id()];
                 off++;
             }
             return 1;
         }
-        if(X->type() == MS_RUN)
-        {
-            for(size_t i = 0; i < X->len(); i++)
+        if (X->type() == MS_RUN) {
+            for (size_t i = 0; i < X->len(); i++)
                 dfs(X->first());
             return 1;
         }
-        for(size_t i = 0; i < X->len(); i++)
-        {
+        for (size_t i = 0; i < X->len(); i++) {
             dfs((*X)[i]);
         }
         return 1;
 
     };
-    if (parser.S!= nullptr)
+    if (parser.S != nullptr)
         dfs(parser.S);
 }
-template <>
-void lc::runs<parser<>>(std::vector<typename parser<>::rule_type*>& MT, std::vector<uint64_t> &POS , lc::parser<>& parser){
+
+template<>
+void
+lc::runs<parser<>>(std::vector<typename parser<>::rule_type *> &MT, std::vector<uint64_t> &POS, lc::parser<> &parser) {
 
 
     uint32_t off_rule = 0;
     size_t len = MT.size();
     uint64_t total_runs = 1;
-    sdsl::bit_vector pos(len,0);
+    sdsl::bit_vector pos(len, 0);
 
 
-    for(size_t i = 1 ; i < len; i++){
-        if(MT[i] != MT[i-1]){
+    for (size_t i = 1; i < len; i++) {
+        if (MT[i] != MT[i - 1]) {
             ++total_runs;
-            pos[i-1] = 1;
+            pos[i - 1] = 1;
         }
     }
-    pos[len-1] = 1;
+    pos[len - 1] = 1;
 
 #ifdef PRINT_LOGS
     std::cout<<"RUN-BITVETOR(rank:"<<total_runs<<")"<<std::endl;
@@ -116,29 +96,29 @@ void lc::runs<parser<>>(std::vector<typename parser<>::rule_type*>& MT, std::vec
 
 
     uint64_t c_runs = 0, last_post = 0; //position in the metatext
-    std::vector<lc::parser<>::rule_type*> RUNS(total_runs, 0);
-    std::vector<uint64_t> POS_RUNS(total_runs,0);
-    std::vector<lc::parser<>::rule_type*> LEVEL_RUNS;
+    std::vector<lc::parser<>::rule_type *> RUNS(total_runs, 0);
+    std::vector<uint64_t> POS_RUNS(total_runs, 0);
+    std::vector<lc::parser<>::rule_type *> LEVEL_RUNS;
 
     uint64_t last_off = 0; //position in the text
-    for(size_t i = 0 ; i < len; i++){
-        if(pos[i] == 1) {
+    for (size_t i = 0; i < len; i++) {
+        if (pos[i] == 1) {
             /**
              * search for the run in the hash table
              * */
-            lc::parser<>::rule_type * t_run = nullptr;
+            lc::parser<>::rule_type *t_run = nullptr;
 
-            if(i-last_post+1 > 1){
+            if (i - last_post + 1 > 1) {
                 // run-len greater than 1
                 std::basic_string<char> exp;
-                if(!check_expansion(last_off,POS[i] + 1,exp,parser)){
+                if (!check_expansion(last_off, POS[i] + 1, exp, parser)) {
                     // no existe  la regla
-                    t_run = new lc::parser<>::run_type (parser.n_sigma + 1, MT[i], i - last_post + 1);
+                    t_run = new lc::parser<>::run_type(parser.n_sigma + 1, MT[i], i - last_post + 1);
                     parser.hash_rules[exp] = t_run;
                     LEVEL_RUNS.push_back(t_run);
                     parser.n_sigma++;
 
-                }else{
+                } else {
                     t_run = parser.hash_rules[exp];
                 }
 
@@ -147,8 +127,8 @@ void lc::runs<parser<>>(std::vector<typename parser<>::rule_type*>& MT, std::vec
                 RUNS[c_runs] = MT[i];
 
             POS_RUNS[c_runs++] = POS[i];
-            last_post = i+1;
-            last_off = POS[i]+1;
+            last_post = i + 1;
+            last_off = POS[i] + 1;
         }
     }
 
@@ -171,20 +151,22 @@ void lc::runs<parser<>>(std::vector<typename parser<>::rule_type*>& MT, std::vec
     POS.clear();
     MT.resize(RUNS.size());
     POS.resize(POS_RUNS.size());
-    std::copy(RUNS.begin(),RUNS.end(),MT.begin());
-    std::copy(POS_RUNS.begin(),POS_RUNS.end(),POS.begin());
+    std::copy(RUNS.begin(), RUNS.end(), MT.begin());
+    std::copy(POS_RUNS.begin(), POS_RUNS.end(), POS.begin());
 }
-template <>
-void lc::blocks<lc::parser<>>(std::vector<typename lc::parser<>::rule_type*>& MT, std::vector<uint64_t> &POS, lc::parser<>&parser ){
+
+template<>
+void lc::blocks<lc::parser<>>(std::vector<typename lc::parser<>::rule_type *> &MT, std::vector<uint64_t> &POS,
+                              lc::parser<> &parser) {
 
     uint32_t off_rule = 0;
     size_t len = MT.size();
     uint64_t total_block = 0;
-    sdsl::bit_vector pos(len,0);
+    sdsl::bit_vector pos(len, 0);
 
-    if(len > 2){
-        for(size_t i = 1 ; i < len-1; i++){
-            if(MT[i-1]->get_pi() > MT[i]->get_pi() && MT[i]->get_pi() < MT[i+1]->get_pi()){
+    if (len > 2) {
+        for (size_t i = 1; i < len - 1; i++) {
+            if (MT[i - 1]->get_pi() > MT[i]->get_pi() && MT[i]->get_pi() < MT[i + 1]->get_pi()) {
                 ++total_block;
                 pos[i] = 1;
             }
@@ -192,7 +174,7 @@ void lc::blocks<lc::parser<>>(std::vector<typename lc::parser<>::rule_type*>& MT
     }
     // add the last block
     ++total_block;
-    pos[len-1] = 1;
+    pos[len - 1] = 1;
     //-----------------
 
 #ifdef PRINT_LOGS
@@ -203,12 +185,12 @@ void lc::blocks<lc::parser<>>(std::vector<typename lc::parser<>::rule_type*>& MT
 #endif
 
     uint64_t c_blocks = 0, last_post = 0, last_off = 0;
-    std::vector<lc::parser<>::rule_type*> BLOCKS(total_block, 0);
-    std::vector<uint64_t> POS_BLOCKS(total_block,0);
-    std::vector<lc::parser<>::rule_type*> LEVEL_BLOCKS;
+    std::vector<lc::parser<>::rule_type *> BLOCKS(total_block, 0);
+    std::vector<uint64_t> POS_BLOCKS(total_block, 0);
+    std::vector<lc::parser<>::rule_type *> LEVEL_BLOCKS;
 
-    for(size_t i = 0 ; i < len; i++){
-        if(pos[i] == 1) {
+    for (size_t i = 0; i < len; i++) {
+        if (pos[i] == 1) {
             /**
              * search for the block in the hash table
              * */
@@ -221,7 +203,7 @@ void lc::blocks<lc::parser<>>(std::vector<typename lc::parser<>::rule_type*>& MT
                 parser.hash_rules[exp] = t_block;
                 LEVEL_BLOCKS.push_back(t_block);
                 parser.n_sigma++;
-            }else{
+            } else {
                 t_block = parser.hash_rules[exp];
             }
 
@@ -229,8 +211,8 @@ void lc::blocks<lc::parser<>>(std::vector<typename lc::parser<>::rule_type*>& MT
 
             POS_BLOCKS[c_blocks++] = POS[i];
 
-            last_post = i+1;
-            last_off = POS[i]+1;
+            last_post = i + 1;
+            last_off = POS[i] + 1;
         }
 
     }
@@ -250,16 +232,16 @@ void lc::blocks<lc::parser<>>(std::vector<typename lc::parser<>::rule_type*>& MT
 #endif
 
     // if level len is 2 as we add specials simbols it can be equals so no runs and they will be assign 0 and 1 in pi
-    if(LEVEL_BLOCKS.size() > 2){
+    if (LEVEL_BLOCKS.size() > 2) {
 //    create permutation;
         std::vector<uint64_t> pi;
-        lc::permutation(LEVEL_BLOCKS.size()-2,pi);
-        for (uint64_t i = 1; i < LEVEL_BLOCKS.size() - 1 ; ++i) {
-            LEVEL_BLOCKS[i]->set_pi(2 + pi[i-1]);
+        lc::permutation(LEVEL_BLOCKS.size() - 2, pi);
+        for (uint64_t i = 1; i < LEVEL_BLOCKS.size() - 1; ++i) {
+            LEVEL_BLOCKS[i]->set_pi(2 + pi[i - 1]);
         }
     }
-    LEVEL_BLOCKS[0] -> set_pi(0);
-    LEVEL_BLOCKS[LEVEL_BLOCKS.size()-1] -> set_pi(1);
+    LEVEL_BLOCKS[0]->set_pi(0);
+    LEVEL_BLOCKS[LEVEL_BLOCKS.size() - 1]->set_pi(1);
 
 #ifdef PRINT_LOGS
     std::cout<<"PI-BLOCKS("<<BLOCKS.size()<<")"<<std::endl;
@@ -271,19 +253,20 @@ void lc::blocks<lc::parser<>>(std::vector<typename lc::parser<>::rule_type*>& MT
     POS.clear();
     MT.resize(BLOCKS.size());
     POS.resize(POS_BLOCKS.size());
-    std::copy(BLOCKS.begin(),BLOCKS.end(),MT.begin());
-    std::copy(POS_BLOCKS.begin(),POS_BLOCKS.end(),POS.begin());
+    std::copy(BLOCKS.begin(), BLOCKS.end(), MT.begin());
+    std::copy(POS_BLOCKS.begin(), POS_BLOCKS.end(), POS.begin());
 }
-template <>
-void lc::parse_text<lc::parser<>>(const char* _text, const uint64_t & _n_text, lc::parser<>& parser){
 
-    uint64_t MT_len = _n_text+2;
-    parser.text = new char [MT_len];
+template<>
+void lc::parse_text<lc::parser<>>(const char *_text, const uint64_t &_n_text, lc::parser<> &parser) {
+
+    uint64_t MT_len = _n_text + 2;
+    parser.text = new char[MT_len];
     parser.n_text = MT_len;
-    std::copy(_text,_text+_n_text,parser.text+1);
+    std::copy(_text, _text + _n_text, parser.text + 1);
 
     parser.text[0] = ZERO_SYM;
-    parser.text[MT_len-1] = ZERO_SYM;
+    parser.text[MT_len - 1] = ZERO_SYM;
     parser.text[MT_len] = 0;
 
 #ifdef PRINT_LOGS
@@ -292,12 +275,12 @@ void lc::parse_text<lc::parser<>>(const char* _text, const uint64_t & _n_text, l
         std::cout<<parser.text[i]<<" ";
     std::cout<<std::endl;
 #endif
-    std::vector<lc::parser<>::rule_type*> MT(MT_len , 0);
-    std::map<char,lc::parser<>::rule_type*> sigma;
+    std::vector<lc::parser<>::rule_type *> MT(MT_len, 0);
+    std::map<char, lc::parser<>::rule_type *> sigma;
 
-    for(size_t i = 0; i < MT_len; ++i){
-        lc::parser<>::rule_type * X = nullptr;
-        if(sigma.find(parser.text[i])== sigma.end()){
+    for (size_t i = 0; i < MT_len; ++i) {
+        lc::parser<>::rule_type *X = nullptr;
+        if (sigma.find(parser.text[i]) == sigma.end()) {
             X = new lc::parser<>::rule_type(sigma.size() + 1);
             sigma[parser.text[i]] = X;
         }
@@ -315,7 +298,7 @@ void lc::parse_text<lc::parser<>>(const char* _text, const uint64_t & _n_text, l
     parser.n_sigma = sigma.size();
 
     {
-        MT[0] ->set_pi(0);
+        MT[0]->set_pi(0);
 
         // create first permutation;
         std::vector<uint64_t> pi;
@@ -341,9 +324,9 @@ void lc::parse_text<lc::parser<>>(const char* _text, const uint64_t & _n_text, l
         std::cout<<std::endl;
 #endif
     }
-    std::vector<uint64_t> POS(MT_len,0);
+    std::vector<uint64_t> POS(MT_len, 0);
 
-    for (uint64_t i = 0; i < MT_len ; ++i) {
+    for (uint64_t i = 0; i < MT_len; ++i) {
         POS[i] = i;
     }
 
@@ -363,60 +346,64 @@ void lc::parse_text<lc::parser<>>(const char* _text, const uint64_t & _n_text, l
         std::cout<<"incremental-id:"<<parser.n_sigma<<std::endl;
         std::cout<<"incremental-pi:"<<parser.n_pi<<std::endl;
 #endif
-        runs(MT,POS,parser);
-        blocks(MT,POS,parser);
+        runs(MT, POS, parser);
+        blocks(MT, POS, parser);
         /**
          * compute blocks
         */
-    }while (MT.size() > 1);
+    } while (MT.size() > 1);
 
     parser.S = MT[0];
 
 }
-template <>
-void lc::parse_file<lc::parser<>>(const std::string &file , lc::parser<>& Parser){
-    std::fstream Ffile(file,std::ios::in | std::ios::binary);
+
+template<>
+void lc::parse_file<lc::parser<>>(const std::string &file, lc::parser<> &Parser) {
+
+    std::fstream Ffile(file, std::ios::in | std::ios::binary);
     uint64_t size_file = io::getFileSize(Ffile);
-    char * buffer_text = new char [size_file];
-    Ffile.read(buffer_text,size_file);
+    char *buffer_text = new char[size_file];
+    Ffile.read(buffer_text, size_file);
     Ffile.close();
-    lc::parse_text(buffer_text,size_file,Parser);
+    lc::parse_text(buffer_text, size_file, Parser);
     delete buffer_text;
 
 }
 
 template<>
-bool lc::check_expansion<lc::parser<>>(const uint64_t &i, const uint64_t &j, std::string &s, const lc::parser<> & parser) {
+bool
+lc::check_expansion<lc::parser<>>(const uint64_t &i, const uint64_t &j, std::string &s, const lc::parser<> &parser) {
 
-    s.resize(j-i );
-    std::copy( parser.text + i, parser.text + j, s.begin());
-    if(parser.hash_rules.find(s) == parser.hash_rules.end())
+    s.resize(j - i);
+    std::copy(parser.text + i, parser.text + j, s.begin());
+    if (parser.hash_rules.find(s) == parser.hash_rules.end())
         return false;
     return true;
 }
-template <>
-void lc::destroy<>(lc::parser<>& parser){
 
-    std::function< void (lc::parser<>::rule_type* )> f_dfs;
-    std::set<lc::parser<>::rule_type*> mark;
+template<>
+void lc::destroy<>(lc::parser<> &parser) {
 
-    f_dfs = [&f_dfs,&mark](lc::parser<>::rule_type * X) -> void{
+    std::function<void(lc::parser<>::rule_type *)> f_dfs;
+    std::set<lc::parser<>::rule_type *> mark;
+
+    f_dfs = [&f_dfs, &mark](lc::parser<>::rule_type *X) -> void {
         mark.insert(X);
 //        std::cout<<X->get_id()<<std::endl;
         switch (X->type()) {
-            case MS_SYM:{
+            case MS_SYM: {
                 break;
             }
-            case MS_RUN:{
+            case MS_RUN: {
                 auto Y = X->first();
-                if(mark.find(Y) == mark.end())
+                if (mark.find(Y) == mark.end())
                     f_dfs(X->first());
                 break;
             }
-            case MS_BLOCK:{
+            case MS_BLOCK: {
                 for (uint64_t i = 0; i < X->len(); ++i) {
                     auto Y = (*X)[i];
-                    if(mark.find(Y) == mark.end())
+                    if (mark.find(Y) == mark.end())
                         f_dfs(Y);
                 }
                 break;
@@ -427,7 +414,7 @@ void lc::destroy<>(lc::parser<>& parser){
     };
 
     f_dfs(parser.S);
-    if(parser.text != nullptr) delete parser.text;
+    if (parser.text != nullptr) delete parser.text;
 
 }
 
