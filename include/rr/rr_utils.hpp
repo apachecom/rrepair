@@ -39,6 +39,11 @@ namespace rr{
         delete cribe;
         return g_prime;
     }
+
+
+// power modulo prime
+    uint64_t modpow(uint64_t base, uint64_t exp,uint64_t prime);
+
 }
 
 

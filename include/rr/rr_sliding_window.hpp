@@ -8,7 +8,7 @@
 
 #include <cstdint>
 #include "../fingerprints/fingerprints.hpp"
-
+#include "rr_utils.hpp"
 
 namespace rr{
 

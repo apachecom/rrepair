@@ -29,17 +29,6 @@ uint64_t rr::size_window<w_kr_uc64>( w_kr_uc64& );
  * Implemetation
  *
  * */
-// power modulo prime
-uint64_t modpow(uint64_t base, uint64_t exp,uint64_t prime)
-{
-    assert(exp>0);
-    if(exp==1) return base;
-    if(exp%2==0)
-        return modpow((base*base)%prime,exp/2,prime);
-    else
-        return (base*modpow((base*base)%prime,exp/2,prime)) % prime;
-}
-
 
 
 template <>
