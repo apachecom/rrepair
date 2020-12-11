@@ -21,52 +21,6 @@ using namespace utilString;
 using namespace rr;
 using namespace std;
 
-
-//
-//static void tParseFile(benchmark::State & state)
-//{
-//    // Perform setup here
-//
-//
-//    for (auto _ : state) {
-//        // This code gets timed
-//        std::string T = util::generate_random_string(100000000);
-//        std::fstream fout("tmp_it",std::ios::out);
-//        fout.write(T.c_str(),T.length());
-//        fout.close();
-//        HashParserConfig<KRPSlindingWindow<>,KRPHashFunction<uint64_t ,std::string>> conf(10,1,10,"./tmp_it","./");
-//        conf.print();
-//        HashParser< HashParserConfig< KRPSlindingWindow<>,KRPHashFunction<uint64_t ,std::string> >> parser(conf);
-//        parser.parseFile();
-//        parser.results.print();
-//        parser.recreateFile("tmp_it",1);
-//        EXPECT_TRUE(util::compareFiles("tmp_it","tmp_it_recreated"));
-////        sleep(3);
-//
-//    }
-//
-//}
-
-auto byte32_parse = [](benchmark::State & state, const std::string& file,const std::string output_dir,uint32_t m,uint32_t w){
-    for (auto _ : state) {
-        // This code gets timed
-
-        try {
-            rr::parserUC32 parser;
-            parser.windows.bytexsymb = 4;
-            rr::init(w,parser.windows);
-            parser.mod = m;
-            rr::compress(file,parser);
-            rr::decompress(file,parser);
-            ASSERT_TRUE(io::compareFiles(file, file+".out"));
-
-        } catch (const char * str) {
-            std::cout<<str<<std::endl;
-            exit(1);
-        }
-    }
-
-};
 auto bench_mzz_parse_compression = [](benchmark::State & state, const std::string& file,const std::string output_dir,uint32_t m,uint32_t w){
     for (auto _ : state) {
         // This code gets timed
@@ -226,10 +180,6 @@ int main (int argc, char *argv[] ){
 //    std::cout<<"output_dir:"<<output_dir<<std::endl;
 
 
-//    benchmark::RegisterBenchmark("hash-parser",tParseFileSM,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
-//    benchmark::RegisterBenchmark("check-8bytes-hash-parser",byte8_parse,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
-    benchmark::RegisterBenchmark("check-32bytes-hash-parser",byte32_parse,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
-//    benchmark::RegisterBenchmark("check-64bytes-hash-parser",byte64_parse,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
     benchmark::RegisterBenchmark("check-mzz-hash-parser",mzz_parse,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
     benchmark::RegisterBenchmark("check-mzz-hash-parser-in-mem",mzz_parse_mem,file,output_dir,m,w,1e12)->Unit({benchmark::kMicrosecond});
     benchmark::RegisterBenchmark("bench-mzz-hash-parser-compression",bench_mzz_parse_compression,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});

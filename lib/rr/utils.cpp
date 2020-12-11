@@ -7,6 +7,20 @@
 #include <cassert>
 
 
+
+
+void rr::append(std::vector<uint8_t>& dest,const std::vector<uint8_t>& src, const uint32_t& n){
+    for (uint32_t i = 0; i < n ; ++i) {
+        dest.push_back(src[i]);
+    }
+}
+
+void rr::append(std::vector<uint8_t>& dest,const uint8_t* src, const uint32_t& n){
+    for (uint32_t i = 0; i < n ; ++i) {
+        dest.push_back(src[i]);
+    }
+}
+
 // power modulo prime
 uint64_t rr::modpow(uint64_t base, uint64_t exp,uint64_t prime)
 {

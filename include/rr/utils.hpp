@@ -7,10 +7,14 @@
 
 
 #include <cstdint>
+#include <vector>
 
 namespace rr{
 
 
+
+    void append(std::vector<uint8_t>& dest,const std::vector<uint8_t>& src, const uint32_t& n);
+    void append(std::vector<uint8_t>& dest,const uint8_t * src, const uint32_t& n);
 
 
 // Return the greater prime less than limit
