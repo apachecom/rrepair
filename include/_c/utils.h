@@ -36,7 +36,7 @@ uint64_t get_myint(uint8_t *a, long n, long i);
 void write_myint(uint64_t u, FILE *f);
 void get_and_write_myint(uint8_t *a, long n, long i, FILE *f);
 
-// multi segment file functions
+/* multi segment file functions */
 typedef struct multiFile {
     FILE *f;      // file currently opened
     char *base;   // basename

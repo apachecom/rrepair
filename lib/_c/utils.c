@@ -26,8 +26,8 @@ int fd_open_aux_file(const char *base, const char *ext, int flags)
     return fd;
 }
 
-// open and return an auxiliary file
-// open file named base.ext with mode mode
+/* open and return an auxiliary file
+ open file named base.ext with mode mode*/
 FILE *open_aux_file(const char *base, const char *ext, const char *mode)
 {
     char *name;
@@ -38,8 +38,8 @@ FILE *open_aux_file(const char *base, const char *ext, const char *mode)
     free(name);
     return f;
 }
-
-// open file named base.num.ext with mode mode
+/*
+ open file named base.num.ext with mode mode*/
 FILE *open_aux_file_num(const char *base, const char *ext, const int num, const char *mode)
 {
     char *name;
@@ -51,9 +51,9 @@ FILE *open_aux_file_num(const char *base, const char *ext, const int num, const 
     return f;
 }
 
-// ------ functions handling file consisting of multiple segments
+/* ------ functions handling file consisting of multiple segments
 
-// open multiple file for reading. If nsegs==0 then it is a single fle
+ open multiple file for reading. If nsegs==0 then it is a single fle*/
 mFile *mopen_aux_file(const char *base, const char *ext, int nsegs)
 {
     mFile *f = malloc(sizeof(mFile));
@@ -70,7 +70,7 @@ mFile *mopen_aux_file(const char *base, const char *ext, int nsegs)
     return f;
 }
 
-// close a multiple file
+/* close a multiple file */
 int mfclose(mFile *f) {
     FILE *aux = f->f;
     free(f->ext);
@@ -79,7 +79,7 @@ int mfclose(mFile *f) {
     return fclose(aux);
 }
 
-// function analogous to fread for a file splitted into segments
+/* function analogous to fread for a file splitted into segments */
 size_t mfread(void *vptr, size_t size, size_t nmemb, mFile *f)
 {
     // try reading from current file
@@ -106,9 +106,16 @@ size_t mfread(void *vptr, size_t size, size_t nmemb, mFile *f)
 
 
 
-// -------------------------------------
+/*
+// write write an integer to file always using IBYTES*/
+void write_myint(uint64_t u, FILE *f)
+{
+    assert(f!=NULL);
+    size_t s = fwrite(&u,IBYTES,1,f);
+    if(s!=1) die(__func__);
+}
 
-// extract an integer from a length n array containing IBYTES bytes per element
+/* extract an integer from a length n array containing IBYTES bytes per element*/
 uint64_t get_myint(uint8_t *a, long n, long i)
 {
     assert(i<n);
@@ -120,15 +127,7 @@ uint64_t get_myint(uint8_t *a, long n, long i)
     return ai;
 }
 
-// write write an integer to file always using IBYTES
-void write_myint(uint64_t u, FILE *f)
-{
-    assert(f!=NULL);
-    size_t s = fwrite(&u,IBYTES,1,f);
-    if(s!=1) die(__func__);
-}
-
-// extract an integer as in get_myint and write to file using write_myint
+/*// extract an integer as in get_myint and write to file using write_myint*/
 void get_and_write_myint(uint8_t *a, long n, long i, FILE *f)
 {
     uint64_t u = get_myint(a,n,i);
