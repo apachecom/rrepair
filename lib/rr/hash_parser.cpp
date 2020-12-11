@@ -3,6 +3,7 @@
 //
 
 #include "../../include/rr/hash_parser.hpp"
+#include "../../include/utils/io.hpp"
 #include <iostream>
 #include <vector>
 
@@ -322,6 +323,8 @@ void rr::compress<mzzParserUC64>(const std::string& file ,mzzParserUC64 & parser
     std::fstream ffiled(file+".dicc", std::ios::out|std::ios::binary);
     std::fstream ffilep(file+".parse", std::ios::out|std::ios::binary);
 
+
+    uint64_t file_size = io::getFileSize(ffile);
     uint32_t bytes = parser.windows.bytexsymb;
     // we will read byte by byte Integer
     uint8_t * c = new uint8_t [bytes];
@@ -330,8 +333,10 @@ void rr::compress<mzzParserUC64>(const std::string& file ,mzzParserUC64 & parser
     // reading file
     uint64_t wsize = rr::size_window(parser.windows);
 
-    while (!ffile.eof() && ffile.read((char*) c, bytes))
-    {   // add new element to the current phrase
+
+    uint64_t it = file_size/bytes;
+    for (uint64_t i = 0; i < it ; ++i) {
+        ffile.read((char*) c, bytes);
         append(word,c,bytes);
         // compute new hash for the window
         uint64_t hash  = rr::feed(c,parser.windows);
@@ -342,12 +347,47 @@ void rr::compress<mzzParserUC64>(const std::string& file ,mzzParserUC64 & parser
             word.clear();
         }
     }
+    delete [] c;
+    it = file_size%bytes;
+    parser.windows.bytexsymb = 1;
+    bytes = 1;
+    c = new uint8_t [bytes];
+
+    for (uint64_t i = 0; i < it ; ++i) {
+        ffile.read((char*) c, bytes);
+        append(word,c,bytes);
+        // compute new hash for the window
+        uint64_t hash  = rr::feed(c,parser.windows);
+        //partition condition
+        if (hash % parser.mod == 0 && word.size() >= wsize) {
+            rr::addWord(word,ffiled,ffilep,parser,true);
+            rr::reset(parser.windows);
+            word.clear();
+        }
+    }
+
+
+//    while (!ffile.eof() && ffile.read((char*) c, bytes))
+//    {   // add new element to the current phrase
+//        append(word,c,bytes);
+//        // compute new hash for the window
+//        uint64_t hash  = rr::feed(c,parser.windows);
+//        //partition condition
+//        if (hash % parser.mod == 0 && word.size() >= wsize) {
+//            rr::addWord(word,ffiled,ffilep,parser,true);
+//            rr::reset(parser.windows);
+//            word.clear();
+//        }
+//    }
     //add possible last phrase in the buffer "word"
     if (!word.empty()){
         rr::addWord(word,ffiled,ffilep,parser,false);
         rr::reset(parser.windows);
         word.clear();
     }
+
+
+    delete [] c;
 }
 
 template <>

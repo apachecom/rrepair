@@ -21,7 +21,7 @@ using namespace utilString;
 using namespace rr;
 using namespace std;
 
-auto bench_mzz_parse_compression = [](benchmark::State & state, const std::string& file,const std::string output_dir,uint32_t m,uint32_t w){
+auto bench_mzz_parse_compression = [](benchmark::State & state, const std::string& file,const std::string output_dir,uint32_t m,uint32_t w,uint32_t b){
     for (auto _ : state) {
         // This code gets timed
         try {
@@ -41,7 +41,7 @@ auto bench_mzz_parse_compression = [](benchmark::State & state, const std::strin
     state.counters["file-size"] = io::getFileSize(f);
     f.close();
 };
-auto bench_mzz_parse_decompression = [](benchmark::State & state, const std::string& file,const std::string output_dir,uint32_t m,uint32_t w){
+auto bench_mzz_parse_decompression = [](benchmark::State & state, const std::string& file,const std::string output_dir,uint32_t m,uint32_t w,uint32_t b){
     for (auto _ : state) {
         // This code gets timed
         try {
@@ -60,7 +60,7 @@ auto bench_mzz_parse_decompression = [](benchmark::State & state, const std::str
     state.counters["file-size"] = io::getFileSize(f);
     f.close();
 };
-auto mzz_parse = [](benchmark::State & state, const std::string& file,const std::string output_dir,uint32_t m,uint32_t w){
+auto mzz_parse = [](benchmark::State & state, const std::string& file,const std::string output_dir,uint32_t m,uint32_t w,uint32_t b){
     for (auto _ : state) {
         // This code gets timed
 
@@ -82,7 +82,7 @@ auto mzz_parse = [](benchmark::State & state, const std::string& file,const std:
 
 };
 auto bench_mzz_parse_mem_compression = [](benchmark::State & state, const std::string& file,const std::string output_dir,uint32_t m,uint32_t w,
-                                          const uint32_t &buff){
+uint32_t b,const uint32_t &buff){
 
 
     for (auto _ : state) {
@@ -108,6 +108,7 @@ auto mzz_parse_mem= [](benchmark::State & state,
         const std::string output_dir,
         const uint32_t &m,
         const uint32_t &w,
+        const uint32_t &b,
         const uint32_t &buff){
 
     for (auto _ : state) {
@@ -175,18 +176,13 @@ int main (int argc, char *argv[] ){
     std::string output_dir = argv[2];
     uint32_t m = atoi(argv[3]);
     uint32_t w = atoi(argv[4]);
+    uint32_t b = atoi(argv[5]);
 
-//    std::cout<<"file:"<<file<<std::endl;
-//    std::cout<<"output_dir:"<<output_dir<<std::endl;
-
-
-    benchmark::RegisterBenchmark("check-mzz-hash-parser",mzz_parse,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
-    benchmark::RegisterBenchmark("check-mzz-hash-parser-in-mem",mzz_parse_mem,file,output_dir,m,w,1e12)->Unit({benchmark::kMicrosecond});
-    benchmark::RegisterBenchmark("bench-mzz-hash-parser-compression",bench_mzz_parse_compression,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
-    benchmark::RegisterBenchmark("bench-mzz-hash-parser-in-mem-compression",bench_mzz_parse_mem_compression,file,output_dir,m,w,1e12)->Unit({benchmark::kMicrosecond});
-    benchmark::RegisterBenchmark("bench-mzz-hash-parser-decompression",bench_mzz_parse_decompression,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
-
-    //    benchmark::RegisterBenchmark("mzz-hash-parser",mzz_parse,file,output_dir,m,w)->Unit({benchmark::kMicrosecond});
+    benchmark::RegisterBenchmark("check-mzz1-hash-parser",mzz_parse,file,output_dir,m,w,b)->Unit({benchmark::kMicrosecond});
+    benchmark::RegisterBenchmark("check-mzz1-hash-parser-in-mem",mzz_parse_mem,file,output_dir,m,w,b,1e12)->Unit({benchmark::kMicrosecond});
+    benchmark::RegisterBenchmark("bench-mzz1-hash-parser-compression",bench_mzz_parse_compression,file,output_dir,m,w,b)->Unit({benchmark::kMicrosecond});
+    benchmark::RegisterBenchmark("bench-mzz1-hash-parser-in-mem-compression",bench_mzz_parse_mem_compression,file,output_dir,m,w,b,1e12)->Unit({benchmark::kMicrosecond});
+    benchmark::RegisterBenchmark("bench-mzz1-hash-parser-decompression",bench_mzz_parse_decompression,file,output_dir,m,w,b)->Unit({benchmark::kMicrosecond});
 
     benchmark::Initialize(&argc, argv);
     benchmark::RunSpecifiedBenchmarks();
