@@ -68,6 +68,9 @@ set(SOURCE_LIB
         include/rr/trie.hpp
         include/rr/sliding_window.hpp
         include/rr/hash_parser.hpp
+        include/rr/rec_compresors.hpp
+        include/rr/confs.hpp
+        include/rr/compresors.hpp
 ##///////////////////LC///////////////////////////////
 #        include/lc/parser.hpp
 #        include/lc/symbols.hpp
@@ -121,6 +124,8 @@ set(SOURCE_LIB
         lib/rr/trie.cpp
         lib/rr/sliding_window.cpp
         lib/rr/hash_parser.cpp
+        lib/rr/rec_compresors.cpp
+        lib/rr/confs.cpp
 ##///////////////////LC///////////////////////////////
         lib/lc/parser.cpp
         lib/lc/symbols.cpp
@@ -214,7 +219,7 @@ cxx_executable_with_flags(t_c_utils "" "${LIBS};benchmark" test/rr/c_utils.cpp $
 cxx_executable_with_flags(t_utils "" "${LIBS};benchmark" test/rr/utils.cpp ${SOURCE_LIB})
 cxx_executable_with_flags(t_trie "" "${LIBS};benchmark" test/rr/trie.cpp ${SOURCE_LIB})
 cxx_executable_with_flags(t_fingerprints "" "${LIBS};benchmark" test/rr/fingerprints.cpp ${SOURCE_LIB})
-#cxx_executable_with_flags(t_hash_parser "" "${LIBS};benchmark" test/t_hash_parser.cpp ${SOURCE_LIB})
+cxx_executable_with_flags(t_rr_sw "" "${LIBS};sdsl;benchmark" test/rr/sliding_window.cpp ${SOURCE_LIB})
 
 cxx_executable_with_flags(t_lyndon "" "${LIBS};sdsl;benchmark" test/lyndon/build.cpp ${SOURCE_LIB})
 

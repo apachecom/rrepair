@@ -6,7 +6,6 @@
 
 
 using namespace rr;
-
 /*
  * 32 bits
  * */
@@ -119,12 +118,27 @@ uint64_t rr::feed<unsigned char,rr::KR_window>(const unsigned char& s, KR_window
     // compute destination of symbol's bytes inside window[]
     int k = (window.tot_symb++ % window.wsize)*window.bytexsymb;
     assert(k+window.bytexsymb-1<window.wbsize); // make sure we are inside window[]
-//    for(int i=0;i<window.bytexsymb;i++) {
+    for(int i=0;i<window.bytexsymb;i++) {
         // complex expression to avoid negative numbers
         window.hash += (window.prime - (window.window[k]*window.asize_pot) % window.prime); // remove window[k] contribution
         window.hash = (window.asize*window.hash + s) % window.prime;      //  add char i
         window.window[k++] = s;
-//    }
+    }
+    return window.hash;
+}
+
+template <>
+uint64_t rr::feed<uint8_t ,rr::KR_window>(const uint8_t * s, KR_window& window ){
+
+    // compute destination of symbol's bytes inside window[]
+    int k = (window.tot_symb++ % window.wsize)*window.bytexsymb;
+    assert(k+window.bytexsymb-1<window.wbsize); // make sure we are inside window[]
+    for(int i=0;i<window.bytexsymb;i++) {
+    // complex expression to avoid negative numbers
+        window.hash += (window.prime - (window.window[k]*window.asize_pot) % window.prime); // remove window[k] contribution
+        window.hash = (window.asize*window.hash + s[i]) % window.prime;      //  add char i
+        window.window[k++] = s[i];
+    }
     return window.hash;
 }
 template <>

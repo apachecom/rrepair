@@ -19,29 +19,17 @@ namespace rr {
 
     template <typename hash_type,typename c_type,typename kwindow> class hParser;
 
-//    typedef fingerprints::kr_hash<char,uint64_t> kr_hash_c64;
-//    typedef fingerprints::kr_hash<unsigned char,uint64_t> kr_hash_uc64;
-//    typedef fingerprints::kr_hash<uint32_t ,uint64_t> kr_hash_ui64;
-
-//    typedef rr::krb_fingerprint_windows<unsigned char,uint64_t,kr_hash_uc64,1999999973> w_kr_hash_uc64 ;
-
-    // parser para unsigned char y hash 64 bits
-    typedef hParser<uint64_t,unsigned char, rr::w_kr_uc64> parserUC64;
+    typedef hParser<uint64_t,unsigned char, rr::KR_window> parserUC32;
     typedef hParser<uint64_t,unsigned char, rr::w_kr_uc64> parserUC64;
     typedef hParser<uint64_t,unsigned char, rr::KR_window> mzzParserUC64;
 
 
     template <typename c_type,typename P >
     void addWord(std::basic_string<c_type>&, std::fstream& dFile, std::fstream& pFile, P&, bool constrain);
-
     template <typename P>
     void compress(const std::string& ,P&);
-
-
     template <typename P>
     void compress_in_mem(const std::string& ,P&,const uint32_t &);
-
-
     template <typename P>
     void decompress(const std::string&,P&);
 

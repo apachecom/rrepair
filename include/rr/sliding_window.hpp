@@ -23,6 +23,9 @@ namespace rr{
     template <typename c_type, typename W>
     uint64_t feed(const c_type&, W& );
 
+    template <typename c_type, typename W>
+    uint64_t feed(const c_type*, W& );
+
     template <typename W>
     void reset( W& );
 
@@ -92,7 +95,22 @@ namespace rr{
         uint64_t tot_symb;    // char added so far, equals symbols*bxs
         uint64_t asize_pot;   // asize^(wsize-1) mod prime
         fingerprints::MzzHash fhash;
+    };
 
+
+//    -----------------------------------------------------------------
+//// class to maintain a window in a string and its KR fingerprint
+//    struct KR_window {
+//        int wsize;            // number of symbols in window
+//        int bytexsymb;        // number of bytes per symbol
+//        int wbsize;           // size of window in bytes
+//        uint8_t *window;
+//        int asize;            // alphabet size
+//        const uint64_t prime = 1999999973; // slightly less that 2^31
+//        uint64_t hash;        // hash of the symbols currently in window
+//        uint64_t tot_symb;    // char added so far, equals symbols*bxs
+//        uint64_t asize_pot;   // asize^(wsize-1) mod prime
+//
 //        KR_window(int w, int bxs): wsize(w), bytexsymb(bxs) {
 //            wbsize = wsize*bytexsymb;    // size of window in bytes
 //            asize = 256;                 // alphabet size for bytes
@@ -138,8 +156,12 @@ namespace rr{
 //        ~KR_window() {
 //            delete[] window;
 //        }
+//
+//    };
 
-    };
+
+
+
 
 
 
@@ -149,6 +171,8 @@ namespace rr{
     void init<KR_window>( const uint32_t & size,KR_window& );
     template <>
     uint64_t  feed<unsigned char,KR_window>( const unsigned char&, KR_window& );
+    template <>
+    uint64_t  feed<uint8_t ,KR_window>( const uint8_t *, KR_window& );
     template <>
     void reset<KR_window>(  KR_window& );
     template <>

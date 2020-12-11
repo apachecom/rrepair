@@ -54,6 +54,7 @@ namespace big_repair{
 
             KRPSlindingWindow(const int& ws ) : wsize(ws){
 
+
                 asize = (1UL << 32)-1  ;//256;
                 asize_pot = 1;
                 prime = 1999999973;
