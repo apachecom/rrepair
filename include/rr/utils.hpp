@@ -8,7 +8,13 @@
 
 #include <cstdint>
 #include <vector>
-
+#include <string>
+#include <fstream>
+#include <iostream>
+#include <unordered_map>
+#include <functional>
+#include "macros.hpp"
+#include <cassert>
 namespace rr{
 
 
@@ -16,6 +22,7 @@ namespace rr{
     void append(std::vector<uint8_t>& dest,const std::vector<uint8_t>& src, const uint32_t& n);
     void append(std::vector<uint8_t>& dest,const uint8_t * src, const uint32_t& n);
 
+    std::pair<uint64_t,uint64_t> prepareDiccFileForRP(const std::string &dFile, const std::string &dout, int bytes, uint64_t max_value);
 
 // Return the greater prime less than limit
     template<typename uint_t = uint64_t >
@@ -48,6 +55,9 @@ namespace rr{
 // power modulo prime
     uint64_t modpow(uint64_t base, uint64_t exp,uint64_t prime);
 
+
+
+    uint64_t decompress(const std::string& file);
 }
 
 

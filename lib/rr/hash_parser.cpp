@@ -3,177 +3,13 @@
 //
 
 #include "../../include/rr/hash_parser.hpp"
-#include "../../include/utils/io.hpp"
+
 #include <iostream>
 #include <vector>
 
 
 using namespace fingerprints;
 using namespace rr;
-//
-//
-//template <>
-//void rr::addWord(std::basic_string<unsigned char>& word, std::fstream& dFile, std::fstream& pFile, parserUC64& parser, bool constrain){
-//
-//    unsigned char zero = 0;
-//    word.push_back(zero);
-//    uint len = word.size();
-//    //check the word is big enough
-//    if (len < rr::size_window(parser.windows) && constrain){
-//        std::cout<<"windows-size:"<<rr::size_window(parser.windows)<<std::endl;
-//        std::cout<<"word-len:"<<len<<std::endl;
-//        throw "windows to small";
-//    }
-//
-//    const char* ptr = (const char*) word.data();
-//    // compute the hash of the string
-//    uint64_t hash = parser.windows.fhash.hash(word);
-//    //search the has in the dicc
-//#ifdef CHECK_COLLISION
-//    auto it_cc = parser.check_collision.find(hash);
-//    if(it_cc == parser.check_collision.end()){
-//        parser.check_collision[hash] = word;
-//    }else{
-//        if(it_cc->second != word)
-//            throw "COLLISION FOUND";
-//    }
-//#endif
-//    auto it = parser.hashToIds.find(hash);
-//    if(it == parser.hashToIds.end()){
-//        //new phrase...
-//        dFile.write(ptr,word.size()*sizeof(unsigned char));
-//        parser.hashToIds[hash] = ++(parser.diccSize);
-//        pFile.write((const char* ) & parser.diccSize, sizeof(uint64_t));
-//    }else{
-//        // already existing phrase...
-//        uint64_t p = it->second;
-//        pFile.write((const char* ) & p, sizeof(uint64_t));
-//    }
-//    word.clear();
-//}
-//
-//template <>
-//void rr::compress<parserUC64>(const std::string& file ,parserUC64 & parser){
-//
-//    std::fstream ffile(file, std::ios::in);
-//    if (!ffile.is_open()) {
-//        std::cout << "Error opening the file: " << file << std::endl;
-//        throw "Error opening the file: "+ file ;
-//    }
-//    std::fstream ffiled(file+".dicc", std::ios::out|std::ios::binary);
-//    std::fstream ffilep(file+".parse", std::ios::out|std::ios::binary);
-//    // we will read byte by byte Integer
-//    unsigned char c = 0;
-//    //current phrase
-//    std::basic_string<unsigned char> word;
-//    // reading file
-//    uint64_t wsize = rr::size_window(parser.windows);
-//    while (!ffile.eof() && ffile.read((char*) &c, 1))
-//    {   // add new element to the current phrase
-//        word.push_back(c);
-//        // compute new hash for the window
-//        uint64_t hash  = rr::feed(c,parser.windows);
-//        //partition condition
-//        if (hash % parser.mod == 0 && word.size() >= wsize) {
-//            rr::addWord(word,ffiled,ffilep,parser,true);
-//            rr::reset(parser.windows);
-//            word.clear();
-//        }
-//    }
-//    //add possible last phrase in the buffer "word"
-//    if (!word.empty()){
-//        rr::addWord(word,ffiled,ffilep,parser,false);
-//        rr::reset(parser.windows);
-//        word.clear();
-//    }
-//}
-//
-//template <>
-//void rr::decompress<parserUC64>(const std::string& file,parserUC64 & parser){
-//
-//    std::fstream ffiled(file+".dicc", std::ios::in|std::ios::binary);
-//    std::fstream ffilep(file+".parse", std::ios::in |std::ios::binary);
-//    std::fstream ofile(file+".out", std::ios::out |std::ios::binary);
-//
-//    unsigned char ch = 0;
-//    std::unordered_map<uint64_t ,std::basic_string<unsigned char>> dicc;
-//    uint64_t cont = 1;
-//    while(!ffiled.eof() && ffiled.read((char*)&ch,1)){
-//        if(ch == 0){
-//#ifdef DEBUG_PRINT
-//            std::cout<<":"<<cont<<std::endl;
-//#endif
-//            ++cont;
-//        }else{
-//            dicc[cont].push_back(ch);
-//#ifdef DEBUG_PRINT
-//            std::cout<<ch<<",";
-//#endif
-//        }
-//    }
-//#ifdef DEBUG_PRINT
-//    std::cout<<"sequence:"<<std::endl;
-//#endif
-//    uint64_t p = 0;
-//    while(!ffilep.eof() && ffilep.read((char*)&p,sizeof(uint64_t))) {
-//#ifdef DEBUG_PRINT
-//        std::cout<<ch<<std::endl;
-//#endif
-//        auto it = dicc.find(p);
-//        if (it == dicc.end()) {
-//            std::cout<<"PHRASE DID NOT FOUND IN THE DICC "<<ch<<std::endl;
-//            throw "PHRASE DID NOT FOUND IN THE DICC ";
-//
-//        }
-//        for (auto c:it->second)
-//            ofile.write((char *) &c, 1);
-//    }
-//
-//
-//}
-
-
-template <>
-void rr::addWord(std::basic_string<unsigned char>& word, std::fstream& dFile, std::fstream& pFile, mzzParserUC64& parser,bool constrain){
-
-    unsigned char zero = 0;
-    word.push_back(zero);
-    uint len = word.size();
-    //check the word is big enough
-    if (len < rr::size_window(parser.windows) && constrain){
-        std::cout<<"windows-size:"<<rr::size_window(parser.windows)<<std::endl;
-        std::cout<<"word-len:"<<len<<std::endl;
-        throw "windows to small";
-    }
-
-    const char* ptr = (const char*) word.data();
-    // compute the hash of the string
-    uint64_t hash = parser.windows.fhash.hash(word);
-    //search the has in the dicc
-#ifdef CHECK_COLLISION
-    auto it_cc = parser.check_collision.find(hash);
-    if(it_cc == parser.check_collision.end()){
-        parser.check_collision[hash] = word;
-    }else{
-        if(it_cc->second != word)
-            throw "COLLISION FOUND";
-    }
-#endif
-    auto it = parser.hashToIds.find(hash);
-    if(it == parser.hashToIds.end()){
-        //new phrase...
-        dFile.write(ptr,word.size()*sizeof(unsigned char));
-        parser.hashToIds[hash] = ++(parser.diccSize);
-        pFile.write((const char* ) & parser.diccSize, sizeof(uint64_t));
-    }else{
-        // already existing phrase...
-        uint64_t p = it->second;
-        pFile.write((const char* ) & p, sizeof(uint64_t));
-    }
-    word.clear();
-}
-
-
 
 template <>
 void rr::addWord(std::vector<uint8_t>& word, std::fstream& dFile, std::fstream& pFile, mzzParserUC64& parser,bool constrain){
@@ -203,20 +39,38 @@ void rr::addWord(std::vector<uint8_t>& word, std::fstream& dFile, std::fstream& 
 #endif
     auto it = parser.hashToIds.find(hash);
     if(it == parser.hashToIds.end()){
+        ++parser.results._dicc_len;
         //new phrase...
+
+#ifdef RR_DEBUG_PRINT
+
+        std::cout<<"dicc["<<parser.results._dicc_len<<"]:";
+        for (const auto &item : word)
+            std::cout<<item<<" ";
+        std::cout<<std::endl;
+#endif
+
         dFile.write(ptr,word.size()*sizeof(unsigned char));
         parser.hashToIds[hash] = ++(parser.diccSize);
-        pFile.write((const char* ) & parser.diccSize, sizeof(uint64_t));
+        uint_t_write id_phrase = parser.diccSize;
+        pFile.write((const char* ) & id_phrase, sizeof(uint_t_write));
     }else{
         // already existing phrase...
-        uint64_t p = it->second;
-        pFile.write((const char* ) & p, sizeof(uint64_t));
+        uint_t_write id_phrase = it->second;
+
+
+#ifdef RR_DEBUG_PRINT
+
+        std::cout<<"parse["<<parser.results._seq_len+1<<"]:"<<id_phrase<<std::endl;
+
+#endif
+
+        pFile.write((const char* ) & id_phrase, sizeof(uint_t_write));
     }
+
+    parser.results._seq_len++;
     word.clear();
 }
-
-
-
 
 template <>
 void rr::compress_in_mem<mzzParserUC64>(const std::string& file ,mzzParserUC64 & parser, const uint32_t &buffer_size){
@@ -338,10 +192,20 @@ void rr::compress<mzzParserUC64>(const std::string& file ,mzzParserUC64 & parser
     for (uint64_t i = 0; i < it ; ++i) {
         ffile.read((char*) c, bytes);
         append(word,c,bytes);
+
+        uint64_t * ptr = new uint64_t; *ptr = 0;
+        uint8_t * tmp  = (uint8_t*)ptr ;
+        for (int j = 0; j < bytes ; ++j) tmp[j] = c[j];
+        if(*ptr > parser.results._max_alph_val)
+            parser.results._max_alph_val = *ptr;
+
+        delete ptr;
+
         // compute new hash for the window
         uint64_t hash  = rr::feed(c,parser.windows);
         //partition condition
         if (hash % parser.mod == 0 && word.size() >= wsize) {
+            ++parser.results._seq_len;
             rr::addWord(word,ffiled,ffilep,parser,true);
             rr::reset(parser.windows);
             word.clear();
@@ -360,6 +224,7 @@ void rr::compress<mzzParserUC64>(const std::string& file ,mzzParserUC64 & parser
         uint64_t hash  = rr::feed(c,parser.windows);
         //partition condition
         if (hash % parser.mod == 0 && word.size() >= wsize) {
+            ++parser.results._seq_len;
             rr::addWord(word,ffiled,ffilep,parser,true);
             rr::reset(parser.windows);
             word.clear();
@@ -388,6 +253,11 @@ void rr::compress<mzzParserUC64>(const std::string& file ,mzzParserUC64 & parser
 
 
     delete [] c;
+
+#ifdef RR_DEBUG_PRINT
+    std::cout<<"hash-parser:_max_alph_val:"<<parser.results._max_alph_val<<std::endl;
+#endif
+
 }
 
 template <>

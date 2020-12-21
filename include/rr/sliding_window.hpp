@@ -67,6 +67,26 @@ namespace rr{
         uint64_t tot_symb;    // char added so far, equals symbols*bxs
         uint64_t asize_pot;   // asize^(wsize-1) mod prime
         fingerprints::MzzHash fhash;
+
+        KR_window& operator = (const KR_window& W){
+                wsize = W.wsize;
+                bytexsymb = W.bytexsymb;
+                hash = W.hash;
+                wbsize = W.wbsize;
+                window = new uint8_t[wbsize];
+                for (int i = 0; i < wbsize ; ++i) {
+                    window[i] = W.window[i];
+                }
+                asize = W.asize;
+                hash = W.hash;
+                tot_symb = W.tot_symb;
+                asize_pot = W.asize_pot;
+                fhash = W.fhash;
+
+                return *this;
+        }
+
+
     };
 
 

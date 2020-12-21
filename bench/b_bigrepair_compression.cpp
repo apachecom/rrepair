@@ -7,7 +7,6 @@
 #include "../DummyPartition.h"
 #include "../DummyRepairCompressor.h"
 #include "../utils.h"
-#include "../include/utils/CLogger.h"
 
 
 
@@ -16,19 +15,6 @@
 #include <sys/time.h>
 
 using namespace std;
-
-uint32_t mem_usage(){
-
-    rusage* str_musage;
-    
-    if( getrusage(RUSAGE_SELF,str_musage) == 0){
-
-        return str_musage->ru_maxrss;
-
-    }else{
-        std::cout<<"Error memory usage"<<std::endl;
-    }
-}
 
 
 auto b_compress  = [](benchmark::State &state,const std::string& file)
@@ -42,9 +28,6 @@ auto b_compress  = [](benchmark::State &state,const std::string& file)
     DummyRepairCompressor C(myrepair_exe);
     BigRRePair brr;
 
-
-
-    uint32_t start_mem = mem_usage();
     size_t G = 0;
     for (auto _ : state)
     {
@@ -54,8 +37,6 @@ auto b_compress  = [](benchmark::State &state,const std::string& file)
          * */
           G = brr.rrpair(file,C,P);
     }
-
-    uint32_t end_mem = mem_usage();
 
     state.counters["memory"] = end_mem - start_mem;
     state.counters["G"] = G;
@@ -73,23 +54,20 @@ auto b_decompress  = [](benchmark::State &state,const std::string& file)
     DummyRepairCompressor C(myrepair_exe);
     BigRRePair brr;
 
-
-    uint32_t start_mem = mem_usage();
     size_t G = 0;
+    uint64_t t = 0;
     for (auto _ : state)
     {
         /*
          * This code gets timed
          *
          * */
+
           G = brr.decompress(file);
-          if(G ==0 )
+          if(G == 0 )
             sleep(4);
     }
 
-    uint32_t end_mem = mem_usage();
-
-    state.counters["memory"] = end_mem - start_mem;
     state.counters["G"] = G;
 };
 
@@ -104,31 +82,29 @@ int main (int argc, char *argv[] ){
 */
 
      
-    benchmark::RegisterBenchmark("compress chr19x50"  ,b_compress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/chr19/chr19x50.fa.out")->Unit({benchmark::kMicrosecond});
-    benchmark::RegisterBenchmark("compress chr19x100" ,b_compress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/chr19/chr19x100.fa.out")->Unit({benchmark::kMicrosecond});
-    benchmark::RegisterBenchmark("compress chr19x250" ,b_compress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/chr19/chr19x250.fa.out")->Unit({benchmark::kMicrosecond});
-    benchmark::RegisterBenchmark("compress chr19x500" ,b_compress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/chr19/chr19x500.fa.out")->Unit({benchmark::kMicrosecond});
-    benchmark::RegisterBenchmark("compress chr19x1000",b_compress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/chr19/chr19x1000.fa.out")->Unit({benchmark::kMicrosecond});
-    benchmark::RegisterBenchmark("compress salx815"   ,b_compress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/sal/salx815.fa.out")->Unit({benchmark::kMicrosecond});
-    benchmark::RegisterBenchmark("compress salx2073"  ,b_compress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/sal/salx2073.fa.out")->Unit({benchmark::kMicrosecond});
-    /*
-    benchmark::RegisterBenchmark("compress salx4570"  ,b_compress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/sal/salx4570.fa.out")->Unit({benchmark::kMicrosecond});
-    benchmark::RegisterBenchmark("compress salx11264" ,b_compress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/sal/salx11264.fa.out")->Unit({benchmark::kMicrosecond});
-    */  
-    
-    benchmark::RegisterBenchmark("decompress chr19x50"  ,b_decompress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/chr19/chr19x50.fa.out")->Unit({benchmark::kMicrosecond});
-    benchmark::RegisterBenchmark("decompress chr19x100" ,b_decompress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/chr19/chr19x100.fa.out")->Unit({benchmark::kMicrosecond});
-    benchmark::RegisterBenchmark("decompress chr19x250" ,b_decompress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/chr19/chr19x250.fa.out")->Unit({benchmark::kMicrosecond});
-    benchmark::RegisterBenchmark("decompress chr19x500" ,b_decompress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/chr19/chr19x500.fa.out")->Unit({benchmark::kMicrosecond});
-    benchmark::RegisterBenchmark("decompress chr19x1000",b_decompress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/chr19/chr19x1000.fa.out")->Unit({benchmark::kMicrosecond});
-    
-    benchmark::RegisterBenchmark("decompress salx815"   ,b_decompress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/sal/salx815.fa.out")->Unit({benchmark::kMicrosecond});
-    benchmark::RegisterBenchmark("decompress salx2073"  ,b_decompress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/sal/salx2073.fa.out")->Unit({benchmark::kMicrosecond});
-    /*benchmark::RegisterBenchmark("decompress salx4570"  ,b_decompress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/sal/salx4570.fa.out")->Unit({benchmark::kMicrosecond});
-    benchmark::RegisterBenchmark("decompress salx11264" ,b_decompress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/sal/salx11264.fa.out")->Unit({benchmark::kMicrosecond});
-    */    
+//    benchmark::RegisterBenchmark("compress chr19x50"  ,b_compress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/chr19/chr19x50.fa.out")->Unit({benchmark::kMicrosecond});
+//    benchmark::RegisterBenchmark("compress chr19x100" ,b_compress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/chr19/chr19x100.fa.out")->Unit({benchmark::kMicrosecond});
+//    benchmark::RegisterBenchmark("compress chr19x250" ,b_compress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/chr19/chr19x250.fa.out")->Unit({benchmark::kMicrosecond});
+//    benchmark::RegisterBenchmark("compress chr19x500" ,b_compress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/chr19/chr19x500.fa.out")->Unit({benchmark::kMicrosecond});
+//    benchmark::RegisterBenchmark("compress chr19x1000",b_compress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/chr19/chr19x1000.fa.out")->Unit({benchmark::kMicrosecond});
+//    benchmark::RegisterBenchmark("compress salx815"   ,b_compress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/sal/salx815.fa.out")->Unit({benchmark::kMicrosecond});
+//    benchmark::RegisterBenchmark("compress salx2073"  ,b_compress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/sal/salx2073.fa.out")->Unit({benchmark::kMicrosecond});
+//    benchmark::RegisterBenchmark("compress salx4570"  ,b_compress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/sal/salx4570.fa.out")->Unit({benchmark::kMicrosecond});
+//    benchmark::RegisterBenchmark("compress salx11264" ,b_compress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/sal/salx11264.fa.out")->Unit({benchmark::kMicrosecond});
+//
+//    benchmark::RegisterBenchmark("decompress chr19x50"  ,b_decompress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/chr19/chr19x50.fa.out")->Unit({benchmark::kMicrosecond});
+//    benchmark::RegisterBenchmark("decompress chr19x100" ,b_decompress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/chr19/chr19x100.fa.out")->Unit({benchmark::kMicrosecond});
+//    benchmark::RegisterBenchmark("decompress chr19x250" ,b_decompress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/chr19/chr19x250.fa.out")->Unit({benchmark::kMicrosecond});
+//    benchmark::RegisterBenchmark("decompress chr19x500" ,b_decompress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/chr19/chr19x500.fa.out")->Unit({benchmark::kMicrosecond});
+//    benchmark::RegisterBenchmark("decompress chr19x1000",b_decompress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/chr19/chr19x1000.fa.out")->Unit({benchmark::kMicrosecond});
+//
+//    benchmark::RegisterBenchmark("decompress salx815"   ,b_decompress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/sal/salx815.fa.out")->Unit({benchmark::kMicrosecond});
+//    benchmark::RegisterBenchmark("decompress salx2073"  ,b_decompress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/sal/salx2073.fa.out")->Unit({benchmark::kMicrosecond});
+//    benchmark::RegisterBenchmark("decompress salx4570"  ,b_decompress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/sal/salx4570.fa.out")->Unit({benchmark::kMicrosecond});
+//    benchmark::RegisterBenchmark("decompress salx11264" ,b_decompress,"/media/alejandro/DATA/phd/pasantia/MANZZINI/sal/salx11264.fa.out")->Unit({benchmark::kMicrosecond});
+//
 
-//    std::string collection = "../../repetitive collections/artificial/fib41";//argv[1];
+    //std::string collection = "../../repetitive collections/artificial/fib41";//argv[1];
     //std::string collection = argv[1];
 
     /**

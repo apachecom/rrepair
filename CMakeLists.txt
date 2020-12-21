@@ -58,9 +58,24 @@ include(ConfigGBench)
 include_directories(~/include)
 link_directories(~/lib)
 
+set(EXTERNAL_REPAIR
+
+        external/repair/repair.h
+        external/repair/repair.c
+        external/repair/array.h
+        external/repair/array.c
+        external/repair/basics.h
+        external/repair/basics.c
+        external/repair/hash.h
+        external/repair/hash.c
+        external/repair/records.h
+        external/repair/records.c
+        external/repair/heap.h
+        external/repair/heap.c
+
+        )
+
 set(SOURCE_LIB
-
-
 #///////////////////C-UTILS///////////////////////////////
 #        include/_c/utils.h
 #///////////////////RRepair///////////////////////////////
@@ -126,6 +141,7 @@ set(SOURCE_LIB
         lib/rr/hash_parser.cpp
         lib/rr/rec_compresors.cpp
         lib/rr/confs.cpp
+        lib/rr/compresors.cpp
 ##///////////////////LC///////////////////////////////
         lib/lc/parser.cpp
         lib/lc/symbols.cpp
@@ -220,9 +236,8 @@ cxx_executable_with_flags(t_utils "" "${LIBS};benchmark" test/rr/utils.cpp ${SOU
 cxx_executable_with_flags(t_trie "" "${LIBS};benchmark" test/rr/trie.cpp ${SOURCE_LIB})
 cxx_executable_with_flags(t_fingerprints "" "${LIBS};benchmark" test/rr/fingerprints.cpp ${SOURCE_LIB})
 cxx_executable_with_flags(t_rr_sw "" "${LIBS};sdsl;benchmark" test/rr/sliding_window.cpp ${SOURCE_LIB})
+cxx_executable_with_flags(t_rr_rec_repair "" "${LIBS};sdsl;benchmark" test/rr/rec_repair.cpp ${SOURCE_LIB} ${EXTERNAL_REPAIR})
 
 cxx_executable_with_flags(t_lyndon "" "${LIBS};sdsl;benchmark" test/lyndon/build.cpp ${SOURCE_LIB})
-
-
 cxx_executable_with_flags(t_lc_parser "" "${LIBS};sdsl;benchmark" test/lc/parser.cpp ${SOURCE_LIB})
 
