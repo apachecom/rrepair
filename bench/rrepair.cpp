@@ -11,7 +11,9 @@
 #include "../RePairRecursiveConfig.h"
 #include "../RePairRecursive.h"
 #include "../SlidingWindow.h"
+#include "../mem_monitor/mem_monitor.hpp"
 
+#define MEM_MONITOR
 #define COMPRESSOR_BIN_DIR "../external/repair/repair"
 
 using namespace big_repair;
@@ -58,9 +60,13 @@ auto b_compress  = [](benchmark::State &state,const Params& params)
 {
 
 
-    // Perform setup here
-    uint64_t G = 0;
 
+    // Perform setup here
+#ifdef MEM_MONITOR
+    std::string mem_out = params.filename + "-rec-repair-compression.csv";
+    mem_monitor mm(mem_out);
+    mm.event("compression");
+#endif
     for (auto _ : state) {
 
 
@@ -88,6 +94,12 @@ auto b_decompress  = [](benchmark::State &state,const Params& params)
 
     // Perform setup here
     uint32_t size = 0;
+#ifdef MEM_MONITOR
+    std::string mem_out = params.filename + "-rec-repair-decompression.csv";
+    mem_monitor mm(mem_out);
+    mm.event("decompression");
+#endif
+
     for (auto _ : state) {
         size = util::decompress(params.filename);
     }

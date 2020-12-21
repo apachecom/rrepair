@@ -77,6 +77,7 @@ set(SOURCE_FILES
         RePairRecursive.cpp RePairRecursive.h
         RePairRecursiveConfig.cpp RePairRecursiveConfig.h
         DummyRePair.cpp DummyRePair.h RepairUtils.cpp
+        mem_monitor/mem_monitor.hpp
         )
 
 
