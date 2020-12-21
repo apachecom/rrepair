@@ -10,7 +10,7 @@
 using namespace std;
 
 //string filename = "../test_text";
-string filename = "/media/alejandro/DATA1/phd/pasantia/repetitiveCollections/reals/influenza";
+string filename = "/home/via56/Documentos/doc/collections/artificial/fib41";
 
 static void test_recursive_partition_scheme(benchmark::State & state)
 {

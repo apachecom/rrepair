@@ -59,6 +59,8 @@ auto b_compress  = [](benchmark::State &state,const Params& params)
 
 
     // Perform setup here
+    uint64_t G = 0;
+
     for (auto _ : state) {
 
 
@@ -75,11 +77,10 @@ auto b_compress  = [](benchmark::State &state,const Params& params)
                 DummyRepair,
                 HashParser< HashParserConfig< KRPSlindingWindow<>, KRPHashFunction< uint64_t ,std::string > > >
         >> brepair(rrConf);
-
         brepair.apply();
 
     }
-
+    state.counters["R-RePair-grammar-size"] = 0;
 };
 
 auto b_decompress  = [](benchmark::State &state,const Params& params)
@@ -99,6 +100,7 @@ int main (int argc, char *argv[] ){
 
 
     Params params;
+
 
     try {
 

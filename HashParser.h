@@ -11,6 +11,7 @@
 #include <vector>
 #include <map>
 #include <set>
+#include <unordered_map>
 
 //#include <sdsl/int_vector.hpp>
 
@@ -66,7 +67,7 @@ namespace big_repair{
 #else
         std::set<hash_type> coll_map;
 #endif
-        std::map<uint32_t, hash_type> rank_hash;
+        std::unordered_map<hash_type,uint32_t> rank_hash;
         std::vector<uint32_t> compressed_seq;
 
 #ifdef DEBUG_PRINT
@@ -77,6 +78,10 @@ namespace big_repair{
     public:
 
         HashParser() {
+#ifdef CHECK_COLLISION
+            std::cout<<"CHECKING COLLISIONS"<<std::endl;
+#endif
+
             config = nullptr;
 
         }
@@ -308,7 +313,7 @@ namespace big_repair{
             std::fstream ofile(s+"_recreated", std::ios::out |std::ios::binary);
 
             uint32_t ch = 0;
-            std::map<uint32_t,std::vector<uint32_t>> dicc;
+            std::unordered_map<uint32_t,std::vector<uint32_t>> dicc;
             uint32_t cont = 1;
             while(!ffiled.eof() && ffiled.read((char*)&ch,sizeof(uint32_t))){
                 if(ch == 0){
