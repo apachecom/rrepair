@@ -107,6 +107,7 @@ cxx_executable_with_flags(t_repair_recursive "" "${LIBS};benchmark" test/t_repai
 
 
 cxx_executable_with_flags(rrepair "" "${LIBS};benchmark" bench/rrepair.cpp ${SOURCE_FILES})
+cxx_executable_with_flags(r_rrepair "" "${LIBS};benchmark" bench/r_rrepair.cpp ${SOURCE_FILES})
 
 #cxx_executable_with_flags(b_bigrepair_compression "" "${LIBS};benchmark;sdsl" bench/b_bigrepair_compression.cpp ${SOURCE_FILES})
 #cxx_executable_with_flags(b_stats "" "${LIBS};benchmark;sdsl" bench/b_stats.cpp ${SOURCE_FILES})

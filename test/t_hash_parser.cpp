@@ -9,6 +9,7 @@
 #include "../HashParser.h"
 #include "../HashParserConfig.h"
 #include "../RepairUtils.h"
+#include "../randomPermutationParser.hpp"
 
 using namespace big_repair;
 using namespace std;
@@ -43,6 +44,25 @@ using namespace std;
 //
 //}
 //
+
+
+static void tParserPi(benchmark::State & state){
+    // Perform setup here
+    for (auto _ : state) {
+        // This code gets timed
+        std::string T = util::generate_random_string(100000);
+        std::fstream fout("tmp",std::ios::out);
+        fout.write(T.c_str(),T.length());
+        fout.close();
+
+        RandomPermutationParser parser;
+        parser.parser("tmp",256,1);
+        parser.recreateFile("tmp",1);
+        EXPECT_TRUE(util::compareFiles("tmp","tmp_recreated"));
+    }
+
+
+    }
 
 static void tParseFileSM(benchmark::State & state)
 {
@@ -112,7 +132,7 @@ static void firstTest(benchmark::State & state)
 }
 // Register the function as a benchmark
 BENCHMARK( firstTest)->Unit(benchmark::TimeUnit::kMicrosecond);
-//BENCHMARK( tParseFile)->Unit(benchmark::TimeUnit::kMicrosecond);
+BENCHMARK( tParserPi)->Unit(benchmark::TimeUnit::kMicrosecond);
 BENCHMARK( tParseFileSM)->Unit(benchmark::TimeUnit::kMicrosecond);
 //BENCHMARK( tPrepareForRP)->Unit(benchmark::TimeUnit::kMicrosecond);
 

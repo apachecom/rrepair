@@ -20,8 +20,35 @@
 using namespace big_repair;
 
 
+namespace std {
+
+    template<>
+    struct hash<std::vector<uint32_t>> {
+
+        std::size_t operator()(const std::vector<uint32_t>& str) const noexcept {
+
+            uint64_t hash = 0;
+            //const uint64_t prime = 3355443229;     // next prime(2**31+2**30+2**27)
+            const uint64_t prime = 27162335252586509; // next prime (2**54 + 2**53 + 2**47 + 2**13)
+            auto ptr = (unsigned char* )str.data();
+            uint32_t len = str.size()*sizeof (uint32_t);
+            for (size_t k = 0; k < len; k++) {
+                int c = (unsigned char) ptr[k];
+                assert(c >= 0 && c < 256);
+                hash = (256 * hash + c) % prime;    //  add char k
+            }
+            return (size_t) hash;
+        }
+
+    };
+
+
+}
+
 class RandomPermutationParser {
 
+
+public:
     RandomPermutationParser() = default;
 
 
@@ -31,37 +58,19 @@ class RandomPermutationParser {
     }
 
 
-    struct hash_function {
-
-        std::size_t operator()(std::list<uint32_t>& str) const noexcept {
-
-            uint64_t hash = 0;
-            //const uint64_t prime = 3355443229;     // next prime(2**31+2**30+2**27)
-            const uint64_t prime = 27162335252586509; // next prime (2**54 + 2**53 + 2**47 + 2**13)
-
-            uint32_t array [str.size()];
-            uint32_t i = 0;
-            for (const auto &item : str) {
-                array[i++] = item;
-            }
-            auto ptr = (unsigned char *)&array;
-            uint32_t len = str.size()*sizeof (uint32_t);
-            for (size_t k = 0; k < len; k++) {
-                int c = (unsigned char) ptr[k];
-                assert(c >= 0 && c < 256);
-                hash = (256 * hash + c) % prime;    //  add char k
-            }
-            return hash;
-
-
-        }
-
-    };
-
     struct stats{
         std::string filename;
         uint32_t dicc_len{0};
         uint32_t seq_len{0};
+        uint32_t max_sigma{0};
+
+        void reset(){
+
+            dicc_len  = 0;
+            seq_len   = 0;
+            max_sigma = 0;
+
+        }
     };
 
 //    template<uint64_t buffer_size = MAX_BUFFER_SIZE >
@@ -85,7 +94,7 @@ class RandomPermutationParser {
 //    };
 
     stats params;
-    std::unordered_map<std::list<uint32_t>,uint64_t,hash_function> hash_table;
+    std::unordered_map<std::vector<uint32_t>,uint64_t> hash_table;
     uint32_t* pi{nullptr};
 
 
@@ -95,16 +104,26 @@ class RandomPermutationParser {
             if(pi != nullptr) delete [] pi;
 
             pi = new uint32_t [len];
-            for(size_t i = 0; i < len; i++)
+            pi[0] = 0;
+            for(size_t i = 1; i < len; i++){
                 pi[i] = i;
+            }
 
             std::random_device rd;
             std::mt19937 g(rd());
-            std::shuffle(pi,pi + len,g);
+            std::shuffle(pi + 1,pi + len,g);
+//
+//        for (uint32_t j = 0 ; j < len; ++j) {
+//            std::cout<<"pi["<<j<<"]:"<<pi[j]<<std::endl;
+//        }
+//        std::cout<<std::endl;
+
     }
 
 
-    void parser (const std::string &file, const uint32_t& sigma, uint& bytex){
+    void parser (const std::string &file, const uint32_t& sigma, const uint& bytex){
+
+        params.filename = file;
 
         generate_permutation(sigma);
 
@@ -120,13 +139,28 @@ class RandomPermutationParser {
         // we will read max 32 bit Integer
         uint32_t c = 0;
         //current phrase
-        std::list<uint32_t> word;
+        std::vector<uint32_t> word;
         // reading file
         int state = UP; uint32_t last = 0;
 
         while (!ffile.eof() && ffile.read((char *) &c, bytex)) {
+
+            params.max_sigma = params.max_sigma > c ? params.max_sigma : c;
+
             if(state == DOWN && pi[c] > pi[last]){
-                // mark the phrase
+
+//                // mark the phrase
+//                std::cout<<"["<<hash_table.size() + 1<<"]"<<std::endl;
+//                for (const auto &item : word) {
+//                    std::cout<<item<<" ";
+//                }
+//                std::cout<<std::endl;
+//
+//                for (const auto &item : word) {
+//                    std::cout<<pi[item]<<" ";
+//                }
+//                std::cout<<"*******************"<<std::endl;
+
                 addWord(word,ffiled,ffilep,false);
                 state = UP;
             }else {
@@ -136,9 +170,8 @@ class RandomPermutationParser {
                     if(pi[c] < pi[last])
                         state = DOWN;
                 }
-                word.push_back(c);
             }
-
+            word.push_back(c);
             last = c;
 
         }
@@ -148,7 +181,7 @@ class RandomPermutationParser {
     }
 
 
-    void addWord(std::list<uint32_t>& word, std::fstream& dFile, std::fstream& pFile, bool constrain = true){
+    void addWord(std::vector<uint32_t>& word, std::fstream& dFile, std::fstream& pFile, bool constrain = true){
 
         uint len = word.size();
         //search the has in the dicc
@@ -171,11 +204,7 @@ class RandomPermutationParser {
 
             params.dicc_len++;
             //write the phrase in the dictionary file
-            auto data = new uint32_t [word.size()];
-            uint32_t j = 0;
-            for (const auto &item : word) {
-                data[j++] = item;
-            }
+            auto data = (char*) word.data();
             dFile.write((char *) data,word.size() * sizeof(uint32_t));
             //put 0 between phrases
             uint32_t z = 0;
@@ -211,6 +240,37 @@ class RandomPermutationParser {
 
         word.clear();
         params.seq_len++;
+    }
+
+
+
+    void recreateFile(const std::string & s, int bytesToWrite)
+    {
+        std::fstream ffiled(s+".dicc", std::ios::in|std::ios::binary);
+        std::fstream ffilep(s+".parse", std::ios::in |std::ios::binary);
+        std::fstream ofile(s+"_recreated", std::ios::out |std::ios::binary);
+
+        uint32_t ch = 0;
+        std::unordered_map<uint32_t,std::vector<uint32_t>> dicc;
+        uint32_t cont = 1;
+        while(!ffiled.eof() && ffiled.read((char*)&ch,sizeof(uint32_t))){
+            if(ch == 0){
+                ++cont;
+            }else{
+                dicc[cont].emplace_back(ch);
+            }
+        }
+
+        ch = 0;
+        while(!ffilep.eof() && ffilep.read((char*)&ch,sizeof(uint32_t))) {
+            auto it = dicc.find(ch);
+            if (it == dicc.end()) throw "PHRASE DID NOT FOUND IN THE DICC";
+
+            for (uint32_t c:it->second)
+                ofile.write((char *) &c, bytesToWrite);
+        }
+
+
     }
 
 };
