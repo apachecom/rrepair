@@ -78,6 +78,9 @@ set(SOURCE_FILES
         RePairRecursiveConfig.cpp RePairRecursiveConfig.h
         DummyRePair.cpp DummyRePair.h RepairUtils.cpp
         mem_monitor/mem_monitor.hpp
+        randomPermutationParser.hpp
+        randomPermutationParser.cpp
+
         )
 
 

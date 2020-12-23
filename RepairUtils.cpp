@@ -176,3 +176,23 @@ uint32_t util::decompress(const std::string& file){
 
     return 2*rules.size()+fcont;
 }
+
+
+
+void util::read_data(const std::string &file, unsigned char** data, uint64_t& len){
+
+    std::ifstream in(file, std::ifstream ::in);
+    in.seekg(0,std::ios_base::end);
+    len = in.tellg();
+    in.seekg(0,std::ios_base::beg);
+
+    if(in.bad()){
+        throw "bad file";
+    }
+    unsigned char* T = *data;
+    T = new unsigned char[len];
+    in.read((char*) T,len);
+    T[len] = '\0';
+    *data = T;
+
+}

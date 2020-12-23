@@ -33,6 +33,9 @@ namespace big_repair{
 
         uint32_t decompress(const std::string&);
 
+        void read_data(const std::string &file, unsigned char** data, uint64_t& len);
+
+
     }
 
 }
