@@ -11,6 +11,7 @@
 #include <random>
 #include <algorithm>
 #include "RepairUtils.h"
+#include "CLogger.h"
 
 
 #define UP 0
@@ -178,6 +179,12 @@ public:
         if (!word.empty()){
             addWord(word,ffiled,ffilep,false);
         }
+
+
+
+        CLogger::GetLogger()->model[file+":dicc-len"] = params.dicc_len;
+        CLogger::GetLogger()->model[file+":parse-len"] = params.seq_len;
+
     }
 
 

@@ -18,6 +18,9 @@
 #include "DummyRePair.h"
 #include "RepairUtils.h"
 #include "randomPermutationParser.hpp"
+#include "macros.h"
+
+#include <chrono>
 
 namespace big_repair{
 
@@ -46,7 +49,8 @@ namespace big_repair{
             DummyRepair,
             HashParser< HashParserConfig< KRPSlindingWindow<>, KRPHashFunction< uint64_t ,std::string > > >
             >
-    {
+
+            {
 
         typedef HashParserConfig< KRPSlindingWindow<>, KRPHashFunction< uint64_t ,std::string > > ParseConf;
         typedef HashParser<HashParserConfig< KRPSlindingWindow<>, KRPHashFunction< uint64_t ,std::string > > > Parse;
@@ -207,6 +211,10 @@ namespace big_repair{
         void compressor() {
             //apply repair and store repair files
             for(std::string s:diccFiles){
+
+#ifdef MEASURE_TIME
+                auto start = std::chrono::high_resolution_clock::now();
+#endif
                 if(_compressor.apply(s) > 0){
                     repairFilesR.push_back(s + ".R");
                     repairFilesC.push_back(s + ".C");
@@ -214,12 +222,29 @@ namespace big_repair{
                 else
                     throw "[ERROR] RePair compression fail dicc file " + s;
 
+#ifdef MEASURE_TIME
+                auto end = std::chrono::high_resolution_clock::now();
+                auto elapse = std::chrono::duration_cast<std::chrono::microseconds>( end - start).count();
+                CLogger::GetLogger()->model[s + ":repair:time"] = elapse;
+#endif
+
             }
+
+#ifdef MEASURE_TIME
+            auto start = std::chrono::high_resolution_clock::now();
+#endif
+
             std::string last_parse_file = parseFiles.back();
             if(_compressor.apply(last_parse_file) > 0){
                 repairFilesR.push_back(last_parse_file + ".R");
                 repairFilesC.push_back(last_parse_file + ".C");
             } else throw "[ERROR] RePair compression fail last parser file";
+
+#ifdef MEASURE_TIME
+            auto end = std::chrono::high_resolution_clock::now();
+            auto elapse = std::chrono::duration_cast<std::chrono::microseconds>( end - start).count();
+            CLogger::GetLogger()->model[last_parse_file + ":repair:time"] = elapse;
+#endif
 
         };
         /**
@@ -240,15 +265,42 @@ namespace big_repair{
 
             _parser = new Parse( _parser_conf );
             //parse current file
-            _parser->parseFileSM();
+
+#ifdef MEASURE_TIME
+            {
+                auto start = std::chrono::high_resolution_clock::now();
+
+#endif
+                _parser->parseFileSM();
+
+#ifdef MEASURE_TIME
+                auto end = std::chrono::high_resolution_clock::now();
+                auto elapse = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+                CLogger::GetLogger()->model[_parser_conf.inputFile() + ":parse:time"] = elapse;
+            }
+#endif
+
+            uint32_t max_sigma = 0;
+#ifdef MEASURE_TIME
+            {
+                auto start = std::chrono::high_resolution_clock::now();
+
+#endif
+
             //posprocess dictionary
             _size_seq = _parser->results._seq_len;
-            uint32_t max_sigma = util::prepareDiccFileForRP(
+             max_sigma = util::prepareDiccFileForRP(
                     _parser_conf.inputFile() + ".dicc",
                     _parser_conf.inputFile()+"["+std::to_string(_iter)+"].dicc",
                     sizeof(uint32_t),
                     _parser->results._max_alph_val
                     );
+#ifdef MEASURE_TIME
+                auto end = std::chrono::high_resolution_clock::now();
+                auto elapse = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+                CLogger::GetLogger()->model[_parser_conf.inputFile() + ":posprocess-dicc:time"] = elapse;
+            }
+#endif
 
 
             maxSigmaIt.emplace_back(_parser->results._max_alph_val,max_sigma);
@@ -293,7 +345,9 @@ namespace big_repair{
                 /* Update the offset of the rules adding the number of rules created in this iteration**/
                 offset_rules += n_rules_level;
                 total_rules += n_rules_level;
+
             }
+
 
             /**
             *  Process last parser file stored in repairFilesR.last
@@ -301,6 +355,13 @@ namespace big_repair{
 
             std::fstream C(_filename + ".C", std::ios::out|std::ios::binary);
             std::pair<uint32_t,uint32_t> p = posprocessingFinalParseFile(R,C,offset_rules,initial_sigma,rule_map);
+
+
+#ifdef MEASURE_TIME
+            CLogger::GetLogger()->model["grammar:size"] = 2*(total_rules+p.first)+p.second;
+            CLogger::GetLogger()->model["grammar:rules"] += total_rules+p.first;
+#endif
+
             return std::make_pair(total_rules+p.first,p.second);
         }
 
@@ -728,21 +789,45 @@ namespace big_repair{
        * */
         void compressor() {
             //apply repair and store repair files
+
             for(std::string s:diccFiles){
+
+#ifdef MEASURE_TIME
+                {
+                    auto start = std::chrono::high_resolution_clock::now();
+#endif
+
                 if(_compressor.apply(s) > 0){
                     repairFilesR.push_back(s + ".R");
                     repairFilesC.push_back(s + ".C");
                 }
                 else
                     throw "[ERROR] RePair compression fail dicc file " + s;
+#ifdef MEASURE_TIME
+                    auto end = std::chrono::high_resolution_clock::now();
+                    auto elapse = std::chrono::duration_cast<std::chrono::microseconds>( end - start).count();
+                    CLogger::GetLogger()->model[s + ":repair:time"] = elapse;
 
+                }
+#endif
             }
+
+#ifdef MEASURE_TIME
+            {
+                auto start = std::chrono::high_resolution_clock::now();
+#endif
             std::string last_parse_file = parseFiles.back();
             if(_compressor.apply(last_parse_file) > 0){
                 repairFilesR.push_back(last_parse_file + ".R");
                 repairFilesC.push_back(last_parse_file + ".C");
             } else throw "[ERROR] RePair compression fail last parser file";
+#ifdef MEASURE_TIME
+                auto end = std::chrono::high_resolution_clock::now();
+                auto elapse = std::chrono::duration_cast<std::chrono::microseconds>( end - start).count();
+                CLogger::GetLogger()->model[last_parse_file + ":repair:time"] = elapse;
 
+            }
+#endif
         };
         /**
         * partitioner method must create two files file_dicc and file_parse as integers
@@ -754,27 +839,54 @@ namespace big_repair{
             uint32_t byte = 1;
             uint32_t sigma = 256;
             if(firstIteration()){
+
                 _parser.params.filename = _filename;
+
             }else{
+
                 byte = 4;
                 sigma = _parser.params.dicc_len;
                 _parser.params.reset();
                 _parser.params.filename = parseFiles[_iter-1];
+
             }
             //parse current file
+
+#ifdef MEASURE_TIME
+            {
+                auto start = std::chrono::high_resolution_clock::now();
+#endif
             _parser.parser(_parser.params.filename,sigma,byte);
 
+#ifdef MEASURE_TIME
+                auto end = std::chrono::high_resolution_clock::now();
+                auto elapse = std::chrono::duration_cast<std::chrono::microseconds>( end - start).count();
+                CLogger::GetLogger()->model[_parser.params.filename + ":parse:time"] = elapse;
+
+            }
+#endif
             //std::cout<<"hash_table_len:"<<_parser.hash_table.size()<<std::endl;
             //std::cout<<"dicc_len      :"<<_parser.params.dicc_len  <<std::endl;
             _parser.hash_table.clear();
             //posprocess dictionary
             _size_seq = _parser.params.seq_len;
-            uint32_t max_sigma = util::prepareDiccFileForRP(
+            uint32_t max_sigma = 0;
+#ifdef MEASURE_TIME
+            {
+                auto start = std::chrono::high_resolution_clock::now();
+#endif
+            max_sigma = util::prepareDiccFileForRP(
                     _parser.params.filename + ".dicc",
                     _parser.params.filename+"["+std::to_string(_iter)+"].dicc",
                     sizeof(uint32_t),
                     _parser.params.max_sigma
             );
+#ifdef MEASURE_TIME
+            auto end = std::chrono::high_resolution_clock::now();
+            auto elapse = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+            CLogger::GetLogger()->model[_parser.params.filename + ":posprocess-dicc:time"] = elapse;
+        }
+#endif
 
 
             maxSigmaIt.emplace_back(_parser.params.max_sigma,max_sigma);
@@ -827,6 +939,12 @@ namespace big_repair{
 
             std::fstream C(_filename + ".C", std::ios::out|std::ios::binary);
             std::pair<uint32_t,uint32_t> p = posprocessingFinalParseFile(R,C,offset_rules,initial_sigma,rule_map);
+
+#ifdef MEASURE_TIME
+            CLogger::GetLogger()->model["grammar:size"] = 2*(total_rules+p.first)+p.second;
+            CLogger::GetLogger()->model["grammar:rules"] += total_rules + 1;
+#endif
+
             return std::make_pair(total_rules+p.first,p.second);
         }
 
@@ -989,6 +1107,7 @@ namespace big_repair{
                                 R.write((char*)&X[i],4);
                                 R.write((char*)&X[i+1],4);
 
+
 #ifdef DEBUG_PRINT
                                 std::cout<<n_rules_level - 1 + offset_rules<<"-<"<<X[i]<<","<<X[i+1]<<">"<<std::endl;
 #endif
@@ -1097,7 +1216,6 @@ namespace big_repair{
 #endif
                     len++;
                 }
-
 
 #ifdef DEBUG_PRINT
 

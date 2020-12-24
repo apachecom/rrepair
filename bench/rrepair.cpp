@@ -12,8 +12,9 @@
 #include "../RePairRecursive.h"
 #include "../SlidingWindow.h"
 #include "../mem_monitor/mem_monitor.hpp"
+#include "../CLogger.h"
+#include "../macros.h"
 
-#define MEM_MONITOR
 #define COMPRESSOR_BIN_DIR "../external/repair/repair"
 
 using namespace big_repair;
@@ -51,6 +52,11 @@ struct Params {
         max_iter = (uint32_t)std::atoi(argv[4]);
         th = (uint32_t)std::atoi(argv[5]);
 
+        CLogger::GetLogger()->model["window-size"] = ws;
+        CLogger::GetLogger()->model["mod"] = mod;
+        CLogger::GetLogger()->model["max-iter"] = max_iter;
+        CLogger::GetLogger()->model["th"] = th;
+
     }
 
 };
@@ -63,12 +69,14 @@ auto b_compress  = [](benchmark::State &state,const Params& params)
 
     // Perform setup here
 #ifdef MEM_MONITOR
-    std::string mem_out = params.filename + "-rec-repair-compression.csv";
+    std::string mem_out = params.filename + "-mem-rec-repair-compression.csv";
     mem_monitor mm(mem_out);
     mm.event("compression");
 #endif
-    for (auto _ : state) {
 
+
+
+    for (auto _ : state) {
 
         HashParserConfig<KRPSlindingWindow<>,KRPHashFunction<uint64_t ,std::string>> conf(params.ws,1,params.mod,params.filename,"");
         DummyRepair compresor(COMPRESSOR_BIN_DIR);
@@ -83,10 +91,40 @@ auto b_compress  = [](benchmark::State &state,const Params& params)
                 DummyRepair,
                 HashParser< HashParserConfig< KRPSlindingWindow<>, KRPHashFunction< uint64_t ,std::string > > >
         >> brepair(rrConf);
+
+
+#ifdef MEASURE_TIME
+        {
+            auto start = std::chrono::high_resolution_clock::now();
+#endif
         brepair.apply();
 
+#ifdef MEASURE_TIME
+            auto end = std::chrono::high_resolution_clock::now();
+            auto elapse = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+            CLogger::GetLogger()->model["total:time"] = elapse;
+        }
+#endif
+
+
+
     }
-    state.counters["R-RePair-grammar-size"] = 0;
+
+
+#ifdef MEASURE_TIME
+
+
+    auto b = CLogger::GetLogger()->model.begin();
+    while(b != CLogger::GetLogger()->model.end()){
+        state.counters[b->first] = b->second;//CLogger::GetLogger()->model["total:time"];
+        ++b;
+    }
+//    state.counters["grammar:size"] = CLogger::GetLogger()->model["grammar:size"];
+//    state.counters["grammar:rules"] = CLogger::GetLogger()->model["grammar:rules"];
+
+#endif
+//
+//    state.counters["R-RePair-grammar-size"] = 0;
 };
 
 auto b_decompress  = [](benchmark::State &state,const Params& params)
@@ -120,7 +158,7 @@ int main (int argc, char *argv[] ){
 
 
         benchmark::RegisterBenchmark("Compression"  ,b_compress,params)->Unit({benchmark::kMicrosecond});
-        benchmark::RegisterBenchmark("Decompression"  ,b_decompress,params)->Unit({benchmark::kMicrosecond});
+//        benchmark::RegisterBenchmark("Decompression"  ,b_decompress,params)->Unit({benchmark::kMicrosecond});
 
         benchmark::Initialize(&argc, argv);
         benchmark::RunSpecifiedBenchmarks();

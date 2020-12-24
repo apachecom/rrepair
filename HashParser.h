@@ -12,6 +12,7 @@
 #include <map>
 #include <set>
 #include <unordered_map>
+#include "CLogger.h"
 
 //#include <sdsl/int_vector.hpp>
 
@@ -302,6 +303,10 @@ namespace big_repair{
 
                 word.clear();
             }
+
+            CLogger::GetLogger()->model[config->inputFile()+":dicc-len"] = results._dicc_len;
+            CLogger::GetLogger()->model[config->inputFile()+":parse-len"] = results._seq_len;
+
 
         }
 
