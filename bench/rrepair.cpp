@@ -158,7 +158,7 @@ int main (int argc, char *argv[] ){
 
 
         benchmark::RegisterBenchmark("Compression"  ,b_compress,params)->Unit({benchmark::kMicrosecond});
-//        benchmark::RegisterBenchmark("Decompression"  ,b_decompress,params)->Unit({benchmark::kMicrosecond});
+        benchmark::RegisterBenchmark("Decompression"  ,b_decompress,params)->Unit({benchmark::kMicrosecond});
 
         benchmark::Initialize(&argc, argv);
         benchmark::RunSpecifiedBenchmarks();

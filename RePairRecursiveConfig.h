@@ -904,7 +904,7 @@ namespace big_repair{
          * */
         std::pair<uint32_t,uint32_t> postprocess() {
             // create a file for the final rules...
-            std::fstream R(_filename + ".R", std::ios::out|std::ios::binary);
+            std::fstream R(_filename + ".rR", std::ios::out|std::ios::binary);
 
             // write the initial sigma value
             uint32_t initial_sigma = maxSigmaIt.front().first;
@@ -937,7 +937,7 @@ namespace big_repair{
             *  Process last parser file stored in repairFilesR.last
             * */
 
-            std::fstream C(_filename + ".C", std::ios::out|std::ios::binary);
+            std::fstream C(_filename + ".rC", std::ios::out|std::ios::binary);
             std::pair<uint32_t,uint32_t> p = posprocessingFinalParseFile(R,C,offset_rules,initial_sigma,rule_map);
 
 #ifdef MEASURE_TIME
