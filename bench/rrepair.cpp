@@ -69,7 +69,7 @@ auto b_compress  = [](benchmark::State &state,const Params& params)
 
     // Perform setup here
 #ifdef MEM_MONITOR
-    std::string mem_out = params.filename + "-mem-rec-repair-compression.csv";
+    std::string mem_out = params.filename +"-"+std::to_string(params.mod)+"-mem-rec-repair-compression.csv";
     mem_monitor mm(mem_out);
     mm.event("compression");
 #endif
@@ -133,7 +133,7 @@ auto b_decompress  = [](benchmark::State &state,const Params& params)
     // Perform setup here
     uint32_t size = 0;
 #ifdef MEM_MONITOR
-    std::string mem_out = params.filename + "-rec-repair-decompression.csv";
+    std::string mem_out = params.filename +"-"+std::to_string(params.mod)+"-rec-repair-decompression.csv";
     mem_monitor mm(mem_out);
     mm.event("decompression");
 #endif
